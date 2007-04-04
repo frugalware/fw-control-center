@@ -39,6 +39,7 @@ char *active_interface = NULL;
 GtkWidget *gn_main_window;
 GtkWidget *gn_profile_combo;
 GtkWidget *gn_interface_combo;
+GtkWidget *gn_conntype_combo;
 GtkWidget *gn_ipaddress_entry;
 GtkWidget *gn_netmask_entry;
 GtkWidget *gn_gateway_entry;
@@ -51,6 +52,7 @@ static void gnetconfig_load_profile (const char *name);
 /* callbacks */
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_interface_changed (GtkComboBox *combo, gpointer data);
+static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
 
 void
 gnetconfig_interface_init (void)
@@ -62,10 +64,10 @@ gnetconfig_interface_init (void)
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
 	gn_profile_combo	= glade_xml_get_widget (xml, "fwn_profile_list");
 	gn_interface_combo	= glade_xml_get_widget (xml, "fwn_interface_list");
+	gn_conntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list");
 	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
 	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
 	gn_gateway_entry	= glade_xml_get_widget (xml, "fwn_gateway");
-
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
@@ -82,8 +84,16 @@ gnetconfig_interface_init (void)
 	gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_interface_combo), renderer, "text", 0);
 	gtk_combo_box_set_model (GTK_COMBO_BOX(gn_interface_combo), model);
 	g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
-
 	
+	/* setup connection type combobox */
+	//model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
+	//renderer = gtk_cell_renderer_text_new ();
+	//gtk_cell_layout_pack_start (GTK_CELL_LAYOUT(gn_conntype_combo), renderer, FALSE);
+	//gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_conntype_combo), renderer, "text", 0);
+	//gtk_combo_box_set_model (GTK_COMBO_BOX(gn_conntype_combo), model);
+	g_signal_connect (G_OBJECT(gn_conntype_combo), "changed", G_CALLBACK(cb_gn_conntype_changed), NULL);
+
+	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
 	gtk_widget_show (gn_main_window);
 
@@ -162,7 +172,11 @@ gnetconfig_load_profile (const char *name)
 	if (!(profile = fwnet_parseprofile (name)))
 		return;
 
+	/* set the active profile */
 	active_profile = profile;
+
+
+	/* populate the list of interfaces */
 	gnetconfig_populate_interface_list (profile);
 
 	return;
@@ -193,6 +207,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 	fwnet_interface_t	*inte;
 	GtkTreeIter			iter;
 	GtkTreeModel		*model = NULL;
+	GtkListStore		*store = NULL;
 	gchar				*text = NULL;
 	char				ip[20];
 	char				netmask[20];
@@ -213,6 +228,11 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
 			sscanf (inte->gateway, "%*s gw %s", ip);
 			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
+			
+			/* set the correct connection type */
+			if (!fwnet_is_dhcp(inte))
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
+
 		}
 		else
 			g_error ("no interface found");
@@ -220,4 +240,11 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 
 	return;
 }
+
+static void
+cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
+{
+	return;
+}
+
 
