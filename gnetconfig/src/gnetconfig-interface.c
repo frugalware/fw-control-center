@@ -228,11 +228,10 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
 			sscanf (inte->gateway, "%*s gw %s", ip);
 			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
-			
-			/* set the correct connection type */
-			if (!fwnet_is_dhcp(inte))
-				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 
+			/* set the correct connection type */
+			if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 		}
 		else
 			g_error ("no interface found");
