@@ -30,6 +30,7 @@
 #endif
 
 #include "gnetconfig-interface.h"
+#include "gnetconfig-messages.h"
 #include "gnetconfig-misc.h"
 
 extern GladeXML *xml;
@@ -235,7 +236,7 @@ gnetconfig_load_profile (const char *name)
 	if (hostname)
 		gtk_entry_set_text (GTK_ENTRY(gn_hostname_entry), hostname);
 	else
-		g_error ("couldn't read hostname.");
+		gn_error ("Couldn't read hostname.", ERROR_GUI);
 
 	return;
 }
@@ -328,7 +329,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 		}
 		else
-			g_error ("no network interface found");
+			gn_error ("No network interface found.", ERROR_GUI);
 	}
 
 	return;
@@ -355,7 +356,7 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 		// check if profile already exists
 		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
 		if (g_file_test(filename, G_FILE_TEST_EXISTS))
-			g_print ("Profile exists");
+			gn_error ("profile already exists", ERROR_GUI);
 		// further processing
 		g_free (filename);
 	}
