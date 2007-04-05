@@ -359,6 +359,7 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 			gn_error ("profile already exists", ERROR_GUI);
 		// further processing
 		g_free (filename);
+		return;
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(dlg));
