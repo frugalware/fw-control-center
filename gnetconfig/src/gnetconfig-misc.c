@@ -56,3 +56,4 @@ gnetconfig_set_hostname (const char *hostname)
 
 	return 0;
 }
+

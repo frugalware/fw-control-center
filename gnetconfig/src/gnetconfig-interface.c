@@ -345,14 +345,22 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 {
 	if (arg1 == GTK_RESPONSE_ACCEPT)
 	{
-		// check if profile name is valid
+		GList		*wlist = NULL;
+		gchar		*filename = NULL;
+		const gchar	*pname;
+
+		wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
+		wlist = g_list_next (wlist);
+		pname = gtk_entry_get_text (GTK_ENTRY(wlist->data));
 		// check if profile already exists
-		// further processing	
-	}
-	else
-	{
-		// don't do anything
+		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
+		if (g_file_test(filename, G_FILE_TEST_EXISTS))
+			g_print ("Profile exists");
+		// further processing
+		g_free (filename);
 	}
 
+	gtk_widget_destroy (GTK_WIDGET(dlg));
 	return;
 }
+
