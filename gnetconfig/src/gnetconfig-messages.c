@@ -1,5 +1,5 @@
 /***************************************************************************
- *  gnetconfg-messages.c
+ *  gnetconfig-messages.c
  *  Author: Priyank Gosalia <priyankmg@gmail.com>	
  *  Copyright 2007 Frugalware Developer Team
  ****************************************************************************/

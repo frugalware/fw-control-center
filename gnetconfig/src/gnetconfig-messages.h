@@ -20,5 +20,5 @@ typedef enum _errortype
 void gn_error (const char *, ErrorType);
 
 void gn_message (const char *);
-	
+
 #endif
