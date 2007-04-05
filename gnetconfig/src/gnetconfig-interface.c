@@ -30,6 +30,7 @@
 #endif
 
 #include "gnetconfig-interface.h"
+#include "gnetconfig-misc.h"
 
 extern GladeXML *xml;
 
@@ -170,6 +171,7 @@ static void
 gnetconfig_load_profile (const char *name)
 {
 	fwnet_profile_t		*profile;
+	char				hostname[256];
 
 	if (!(profile = fwnet_parseprofile (name)))
 		return;
@@ -179,6 +181,13 @@ gnetconfig_load_profile (const char *name)
 
 	/* populate the list of interfaces */
 	gnetconfig_populate_interface_list (profile);
+
+	/* read the hostname */
+	gnetconfig_read_hostname(hostname);
+	if (hostname)
+		gtk_entry_set_text (GTK_ENTRY(gn_hostname_entry), hostname);
+	else
+		g_error ("couldn't read hostname.");
 
 	return;
 }
@@ -235,7 +244,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 		}
 		else
-			g_error ("no interface found");
+			g_error ("no network interface found");
 	}
 
 	return;
