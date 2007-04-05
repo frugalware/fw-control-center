@@ -53,6 +53,10 @@ static void gnetconfig_populate_interface_list (fwnet_profile_t *profile);
 static void gnetconfig_load_profile (const char *name);
 static void gnetconfig_populate_dns_list (GList *list);
 
+/* new profile dialog */
+static void gnetconfig_new_profile_dialog_show (void);
+static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
+
 /* callbacks */
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_interface_changed (GtkComboBox *combo, gpointer data);
@@ -61,6 +65,7 @@ static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
 void
 gnetconfig_interface_init (void)
 {
+	GtkWidget		*widget = NULL;
 	GtkTreeModel	*model = NULL;
 	GtkCellRenderer	*renderer = NULL;
 	
@@ -98,13 +103,17 @@ gnetconfig_interface_init (void)
 	//gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_conntype_combo), renderer, "text", 0);
 	//gtk_combo_box_set_model (GTK_COMBO_BOX(gn_conntype_combo), model);
 	g_signal_connect (G_OBJECT(gn_conntype_combo), "changed", G_CALLBACK(cb_gn_conntype_changed), NULL);
-	
+
 	/* setup dns listview */
 	model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(gn_dns_listview), -1, "IP Address", renderer, "text", 0, NULL);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_dns_listview), model);
 	//g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
+
+	/* setup new profile dialog */
+	widget = glade_xml_get_widget (xml, "fwn_menu_newprofile");
+	g_signal_connect (G_OBJECT(widget), "activate", G_CALLBACK(gnetconfig_new_profile_dialog_show), NULL);
 
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
@@ -232,6 +241,43 @@ gnetconfig_load_profile (const char *name)
 }
 
 static void
+gnetconfig_new_profile_dialog_show (void)
+{
+	GtkWidget 	*dialog;
+	GtkWidget 	*label;
+	GtkWidget 	*entry;
+	static gchar	*message = "Enter a name for the new profile: ";
+
+	dialog = gtk_dialog_new_with_buttons (_("New Profile"),
+                                         NULL,
+                                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                                         GTK_STOCK_OK,
+                                         GTK_RESPONSE_ACCEPT,
+                                         GTK_STOCK_CANCEL,
+                                         GTK_RESPONSE_REJECT,
+                                         NULL);
+	gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
+	label = gtk_label_new (message);
+	entry = gtk_entry_new ();
+
+	g_signal_connect_swapped (dialog,
+                             "response",
+                             G_CALLBACK (cb_gn_new_profile_dialog_response),
+                             dialog);
+	gtk_misc_set_padding (GTK_MISC(label), 5, 5);
+	gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER((GTK_DIALOG(dialog))->vbox), 10);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), entry);
+
+	gtk_widget_show_all (dialog);
+
+	return;
+}
+
+/* CALLBACKS */
+
+static void
 cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 {
 	GtkTreeIter	iter;
@@ -291,5 +337,22 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 static void
 cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 {
+	return;
+}
+
+static void
+cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
+{
+	if (arg1 == GTK_RESPONSE_ACCEPT)
+	{
+		// check if profile name is valid
+		// check if profile already exists
+		// further processing	
+	}
+	else
+	{
+		// don't do anything
+	}
+
 	return;
 }

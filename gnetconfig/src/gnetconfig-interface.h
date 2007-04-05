@@ -10,6 +10,8 @@
 #include <gtk/gtk.h>
 #include <libfwnetconfig.h>
 
+#define _(string) gettext (string)
+
 void gnetconfig_interface_init (void);
 
 #endif
