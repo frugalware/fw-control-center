@@ -101,6 +101,7 @@ gnetconfig_interface_init (void)
 	/* setup dns listview */
 	model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
 	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(gn_dns_listview), -1, "IP Address", renderer, "text", 0, NULL);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_dns_listview), model);
 	//g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
 
@@ -176,6 +177,32 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 }
 
 static void
+gnetconfig_populate_dns_list (GList *list)
+{
+	GtkTreeModel	*model = NULL;
+	GtkListStore	*store = NULL;
+	GtkTreeIter		iter;
+	
+	if (!list)
+		return;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_dns_listview));
+	store = GTK_LIST_STORE (model);
+	gtk_list_store_clear (store);
+
+	while (list != NULL)
+	{
+		gtk_list_store_append (store, &iter);
+		gtk_list_store_set (store, &iter, 0, list->data, -1);
+		list = g_list_next (list);
+	}
+
+	gtk_widget_show (gn_dns_listview);
+
+	return;
+}
+
+static void
 gnetconfig_load_profile (const char *name)
 {
 	fwnet_profile_t		*profile;
@@ -189,6 +216,9 @@ gnetconfig_load_profile (const char *name)
 
 	/* populate the list of interfaces */
 	gnetconfig_populate_interface_list (profile);
+
+	/* populate the dns list */
+	gnetconfig_populate_dns_list (profile->dnses);
 
 	/* read the hostname */
 	gnetconfig_read_hostname(hostname);
