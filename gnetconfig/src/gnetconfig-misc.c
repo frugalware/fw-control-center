@@ -43,8 +43,16 @@ gnetconfig_read_hostname (char *hostname)
 int
 gnetconfig_set_hostname (const char *hostname)
 {
+	FILE *fp = NULL;
+
+	if (hostname == NULL || !(strlen(hostname)))
+		return -1;
+
+	if (!(fp=fopen ("/etc/HOSTNAME", "w")))
+			return -1;
+
+	fprintf (fp, "%s", hostname);
+	fclose (fp);
+
 	return 0;
-
 }
-
-
