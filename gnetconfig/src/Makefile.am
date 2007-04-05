@@ -5,6 +5,7 @@ INCLUDES=@GNETCONFIG_CFLAGS@ \
 bin_PROGRAMS=gnetconfig
 
 gnetconfig_SOURCES=	 gnetconfig.c \
+					 gnetconfig-misc.c \
 					 gnetconfig-interface.c
 
 gnetconfig_LDADD= @GNETCONFIG_LIBS@ -lfwnetconfig

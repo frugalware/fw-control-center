@@ -43,6 +43,7 @@ GtkWidget *gn_conntype_combo;
 GtkWidget *gn_ipaddress_entry;
 GtkWidget *gn_netmask_entry;
 GtkWidget *gn_gateway_entry;
+GtkWidget *gn_hostname_entry;
 
 /* utility functions */
 static void gnetconfig_populate_profile_list (void);
@@ -68,6 +69,7 @@ gnetconfig_interface_init (void)
 	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
 	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
 	gn_gateway_entry	= glade_xml_get_widget (xml, "fwn_gateway");
+	gn_hostname_entry	= glade_xml_get_widget (xml, "fwn_hostname");
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
@@ -106,8 +108,8 @@ gnetconfig_populate_profile_list (void)
 	GDir			*dir = NULL;
 	GError			*error = NULL;
 	const gchar		*file;
-	GtkTreeModel	*gn_profile_model = NULL;
-	GtkListStore	*gn_profile_store = NULL;
+	GtkTreeModel		*gn_profile_model = NULL;
+	GtkListStore		*gn_profile_store = NULL;
 	GtkTreeIter		iter;
 	char			*fn = NULL;
 	gint			index = -1;
@@ -141,11 +143,11 @@ gnetconfig_populate_profile_list (void)
 static void
 gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 {
-	gint				i, n_ifs = 0;
+	gint			i, n_ifs = 0;
 	fwnet_interface_t	*interface;
 	GtkTreeModel		*model = NULL;
 	GtkListStore		*store = NULL;
-	GtkTreeIter			iter;
+	GtkTreeIter		iter;
 
 	n_ifs = g_list_length (profile->interfaces);
 	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_interface_combo));
@@ -175,7 +177,6 @@ gnetconfig_load_profile (const char *name)
 	/* set the active profile */
 	active_profile = profile;
 
-
 	/* populate the list of interfaces */
 	gnetconfig_populate_interface_list (profile);
 
@@ -185,9 +186,9 @@ gnetconfig_load_profile (const char *name)
 static void
 cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 {
-	GtkTreeIter		iter;
+	GtkTreeIter	iter;
 	GtkTreeModel	*model = NULL;
-	gchar			*text = NULL;
+	gchar		*text = NULL;
 	
 	if (gtk_combo_box_get_active_iter(combo, &iter))
 	{
@@ -202,16 +203,16 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 static void
 cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 {
-	GList				*interface = NULL;
-	GList				*options = NULL;
+	GList			*interface = NULL;
+	GList			*options = NULL;
 	fwnet_interface_t	*inte;
-	GtkTreeIter			iter;
+	GtkTreeIter		iter;
 	GtkTreeModel		*model = NULL;
 	GtkListStore		*store = NULL;
-	gchar				*text = NULL;
-	char				ip[20];
-	char				netmask[20];
-	gint				if_pos = -1;
+	gchar			*text = NULL;
+	char			ip[20];
+	char			netmask[20];
+	gint			if_pos = -1;
 
 	if (gtk_combo_box_get_active_iter(combo, &iter))
 	{
