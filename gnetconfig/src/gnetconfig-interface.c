@@ -51,6 +51,7 @@ GtkWidget *gn_dns_listview;
 static void gnetconfig_populate_profile_list (void);
 static void gnetconfig_populate_interface_list (fwnet_profile_t *profile);
 static void gnetconfig_load_profile (const char *name);
+static void gnetconfig_populate_dns_list (GList *list);
 
 /* callbacks */
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
@@ -181,8 +182,8 @@ gnetconfig_populate_dns_list (GList *list)
 {
 	GtkTreeModel	*model = NULL;
 	GtkListStore	*store = NULL;
-	GtkTreeIter		iter;
-	
+	GtkTreeIter	iter;
+
 	if (!list)
 		return;
 
@@ -206,7 +207,7 @@ static void
 gnetconfig_load_profile (const char *name)
 {
 	fwnet_profile_t		*profile;
-	char				hostname[256];
+	char			hostname[256];
 
 	if (!(profile = fwnet_parseprofile (name)))
 		return;
@@ -292,5 +293,3 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 {
 	return;
 }
-
-
