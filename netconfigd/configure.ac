@@ -16,6 +16,14 @@ AC_MSG_CHECKING(whether I'm developed by somebody paranoid about their code bein
 CFLAGS="$CFLAGS -Werror -Wextra -pedantic -Wall -Wno-unused-parameter"
 AC_MSG_RESULT(yes)
 
+AC_PATH_PROG(DBUSBINDINGTOOL, dbus-binding-tool, no)
+
+if test "x$DBUSBINDINGTOOL" = "xno"; then
+	AC_MSG_ERROR([dbus-binding-tool not found in your PATH. Please correct this])
+fi
+
+AC_SUBST(DBUS_BINDING_TOOL)
+
 PKG_CHECK_MODULES([NETCONFIGD], [dbus-glib-1 >= 0.73])
 
 CFLAGS="${CFLAGS}"

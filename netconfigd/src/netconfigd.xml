@@ -1,0 +1,23 @@
+<node name="/com/frugalware/NetConfig">
+	<interface name="com.frugalware.NetConfig">
+		<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig"/>
+		<method name="GetCurrentProfile">
+			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_get_current_profile"/>
+			<arg type="s" name="profile" direction="out" />
+		</method>
+		<method name="ChangeProfile">
+			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_change_profile"/>
+			<arg type="s" name="profile" direction="in" />
+		</method>
+		<method name="StopNetworking">
+			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_stop_networking"/>
+		</method>
+		<method name="StartNetworking">
+			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_start_networking"/>
+		</method>
+		<method name="GetProfiles">
+			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_get_profiles"/>
+			<arg type="as" name="profile" direction="out" />
+		</method>
+	</interface>
+</node>
