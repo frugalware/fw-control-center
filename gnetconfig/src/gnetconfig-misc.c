@@ -63,6 +63,7 @@ gnetconfig_new_profile (const char *name)
 	fwnet_profile_t		*profile = NULL;
 	fwnet_interface_t	*interface = NULL;
 
+	/* following code is taken from netconfig */
 	profile = (fwnet_profile_t*) malloc(sizeof(fwnet_profile_t));
 	if (profile == NULL)
 		return NULL;

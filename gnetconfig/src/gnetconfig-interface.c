@@ -282,7 +282,9 @@ gnetconfig_setup_new_profile (const char *profile)
 {
 	fwnet_profile_t		*new_profile = NULL;
 	GtkListStore		*profile_list = NULL;
+	GtkTreeModel		*profile_model = NULL;
 	GtkTreeIter			iter;
+	gint				n;
 
 	if ((new_profile = gnetconfig_new_profile (profile)) == NULL)
 	{
@@ -292,11 +294,14 @@ gnetconfig_setup_new_profile (const char *profile)
 
 	/* set as active profile */
 	active_profile = new_profile;
-
-	/* Reset all entries */
-	profile_list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(gn_profile_combo)));
+	profile_model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
+	profile_list = GTK_LIST_STORE (profile_model);
 	gtk_list_store_append (profile_list, &iter);
 	gtk_list_store_set (profile_list, &iter, 0, profile, -1);
+	n = gtk_tree_model_iter_n_children (profile_model, NULL);
+	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_profile_combo), n-1);
+
+	/* Reset all entries */
 	gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
