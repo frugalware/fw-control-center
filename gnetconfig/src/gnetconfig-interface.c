@@ -280,9 +280,23 @@ gnetconfig_new_profile_dialog_show (void)
 static void
 gnetconfig_setup_new_profile (const char *profile)
 {
-	/* Unload existing profile */
+	fwnet_profile_t		*new_profile = NULL;
+	GtkListStore		*profile_list = NULL;
+	GtkTreeIter			iter;
+
+	if ((new_profile = gnetconfig_new_profile (profile)) == NULL)
+	{
+		gn_error ("Error creating profile.", ERROR_GUI);
+		return;
+	}
+
+	/* set as active profile */
+	active_profile = new_profile;
 
 	/* Reset all entries */
+	profile_list = GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(gn_profile_combo)));
+	gtk_list_store_append (profile_list, &iter);
+	gtk_list_store_set (profile_list, &iter, 0, profile, -1);
 	gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");

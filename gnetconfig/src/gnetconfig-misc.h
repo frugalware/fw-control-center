@@ -13,6 +13,8 @@ void gnetconfig_read_hostname (char *);
 
 int gnetconfig_set_hostname (const char *);
 
+fwnet_profile_t * gnetconfig_new_profile (const char *);
+
 int gnetconfig_save_profile (fwnet_profile_t *);
 
 #endif
