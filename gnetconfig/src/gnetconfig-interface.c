@@ -395,7 +395,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 			}
 			else if (strlen(active_profile->adsl_interface))
 			{
-				/* ADSL Active */
+				/* DSL Active */
 				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 2);
 			}
 		}
@@ -424,7 +424,7 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_hide (gn_dhcp_table);
 			break;
 
-		case 2: /* ADSL */
+		case 2: /* DSL */
 			break;
 
 		case 3: /* lo */
