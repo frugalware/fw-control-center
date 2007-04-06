@@ -109,11 +109,6 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
 	
 	/* setup connection type combobox */
-	//model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
-	//renderer = gtk_cell_renderer_text_new ();
-	//gtk_cell_layout_pack_start (GTK_CELL_LAYOUT(gn_conntype_combo), renderer, FALSE);
-	//gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_conntype_combo), renderer, "text", 0);
-	//gtk_combo_box_set_model (GTK_COMBO_BOX(gn_conntype_combo), model);
 	g_signal_connect (G_OBJECT(gn_conntype_combo), "changed", G_CALLBACK(cb_gn_conntype_changed), NULL);
 
 	/* setup dns listview */
