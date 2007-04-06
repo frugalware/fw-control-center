@@ -83,10 +83,13 @@ gnetconfig_interface_init (void)
 	gn_dns_listview		= glade_xml_get_widget (xml, "fwn_dns_list");
 
 	/* setup profiles combobox */
-	model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
+	model = GTK_TREE_MODEL(gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING));
+	renderer = gtk_cell_renderer_pixbuf_new ();
+	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT(gn_profile_combo), renderer, FALSE);
+	gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_profile_combo), renderer, "pixbuf", 0);
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT(gn_profile_combo), renderer, FALSE);
-	gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_profile_combo), renderer, "text", 0);
+	gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_profile_combo), renderer, "text", 1);
 	gtk_combo_box_set_model (GTK_COMBO_BOX(gn_profile_combo), model);
 	g_signal_connect (G_OBJECT(gn_profile_combo), "changed", G_CALLBACK(cb_gn_profile_changed), NULL);
 
@@ -133,6 +136,7 @@ gnetconfig_populate_profile_list (void)
 	GtkTreeModel		*gn_profile_model = NULL;
 	GtkListStore		*gn_profile_store = NULL;
 	GtkTreeIter		iter;
+	GdkPixbuf		*pixbuf = NULL;
 	char			*fn = NULL;
 	gint			index = -1;
 
@@ -145,15 +149,20 @@ gnetconfig_populate_profile_list (void)
 	gn_profile_model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
 	gn_profile_store = GTK_LIST_STORE (gn_profile_model);
 	gtk_list_store_clear (gn_profile_store);
+	pixbuf = gtk_widget_render_icon (gn_profile_combo, GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU, NULL);
+
 	while (file != NULL)
 	{
+		gtk_list_store_append (gn_profile_store, &iter);
+		gtk_list_store_set (gn_profile_store, &iter, 1, file, -1);
 		if ((fn=fwnet_lastprofile()))
 		{
 			if (!strcmp(file,fn))
+			{	
 				index++;
+				gtk_list_store_set (gn_profile_store, &iter, 0, pixbuf, -1);
+			}
 		}
-		gtk_list_store_append (gn_profile_store, &iter);
-		gtk_list_store_set (gn_profile_store, &iter, 0, file, -1);
 		file = g_dir_read_name (dir);
 	}
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_profile_combo), index);
@@ -323,7 +332,7 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 	if (gtk_combo_box_get_active_iter(combo, &iter))
 	{
 		model = gtk_combo_box_get_model(combo);
-		gtk_tree_model_get (model, &iter, 0, &text, -1);
+		gtk_tree_model_get (model, &iter, 1, &text, -1);
 		gnetconfig_load_profile (text);
 	}
 
