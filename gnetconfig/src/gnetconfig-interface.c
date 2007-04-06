@@ -306,7 +306,7 @@ gnetconfig_setup_new_profile (const char *profile)
 	profile_model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
 	profile_list = GTK_LIST_STORE (profile_model);
 	gtk_list_store_append (profile_list, &iter);
-	gtk_list_store_set (profile_list, &iter, 0, profile, -1);
+	gtk_list_store_set (profile_list, &iter, 1, profile, -1);
 	n = gtk_tree_model_iter_n_children (profile_model, NULL);
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_profile_combo), n-1);
 
