@@ -18,3 +18,7 @@ rm -rf compile
 rm -rf libtool
 rm -rf mkinstalldirs
 rm -rf config.rpath
+rm -rf intltool-extract
+rm -rf intltool-merge
+rm -rf intltool-update
+rm -rf po/stamp-it
