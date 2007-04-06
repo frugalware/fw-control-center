@@ -48,6 +48,9 @@ GtkWidget *gn_gateway_entry;
 GtkWidget *gn_hostname_entry;
 GtkWidget *gn_dns_listview;
 
+GtkWidget *gn_staticip_table;
+GtkWidget *gn_dhcp_table;
+
 /* utility functions */
 static void gnetconfig_populate_profile_list (void);
 static void gnetconfig_populate_interface_list (fwnet_profile_t *profile);
@@ -81,6 +84,8 @@ gnetconfig_interface_init (void)
 	gn_gateway_entry	= glade_xml_get_widget (xml, "fwn_gateway");
 	gn_hostname_entry	= glade_xml_get_widget (xml, "fwn_hostname");
 	gn_dns_listview		= glade_xml_get_widget (xml, "fwn_dns_list");
+	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
+	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING));
@@ -404,6 +409,28 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 static void
 cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 {
+	gint sel;
+
+	sel = gtk_combo_box_get_active (combo);
+	switch (sel)
+	{
+		case 0: /* DHCP */
+			gtk_widget_show (gn_dhcp_table);
+			gtk_widget_hide (gn_staticip_table);
+			break;
+
+		case 1: /* Static ip */
+			gtk_widget_show (gn_staticip_table);
+			gtk_widget_hide (gn_dhcp_table);
+			break;
+
+		case 2: /* ADSL */
+			break;
+
+		case 3: /* lo */
+			break;
+	}
+
 	return;
 }
 
