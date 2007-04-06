@@ -50,6 +50,7 @@ GtkWidget *gn_dns_listview;
 
 GtkWidget *gn_staticip_table;
 GtkWidget *gn_dhcp_table;
+GtkWidget *gn_dsl_table;
 
 /* utility functions */
 static void gnetconfig_populate_profile_list (void);
@@ -86,6 +87,7 @@ gnetconfig_interface_init (void)
 	gn_dns_listview		= glade_xml_get_widget (xml, "fwn_dns_list");
 	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
 	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
+	gn_dsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table");
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING));
@@ -417,14 +419,19 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 		case 0: /* DHCP */
 			gtk_widget_show (gn_dhcp_table);
 			gtk_widget_hide (gn_staticip_table);
+			gtk_widget_hide (gn_dsl_table);
 			break;
 
 		case 1: /* Static ip */
 			gtk_widget_show (gn_staticip_table);
 			gtk_widget_hide (gn_dhcp_table);
+			gtk_widget_hide (gn_dsl_table);
 			break;
 
 		case 2: /* DSL */
+			gtk_widget_hide (gn_staticip_table);
+			gtk_widget_hide (gn_dhcp_table);
+			gtk_widget_show (gn_dsl_table);
 			break;
 
 		case 3: /* lo */
