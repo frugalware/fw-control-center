@@ -53,6 +53,7 @@ static void gnetconfig_populate_profile_list (void);
 static void gnetconfig_populate_interface_list (fwnet_profile_t *profile);
 static void gnetconfig_load_profile (const char *name);
 static void gnetconfig_populate_dns_list (GList *list);
+static void gnetconfig_setup_new_profile (const char *profile);
 
 /* new profile dialog */
 static void gnetconfig_new_profile_dialog_show (void);
@@ -276,6 +277,21 @@ gnetconfig_new_profile_dialog_show (void)
 	return;
 }
 
+static void
+gnetconfig_setup_new_profile (const char *profile)
+{
+	/* Unload existing profile */
+
+	/* Reset all entries */
+	gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
+	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
+	gtk_list_store_clear (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gn_dns_listview))));
+
+	return;
+}
+
 /* CALLBACKS */
 
 static void
@@ -321,6 +337,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 			/* set the correct connection type */
 			if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
 			{	
+				/* Static IP Active */
 				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 				gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
 				gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
@@ -334,6 +351,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 			}
 			else if ((fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
 			{	
+				/* DHCP Active */
 				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 0);
 				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
 				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
@@ -341,6 +359,11 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 				gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 				gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 				gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
+			}
+			else if (strlen(active_profile->adsl_interface))
+			{
+				/* ADSL Active */
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 2);
 			}
 		}
 		else
@@ -368,14 +391,17 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 		wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
 		wlist = g_list_next (wlist);
 		pname = gtk_entry_get_text (GTK_ENTRY(wlist->data));
-		// check if profile already exists
+
+		/* check if profile already exists */
 		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
 		if (g_file_test(filename, G_FILE_TEST_EXISTS))
 			gn_error ("profile already exists", ERROR_GUI);
+
 		// further processing
+		gnetconfig_setup_new_profile (pname);
+
 		g_free (filename);
 		g_list_free (wlist);
-		return;
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(dlg));

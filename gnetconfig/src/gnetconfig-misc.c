@@ -57,3 +57,9 @@ gnetconfig_set_hostname (const char *hostname)
 	return 0;
 }
 
+int
+gnetconfig_save_profile (fwnet_profile_t *profile)
+{
+	return 0;
+}
+
