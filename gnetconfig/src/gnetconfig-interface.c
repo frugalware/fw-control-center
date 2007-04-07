@@ -1,6 +1,6 @@
 /***************************************************************************
  *  gnetconfig-interface.c
- *  Author(s): 	Priyank Gosalia <priyankmg@gmail.com>
+ *  Author(s): Priyank Gosalia <priyankmg@gmail.com>
  *  Copyright 2007 Frugalware Developer Team
  ****************************************************************************/
 
@@ -74,24 +74,24 @@ static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 void
 gnetconfig_interface_init (void)
 {
-	GtkWidget		*widget = NULL;
+	GtkWidget	*widget = NULL;
 	GtkTreeModel	*model = NULL;
 	GtkCellRenderer	*renderer = NULL;
 	
 	/* setup widgets */
-	gn_main_window			= glade_xml_get_widget (xml, "window1");
-	gn_profile_combo		= glade_xml_get_widget (xml, "fwn_profile_list");
-	gn_interface_combo		= glade_xml_get_widget (xml, "fwn_interface_list");
-	gn_conntype_combo		= glade_xml_get_widget (xml, "fwn_conntype_list");
-	gn_ipaddress_entry		= glade_xml_get_widget (xml, "fwn_ip");
-	gn_netmask_entry		= glade_xml_get_widget (xml, "fwn_netmask");
-	gn_gateway_entry		= glade_xml_get_widget (xml, "fwn_gateway");
-	gn_hostname_entry		= glade_xml_get_widget (xml, "fwn_hostname");
+	gn_main_window		= glade_xml_get_widget (xml, "window1");
+	gn_profile_combo	= glade_xml_get_widget (xml, "fwn_profile_list");
+	gn_interface_combo	= glade_xml_get_widget (xml, "fwn_interface_list");
+	gn_conntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list");
+	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
+	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
+	gn_gateway_entry	= glade_xml_get_widget (xml, "fwn_gateway");
+	gn_hostname_entry	= glade_xml_get_widget (xml, "fwn_hostname");
 	gn_dhcp_hostname_entry	= glade_xml_get_widget (xml, "fwn_dhcp_hostname");
-	gn_dns_listview			= glade_xml_get_widget (xml, "fwn_dns_list");
-	gn_staticip_table		= glade_xml_get_widget (xml, "fwn_staticip_table");
-	gn_dhcp_table			= glade_xml_get_widget (xml, "fwn_dhcp_table");
-	gn_dsl_table			= glade_xml_get_widget (xml, "fwn_dsl_table");
+	gn_dns_listview		= glade_xml_get_widget (xml, "fwn_dns_list");
+	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
+	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
+	gn_dsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table");
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING));
@@ -241,7 +241,7 @@ gnetconfig_load_profile (const char *name)
 	fwnet_profile_t		*profile;
 	char			hostname[256];
 
-	if (!(profile = fwnet_parseprofile (name)))
+	if (!(profile = fwnet_parseprofile ((char*)name)))
 		return;
 
 	/* set the active profile */
@@ -304,8 +304,8 @@ gnetconfig_setup_new_profile (const char *profile)
 	fwnet_profile_t		*new_profile = NULL;
 	GtkListStore		*profile_list = NULL;
 	GtkTreeModel		*profile_model = NULL;
-	GtkTreeIter			iter;
-	gint				n;
+	GtkTreeIter		iter;
+	gint			n;
 
 	if ((new_profile = gnetconfig_new_profile (profile)) == NULL)
 	{
@@ -479,10 +479,9 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 static void
 cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
 {
-	gint				c;
-	fwnet_interface_t	*interface;
+	gint			c;
 	fwnet_profile_t		*profile;
-	char				hostname[256];
+	char			hostname[256];
 
 	c = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_conntype_combo));
 	switch (c)
@@ -490,23 +489,7 @@ cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
 		case GN_STATIC:
 			{
 				g_print ("static ip saving..");
-				//profile = fwnet_parseprofile ("priyank");
 				profile = active_profile;
-
-				/* temporary */
-				char *ip, *netmask;
-				interface = g_list_nth_data (active_profile->interfaces, 0);
-				printf ("=== %s ===\n", interface->options->data);
-
-
-
-				/*----------*/
-				//interface = (g_list_nth_data (profile->interfaces, 0));
-				//sprintf (interface->options->data, "options = %s netmask %s",
-				//		(char*)gtk_entry_get_text(GTK_ENTRY(gn_ipaddress_entry)),
-				//		(char*)gtk_entry_get_text(GTK_ENTRY(gn_netmask_entry)));
-				//sprintf (interface->gateway, "%s", 
-				//		(char*)gtk_entry_get_text(GTK_ENTRY(gn_gateway_entry)));
 				break;
 			}
 	}
@@ -521,14 +504,14 @@ static void
 cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 {
 	fwnet_interface_t	*interface = NULL;
-	gint				if_pos;
-	gchar				*ipaddr = NULL;
-	gchar				*netmask = NULL;
-	gchar				*gateway = NULL;
-	gchar				*if_name = NULL;
+	gint			if_pos;
+	gchar			*ipaddr = NULL;
+	gchar			*netmask = NULL;
+	gchar			*gateway = NULL;
+	gchar			*if_name = NULL;
 	GtkTreeModel		*model = NULL;
-	GtkTreeIter			iter;
-	char				opstring[50];
+	GtkTreeIter		iter;
+	char			opstring[50];
 
 	if_pos = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_interface_combo));
 	interface = g_list_nth_data (active_profile->interfaces, if_pos);
