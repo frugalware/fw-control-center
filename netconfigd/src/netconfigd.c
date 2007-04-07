@@ -25,6 +25,7 @@
 #include <glib.h>
 #include <dbus/dbus-glib-bindings.h>
 #include <libfwnetconfig.h>
+#include <dirent.h>
 #include "netconfigd.h"
 #include "netconfigd-dbus-glue.h"
 
@@ -65,7 +66,7 @@ void netconfigd_init(NetConfig *server) {
 
 gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError **error) {
 	*profile = fwnet_lastprofile();
-	printf("[DEBUG] Received current profile request.\n");
+	printf("[DEBUG] Handled current profile request.\n");
 	return TRUE;
 }
 
@@ -88,7 +89,28 @@ gboolean netconfig_start_networking(NetConfig *obj, gint32 *ret, GError **error)
 }
 
 gboolean netconfig_get_profiles(NetConfig *obj, gchar **profiles, GError **error) {
-	*profiles = g_strdup("Meow");
+	struct dirent *ent=NULL;
+	DIR *dir;
+	int i = 0;
+	gchar *tmp;
+	
+	dir = opendir(FWNET_PATH);
+	while ((ent = readdir(dir))) {
+		if (strcmp(ent->d_name, ".") && strcmp(ent->d_name, "..")) {
+			if (i == 0)
+				tmp = g_strdup(ent->d_name);
+			else
+				tmp = g_strdup_printf("%s,%s", tmp, ent->d_name);
+			
+			i++;
+		}
+	}
+	
+	*profiles = g_strdup(tmp);
+	tmp = NULL;
+	
+	printf("[DEBUG] Handled profile list request.\n");
+	
 	return TRUE;
 }
 
