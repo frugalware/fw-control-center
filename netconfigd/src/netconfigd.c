@@ -24,6 +24,7 @@
 #include <string.h>
 #include <glib.h>
 #include <dbus/dbus-glib-bindings.h>
+#include <libfwnetconfig.h>
 #include "netconfigd.h"
 #include "netconfigd-dbus-glue.h"
 
@@ -54,7 +55,7 @@ void netconfigd_init(NetConfig *server) {
 	// Register the service name, the constant here are defined in dbus-glib-bindings.h
 	driver_proxy = dbus_g_proxy_new_for_name(server->connection, DBUS_SERVICE_DBUS, DBUS_PATH_DBUS, DBUS_INTERFACE_DBUS);
 
-	if(!org_freedesktop_DBus_request_name (driver_proxy, "org.frugalware.NetConfig", 0, &request_ret, &error)) {
+	if (!org_freedesktop_DBus_request_name (driver_proxy, "org.frugalware.NetConfig", 0, &request_ret, &error)) {
 		g_warning("Unable to register service: %s", error->message);
 		g_error_free(error);
 	}
@@ -63,8 +64,8 @@ void netconfigd_init(NetConfig *server) {
 }
 
 gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError **error) {
-	*profile = g_strdup("Meow");
-	printf("Telling client that the current profile is Meow...\n");
+	*profile = fwnet_lastprofile();
+	printf("[DEBUG] Received current profile request.\n");
 	return TRUE;
 }
 
