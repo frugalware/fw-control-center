@@ -64,21 +64,25 @@ void netconfigd_init(NetConfig *server) {
 
 gboolean netconfig_get_current_profile(NetConfig *obj, gchar *profile, GError **error) {
 	profile = g_strdup("Meow");
+	printf("Getting current profile...\n");
 	return TRUE;
 }
 
 gboolean netconfig_change_profile(NetConfig *obj, gchar *profile, gint32 *ret, GError **error) {
 	ret = 0;
+	printf("Changing profile to %s...\n", profile);
 	return TRUE;
 }
 
 gboolean netconfig_stop_networking(NetConfig *obj, gint32 *ret, GError **error) {
 	ret = 0;
+	printf("Stopping networking...\n");
 	return TRUE;
 }
 
 gboolean netconfig_start_networking(NetConfig *obj, gint32 *ret, GError **error) {
 	ret = 0;
+	printf("Starting networking...\n");
 	return TRUE;
 }
 
