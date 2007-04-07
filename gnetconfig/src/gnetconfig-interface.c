@@ -559,8 +559,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				}
 				else
 					sprintf (interface->options->data, "options = %s netmask %s", ipaddr, netmask);
-
-				g_print (interface->options->data);
 				sprintf (interface->gateway, "%s", gateway);
 				break;
 			}
@@ -569,7 +567,13 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				snprintf (interface->dhcp_opts, PATH_MAX,
 						"dhcp_opts = -t 10 -h %s\n",
 						(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
-				sprintf (interface->options->data, "dhcp");
+				if (interface->options == NULL)
+				{
+					snprintf (opstring, 49, "options = dhcp");
+					interface->options = g_list_append (interface->options, strdup(opstring));
+				}
+				else
+					sprintf (interface->options->data, "options = dhcp");
 				break;
 			}
 	}
