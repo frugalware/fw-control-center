@@ -1,5 +1,5 @@
-<node name="/com/frugalware/NetConfig">
-	<interface name="com.frugalware.NetConfig">
+<node name="/org/frugalware/NetConfig">
+	<interface name="org.frugalware.NetConfig">
 		<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig"/>
 		<method name="GetCurrentProfile">
 			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_get_current_profile"/>
@@ -20,7 +20,7 @@
 		</method>
 		<method name="GetProfiles">
 			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_get_profiles"/>
-			<arg type="as" name="profile" direction="out" />
+			<arg type="s" name="profiles" direction="out" />
 		</method>
 	</interface>
 </node>

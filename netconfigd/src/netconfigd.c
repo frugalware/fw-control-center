@@ -64,7 +64,7 @@ void netconfigd_init(NetConfig *server) {
 
 gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError **error) {
 	*profile = g_strdup("Meow");
-	printf("Getting current profile...\n");
+	printf("Telling client that the current profile is Meow...\n");
 	return TRUE;
 }
 
@@ -87,7 +87,7 @@ gboolean netconfig_start_networking(NetConfig *obj, gint32 *ret, GError **error)
 }
 
 gboolean netconfig_get_profiles(NetConfig *obj, gchar **profiles, GError **error) {
-	profiles[0] = g_strdup("Meow");
+	*profiles = g_strdup("Meow");
 	return TRUE;
 }
 
