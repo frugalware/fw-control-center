@@ -12,10 +12,6 @@ AC_PROG_CC
 AC_HEADER_STDC
 AC_CHECK_HEADERS([stdlib.h string.h sys/ioctl.h unistd.h libfwnetconfig.h])
 
-AC_MSG_CHECKING(whether I'm developed by somebody paranoid about their code being warning free)
-CFLAGS="$CFLAGS -Werror -Wextra -pedantic -Wall -Wno-unused-parameter"
-AC_MSG_RESULT(yes)
-
 AC_PATH_PROG(DBUSBINDINGTOOL, dbus-binding-tool, no)
 
 if test "x$DBUSBINDINGTOOL" = "xno"; then

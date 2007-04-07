@@ -8,12 +8,15 @@
 		<method name="ChangeProfile">
 			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_change_profile"/>
 			<arg type="s" name="profile" direction="in" />
+			<arg type="u" direction="out" />
 		</method>
 		<method name="StopNetworking">
 			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_stop_networking"/>
+			<arg type="u" direction="out" />
 		</method>
 		<method name="StartNetworking">
 			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_start_networking"/>
+			<arg type="u" direction="out" />
 		</method>
 		<method name="GetProfiles">
 			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="netconfig_get_profiles"/>
