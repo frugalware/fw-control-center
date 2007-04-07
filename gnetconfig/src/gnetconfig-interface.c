@@ -68,6 +68,7 @@ static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_interface_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_save_profile_clicked (GtkButton *button, gpointer data);
+static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
 void
 gnetconfig_interface_init (void)
@@ -126,6 +127,8 @@ gnetconfig_interface_init (void)
 	/* other stuff */
 	widget = glade_xml_get_widget (xml, "fwn_save_profile");
 	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_save_profile_clicked), NULL);
+	widget = glade_xml_get_widget (xml, "fwn_interface_save");
+	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_save_interface_clicked), NULL);
 
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
@@ -497,5 +500,36 @@ cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
 	gnetconfig_save_profile (profile, c);
 
 	return;
-
 }
+
+static void
+cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
+{
+	fwnet_interface_t	*interface = NULL;
+	GList				*options = NULL;
+	gint				if_pos;
+	gchar				*ipaddr = NULL;
+	gchar				*netmask = NULL;
+	gchar				*gateway = NULL;
+
+	if_pos = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_interface_combo));
+	interface = g_list_nth_data (active_profile->interfaces, if_pos);
+	options = interface->options;
+
+	switch (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_conntype_combo)))
+	{
+		case GN_STATIC:
+			{
+				ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
+				netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
+				gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
+
+				sprintf (options->data, "%s netmask %s", ipaddr, netmask);
+				g_print (options->data);
+				sprintf (interface->gateway, "gateway = default gw %s", gateway);
+			}
+	}
+
+	return;
+}
+
