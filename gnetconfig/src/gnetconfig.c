@@ -1,7 +1,7 @@
 /***************************************************************************
  *  gnetconfig.c
- *  Author(s): 	Priyank Gosalia <priyankmg@gmail.com>
- *  Copyright 2007 Frugalware Developer Team
+ *  Author(s): Priyank Gosalia <priyankmg@gmail.com>
+ *  Copyright (C) 2007 Frugalware Developer Team
  ****************************************************************************/
 
 /*

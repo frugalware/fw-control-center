@@ -1,7 +1,7 @@
 /***************************************************************************
  *  gnetconfig-interface.c
  *  Author(s): Priyank Gosalia <priyankmg@gmail.com>
- *  Copyright 2007 Frugalware Developer Team
+ *  Copyright (C) 2007 Frugalware Developer Team
  ****************************************************************************/
 
 /*
@@ -382,6 +382,9 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 				gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
 				gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
 				gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
+				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
+				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
+				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
 				options = inte->options;
 				if (!options) return; /* FIX ME */
 				sscanf (options->data, "%s netmask %s", ip, netmask);
@@ -393,10 +396,10 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 			else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface)))
 			{	
 				/* DHCP Active */
-				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 0);
 				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
 				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
 				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 0);
 				gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 				gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 				gtk_widget_set_sensitive (gn_gateway_entry, FALSE);

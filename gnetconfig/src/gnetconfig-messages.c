@@ -1,7 +1,7 @@
 /***************************************************************************
  *  gnetconfig-messages.c
  *  Author: Priyank Gosalia <priyankmg@gmail.com>	
- *  Copyright 2007 Frugalware Developer Team
+ *  Copyright (C) 2007 Frugalware Developer Team
  ****************************************************************************/
 
 /*
