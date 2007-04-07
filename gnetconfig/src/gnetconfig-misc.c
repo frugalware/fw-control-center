@@ -79,8 +79,25 @@ gnetconfig_new_profile (const char *name)
 }
 
 int
-gnetconfig_save_profile (fwnet_profile_t *profile)
+gnetconfig_save_profile (fwnet_profile_t *profile, GN_CONN_TYPE type)
 {
+	char		nettype[7];
+
+	switch (type)
+	{
+		case GN_DHCP: printf ("saving dhcp...");
+					  break;
+		case GN_STATIC: printf ("\nsaving.. %s\n", profile->name);
+						if (profile == NULL)
+							printf ("eww profile NULL\n");
+						sprintf (nettype, "priyank.ath.cx");
+						if (!fwnet_writeconfig (profile, nettype, "static"))
+							printf ("provile saved..\n");
+						else
+							printf ("provile not saved \n");
+						break;
+	}
+
 	return 0;
 }
 

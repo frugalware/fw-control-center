@@ -67,6 +67,7 @@ static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpoint
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_interface_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
+static void cb_gn_save_profile_clicked (GtkButton *button, gpointer data);
 
 void
 gnetconfig_interface_init (void)
@@ -121,6 +122,10 @@ gnetconfig_interface_init (void)
 	/* setup new profile dialog */
 	widget = glade_xml_get_widget (xml, "fwn_menu_newprofile");
 	g_signal_connect (G_OBJECT(widget), "activate", G_CALLBACK(gnetconfig_new_profile_dialog_show), NULL);
+
+	/* other stuff */
+	widget = glade_xml_get_widget (xml, "fwn_save_profile");
+	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_save_profile_clicked), NULL);
 
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
@@ -411,25 +416,25 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 	sel = gtk_combo_box_get_active (combo);
 	switch (sel)
 	{
-		case 0: /* DHCP */
+		case GN_DHCP: /* DHCP */
 			gtk_widget_show (gn_dhcp_table);
 			gtk_widget_hide (gn_staticip_table);
 			gtk_widget_hide (gn_dsl_table);
 			break;
 
-		case 1: /* Static ip */
+		case GN_STATIC: /* Static ip */
 			gtk_widget_show (gn_staticip_table);
 			gtk_widget_hide (gn_dhcp_table);
 			gtk_widget_hide (gn_dsl_table);
 			break;
 
-		case 2: /* DSL */
+		case GN_DSL: /* DSL */
 			gtk_widget_hide (gn_staticip_table);
 			gtk_widget_hide (gn_dhcp_table);
 			gtk_widget_show (gn_dsl_table);
 			break;
 
-		case 3: /* lo */
+		case GN_LO: /* lo */
 			break;
 	}
 
@@ -465,3 +470,32 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 	return;
 }
 
+static void
+cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
+{
+	gint				c;
+	fwnet_interface_t	*interface;
+	fwnet_profile_t		*profile;
+
+	c = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_conntype_combo));
+	switch (c)
+	{
+		case GN_STATIC:
+			{
+				g_print ("static ip saving..");
+				profile = fwnet_parseprofile ("priyank");
+				interface = (g_list_nth_data (profile->interfaces, 0));
+				sprintf (interface->options->data, "options = %s netmask %s",
+						(char*)gtk_entry_get_text(GTK_ENTRY(gn_ipaddress_entry)),
+						(char*)gtk_entry_get_text(GTK_ENTRY(gn_netmask_entry)));
+				sprintf (interface->gateway, "%s", 
+						(char*)gtk_entry_get_text(GTK_ENTRY(gn_gateway_entry)));
+				break;
+			}
+	}
+
+	gnetconfig_save_profile (profile, c);
+
+	return;
+
+}
