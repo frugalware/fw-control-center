@@ -37,7 +37,7 @@ typedef struct
 static void netconfigd_init(NetConfig *server);
 static void netconfigd_class_init(NetConfigClass *class);
 
-gboolean netconfig_get_current_profile(NetConfig *obj, gchar *profile, GError **error);
+gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError **error);
 gboolean netconfig_change_profile(NetConfig *obj, gchar *profile, gint32 *ret, GError **error);
 gboolean netconfig_stop_networking(NetConfig *obj, gint32 *ret, GError **error);
 gboolean netconfig_start_networking(NetConfig *obj, gint32 *ret, GError **error);

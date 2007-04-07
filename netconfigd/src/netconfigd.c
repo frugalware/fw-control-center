@@ -62,8 +62,8 @@ void netconfigd_init(NetConfig *server) {
 	g_object_unref(driver_proxy);
 }
 
-gboolean netconfig_get_current_profile(NetConfig *obj, gchar *profile, GError **error) {
-	profile = g_strdup("Meow");
+gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError **error) {
+	*profile = g_strdup("Meow");
 	printf("Getting current profile...\n");
 	return TRUE;
 }
