@@ -72,6 +72,7 @@ gnetconfig_new_profile (const char *name)
 	if (interface == NULL)
 		return NULL;
 	memset (interface, 0, sizeof(fwnet_interface_t));
+	interface->options = NULL;
 	profile->interfaces = g_list_append (profile->interfaces, interface);
 	sprintf (profile->name, name);
 
@@ -79,23 +80,30 @@ gnetconfig_new_profile (const char *name)
 }
 
 int
-gnetconfig_save_profile (fwnet_profile_t *profile, GN_CONN_TYPE type)
+gnetconfig_save_profile (fwnet_profile_t *profile, char *hostname, GN_CONN_TYPE type)
 {
-	char		nettype[7];
-
 	switch (type)
 	{
-		case GN_DHCP: printf ("saving dhcp...");
-					  break;
-		case GN_STATIC: printf ("\nsaving.. %s\n", profile->name);
-						if (profile == NULL)
-							printf ("eww profile NULL\n");
-						sprintf (nettype, "priyank.ath.cx");
-						if (!fwnet_writeconfig (profile, nettype, "static"))
-							printf ("provile saved..\n");
-						else
-							printf ("provile not saved \n");
-						break;
+		case GN_DHCP:
+			{
+				printf ("saving dhcp...");
+				if(!fwnet_writeconfig (profile, hostname, "dhcp"))
+					printf ("profile saved\n");
+				else
+					printf ("profile not saved \n");
+				break;
+			}
+		case GN_STATIC:
+			{
+				printf ("\nsaving.. %s\n", profile->name);
+				if (profile == NULL)
+					printf ("eww profile NULL\n");
+				if (!fwnet_writeconfig (profile, hostname, "static"))
+					printf ("provile saved..\n");
+				else
+					printf ("provile not saved \n");
+				break;
+			}
 	}
 
 	return 0;

@@ -383,6 +383,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 				gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
 				gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
 				options = inte->options;
+				if (!options) return; /* FIX ME */
 				sscanf (options->data, "%s netmask %s", ip, netmask);
 				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
 				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
@@ -481,6 +482,7 @@ cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
 	gint				c;
 	fwnet_interface_t	*interface;
 	fwnet_profile_t		*profile;
+	char				hostname[256];
 
 	c = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_conntype_combo));
 	switch (c)
@@ -488,18 +490,29 @@ cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
 		case GN_STATIC:
 			{
 				g_print ("static ip saving..");
-				profile = fwnet_parseprofile ("priyank");
-				interface = (g_list_nth_data (profile->interfaces, 0));
-				sprintf (interface->options->data, "options = %s netmask %s",
-						(char*)gtk_entry_get_text(GTK_ENTRY(gn_ipaddress_entry)),
-						(char*)gtk_entry_get_text(GTK_ENTRY(gn_netmask_entry)));
-				sprintf (interface->gateway, "%s", 
-						(char*)gtk_entry_get_text(GTK_ENTRY(gn_gateway_entry)));
+				//profile = fwnet_parseprofile ("priyank");
+				profile = active_profile;
+
+				/* temporary */
+				char *ip, *netmask;
+				interface = g_list_nth_data (active_profile->interfaces, 0);
+				printf ("=== %s ===\n", interface->options->data);
+
+
+
+				/*----------*/
+				//interface = (g_list_nth_data (profile->interfaces, 0));
+				//sprintf (interface->options->data, "options = %s netmask %s",
+				//		(char*)gtk_entry_get_text(GTK_ENTRY(gn_ipaddress_entry)),
+				//		(char*)gtk_entry_get_text(GTK_ENTRY(gn_netmask_entry)));
+				//sprintf (interface->gateway, "%s", 
+				//		(char*)gtk_entry_get_text(GTK_ENTRY(gn_gateway_entry)));
 				break;
 			}
 	}
 
-	gnetconfig_save_profile (profile, c);
+	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
+	gnetconfig_save_profile (active_profile, hostname, c);
 
 	return;
 }
@@ -508,15 +521,28 @@ static void
 cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 {
 	fwnet_interface_t	*interface = NULL;
-	GList				*options = NULL;
 	gint				if_pos;
 	gchar				*ipaddr = NULL;
 	gchar				*netmask = NULL;
 	gchar				*gateway = NULL;
+	gchar				*if_name = NULL;
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter			iter;
+	char				opstring[50];
 
 	if_pos = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_interface_combo));
 	interface = g_list_nth_data (active_profile->interfaces, if_pos);
-	options = interface->options;
+
+	/* set the interface name if not already set */
+	/* generally this happens when a new profile is created */
+	if (!strlen(interface->name))
+	{
+		gtk_combo_box_get_active_iter(GTK_COMBO_BOX(gn_interface_combo), &iter);
+		model = gtk_combo_box_get_model(GTK_COMBO_BOX(gn_interface_combo));
+		gtk_tree_model_get (model, &iter, 0, &if_name, -1);
+		snprintf (interface->name, IF_NAMESIZE, if_name);
+		g_print ("setting interface name %s\n", if_name);
+	}
 
 	switch (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_conntype_combo)))
 	{
@@ -526,9 +552,16 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
 				gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
 
-				sprintf (options->data, "%s netmask %s", ipaddr, netmask);
-				g_print (options->data);
-				sprintf (interface->gateway, "gateway = default gw %s", gateway);
+				if (interface->options == NULL)
+				{	
+					snprintf (opstring, 49, "options = %s netmask %s", ipaddr, netmask);
+					interface->options = g_list_append (interface->options, strdup(opstring));
+				}
+				else
+					sprintf (interface->options->data, "options = %s netmask %s", ipaddr, netmask);
+
+				g_print (interface->options->data);
+				sprintf (interface->gateway, "%s", gateway);
 				break;
 			}
 		case GN_DHCP:
@@ -536,7 +569,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				snprintf (interface->dhcp_opts, PATH_MAX,
 						"dhcp_opts = -t 10 -h %s\n",
 						(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
-				sprintf (options->data, "dhcp");
+				sprintf (interface->options->data, "dhcp");
 				break;
 			}
 	}
