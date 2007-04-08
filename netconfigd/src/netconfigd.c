@@ -131,8 +131,15 @@ gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError *
 }
 
 gboolean netconfig_change_profile(NetConfig *obj, gchar *profile, gint32 *ret, GError **error) {
-	ret = 0;
-	printf("Changing profile to %s...\n", profile);
+	*ret = 0;
+	
+	printf("[DEBUG] Changing profile to %s...\n", profile);
+	*ret += handle_network_stop();
+	fwnet_setlastprofile(profile);
+	*ret += handle_network_start();
+	
+	printf("[DEBUG] Profile change successful\n");
+	
 	return TRUE;
 }
 
