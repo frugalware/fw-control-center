@@ -22,6 +22,16 @@ AC_SUBST(DBUS_BINDING_TOOL)
 
 PKG_CHECK_MODULES([NETCONFIGD], [dbus-glib-1 >= 0.73])
 
+AC_ARG_WITH(dbus-sys, [  --with-dbus-sys=<dir>   where D-BUS system.d directory is])
+
+if ! test -z "$with_dbus_sys" ; then
+	DBUS_SYS_DIR="$with_dbus_sys"
+else
+	DBUS_SYS_DIR="$sysconfdir/dbus-1/system.d"
+fi
+
+AC_SUBST(DBUS_SYS_DIR)
+
 CFLAGS="${CFLAGS}"
 
 dnl ==========================================================================
