@@ -25,6 +25,7 @@
 #include <glib.h>
 #include <dbus/dbus-glib-bindings.h>
 #include <libfwnetconfig.h>
+#include <libfwutil.h>
 #include <dirent.h>
 #include "netconfigd.h"
 #include "netconfigd-dbus-glue.h"
@@ -64,6 +65,65 @@ void netconfigd_init(NetConfig *server) {
 	g_object_unref(driver_proxy);
 }
 
+// Copied from netconfig.
+int handle_network_stop() {
+	char *fn = NULL;
+	int i;
+	fwnet_profile_t *profile;
+	
+	if ((fn=fwnet_lastprofile())) {
+		if (!fn)
+			printf("[DEBUG] No profile is loaded. Cannot stop networking\n");
+		
+		profile = fwnet_parseprofile(fn);
+		
+		if (profile != NULL) {
+			// Unload the old profile
+			for (i = 0; i < g_list_length(profile->interfaces); i++)
+				fwnet_ifdown((fwnet_interface_t*)g_list_nth_data(profile->interfaces, i), profile);
+		}
+		
+		fwnet_setlastprofile(NULL);
+		printf("[DEBUG] Handled network stop request.\n");
+		return(0);
+	}
+	
+	printf("[DEBUG] Network stop request failed!\n");
+	return(1);
+}
+
+int handle_network_start() {
+	char *fn=NULL;
+	int ret=0, i;
+	fwnet_profile_t *profile;
+	
+	fn = fwnet_lastprofile();
+	if (!fn)
+		fn = strdup("default");
+	
+	// Load the new profile
+	profile = fwnet_parseprofile(fn);
+	
+	if (profile == NULL)
+		return(1);
+	
+	if (!fwnet_lastprofile())
+		fwnet_loup();
+	
+	for (i = 0; i < g_list_length(profile->interfaces); i++)
+		ret += fwnet_ifup((fwnet_interface_t*)g_list_nth_data(profile->interfaces, i), profile);
+	
+	fwnet_setdns(profile);
+	fwnet_setlastprofile(fn);
+	FWUTIL_FREE(fn);
+	
+	if (ret != 0)
+		printf("[DEBUG] Network start request failed!\n");
+	else
+		printf("[DEBUG] Handled network start request.\n");
+	return(ret);
+}
+
 gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError **error) {
 	*profile = fwnet_lastprofile();
 	printf("[DEBUG] Handled current profile request.\n");
@@ -77,14 +137,12 @@ gboolean netconfig_change_profile(NetConfig *obj, gchar *profile, gint32 *ret, G
 }
 
 gboolean netconfig_stop_networking(NetConfig *obj, gint32 *ret, GError **error) {
-	ret = 0;
-	printf("Stopping networking...\n");
+	*ret = handle_network_stop();
 	return TRUE;
 }
 
 gboolean netconfig_start_networking(NetConfig *obj, gint32 *ret, GError **error) {
-	ret = 0;
-	printf("Starting networking...\n");
+	*ret = handle_network_start();
 	return TRUE;
 }
 

@@ -6,7 +6,7 @@ bin_PROGRAMS = netconfigd
 
 netconfigd_SOURCES = netconfigd.c
 
-netconfigd_LDADD= @NETCONFIGD_LIBS@ -lfwnetconfig
+netconfigd_LDADD= @NETCONFIGD_LIBS@ -lfwnetconfig -lfwutil
 
 BUILT_SOURCES = netconfigd-dbus-glue.h
 

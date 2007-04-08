@@ -10,7 +10,7 @@ AM_INIT_AUTOMAKE
 
 AC_PROG_CC
 AC_HEADER_STDC
-AC_CHECK_HEADERS([stdlib.h string.h sys/ioctl.h unistd.h libfwnetconfig.h])
+AC_CHECK_HEADERS([stdlib.h string.h sys/ioctl.h unistd.h libfwnetconfig.h libfwutil.h])
 
 AC_PATH_PROG(DBUSBINDINGTOOL, dbus-binding-tool, no)
 
