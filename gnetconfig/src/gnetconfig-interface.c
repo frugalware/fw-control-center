@@ -551,8 +551,8 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		case GN_DHCP:
 			{
 				snprintf (interface->dhcp_opts, PATH_MAX,
-						"dhcp_opts = -t 10 -h %s\n",
-						(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
+					"dhcp_opts = -t 10 -h %s\n",
+					(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
 				if (interface->options == NULL)
 				{
 					snprintf (opstring, 49, "options = dhcp");
