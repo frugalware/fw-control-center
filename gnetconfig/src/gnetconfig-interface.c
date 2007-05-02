@@ -72,7 +72,6 @@ static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpoint
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_interface_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
-static void cb_gn_save_profile_clicked (GtkButton *button, gpointer data);
 static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
 /* new callbacks */
@@ -155,8 +154,6 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget), "activate", G_CALLBACK(gnetconfig_new_profile_dialog_show), NULL);
 
 	/* other stuff */
-	widget = glade_xml_get_widget (xml, "fwn_save_profile");
-	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_save_profile_clicked), NULL);
 	widget = glade_xml_get_widget (xml, "fwn_interface_save");
 	g_signal_connect (G_OBJECT(widget),
 						"clicked",
@@ -601,30 +598,6 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 }
 
 static void
-cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
-{
-	gint				c;
-	fwnet_profile_t		*profile;
-	char				hostname[256];
-
-	c = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_conntype_combo));
-	switch (c)
-	{
-		case GN_STATIC:
-			{
-				g_print ("static ip saving..");
-				profile = active_profile;
-				break;
-			}
-	}
-
-	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
-	gnetconfig_save_profile (active_profile, hostname, c);
-
-	return;
-}
-
-static void
 cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 {
 	gchar				*ipaddr = NULL;
@@ -636,6 +609,9 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	char				opstring[50];
 	GList				*intf = NULL;
 	fwnet_interface_t	*interface = NULL;
+	char				hostname[256];
+	gchar				*buf;
+	gint				nettype;
 
 	if_name = gtk_label_get_text (GTK_LABEL(data));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
@@ -676,6 +652,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 																netmask);
 				g_print (interface->options->data);
 				sprintf (interface->gateway, "%s", gateway);
+				printf ("saving..\n");
 				break;
 			}
 		case GN_DHCP:
@@ -695,12 +672,25 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	}
 
 	/* save the profile */
-	cb_gn_save_profile_clicked (NULL, NULL);
+	nettype = gtk_combo_box_get_active(GTK_COMBO_BOX(gn_conntype_combo));
+	switch (nettype)
+	{
+		case GN_STATIC:
+			{
+				g_print ("static ip saving..");
+				break;
+			}
+	}
+
+	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
+	gnetconfig_save_profile (active_profile, hostname, nettype);
 	
 	/* the profile data gets corrupted after saving and
 	 * hence needs to be reloaded */
-	g_free (active_profile);
-	active_profile = fwnet_parseprofile ("default");
+	buf = g_strdup (active_profile->name);
+	g_free (active_profile); // Replace with a better function
+	active_profile = fwnet_parseprofile (buf);
+	g_free (buf);
 
 	return;
 }
