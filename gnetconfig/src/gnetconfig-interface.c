@@ -666,11 +666,11 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 
 				if (interface->options == NULL)
 				{	
-					snprintf (opstring, 49, "options = %s netmask %s", ipaddr, netmask);
+					snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
 					interface->options = g_list_append (interface->options, strdup(opstring));
 				}
 				else
-					sprintf (interface->options->data, "options = %s netmask %s", ipaddr, netmask);
+					sprintf (interface->options->data, "%s netmask %s", ipaddr, netmask);
 				sprintf (interface->gateway, "%s", gateway);
 				break;
 			}
