@@ -49,6 +49,10 @@ GtkWidget *gn_hostname_entry;
 GtkWidget *gn_dns_listview;
 GtkWidget *gn_dhcp_hostname_entry;
 
+/* New Widgets */
+GtkWidget *gn_interface_treeview;
+GtkWidget *gn_interface_dialog;
+
 GtkWidget *gn_staticip_table;
 GtkWidget *gn_dhcp_table;
 GtkWidget *gn_dsl_table;
@@ -71,17 +75,21 @@ static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_save_profile_clicked (GtkButton *button, gpointer data);
 static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
+/* new callbacks */
+static void cb_gn_interface_edited (GtkButton *button, gpointer data);
+
 void
 gnetconfig_interface_init (void)
 {
 	GtkWidget	*widget = NULL;
 	GtkTreeModel	*model = NULL;
 	GtkCellRenderer	*renderer = NULL;
+	GtkListStore	*store = NULL;
 	
 	/* setup widgets */
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
 	gn_profile_combo	= glade_xml_get_widget (xml, "fwn_profile_list");
-	gn_interface_combo	= glade_xml_get_widget (xml, "fwn_interface_list");
+//	gn_interface_combo	= glade_xml_get_widget (xml, "fwn_interface_list");
 	gn_conntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list");
 	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
 	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
@@ -92,6 +100,26 @@ gnetconfig_interface_init (void)
 	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
 	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
 	gn_dsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table");
+
+	/* new widgets */
+	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
+	gn_interface_treeview = glade_xml_get_widget (xml, "interface_treeview");
+	renderer = gtk_cell_renderer_pixbuf_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (gn_interface_treeview),
+							-1,
+							"Icon",
+							renderer,
+							"pixbuf", 0,
+							NULL);
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (gn_interface_treeview),
+							-1,
+							"Name",
+							renderer,
+							"text", 1,
+							NULL);
+	store = gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING);
+	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_interface_treeview), GTK_TREE_MODEL(store));
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING));
@@ -105,12 +133,12 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(gn_profile_combo), "changed", G_CALLBACK(cb_gn_profile_changed), NULL);
 
 	/* setup interfaces combobox */
-	model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
-	renderer = gtk_cell_renderer_text_new ();
-	gtk_cell_layout_pack_start (GTK_CELL_LAYOUT(gn_interface_combo), renderer, FALSE);
-	gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_interface_combo), renderer, "text", 0);
-	gtk_combo_box_set_model (GTK_COMBO_BOX(gn_interface_combo), model);
-	g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
+	//model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
+	//renderer = gtk_cell_renderer_text_new ();
+	//gtk_cell_layout_pack_start (GTK_CELL_LAYOUT(gn_interface_combo), renderer, FALSE);
+	//gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_interface_combo), renderer, "text", 0);
+	//gtk_combo_box_set_model (GTK_COMBO_BOX(gn_interface_combo), model);
+	//g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
 	
 	/* setup connection type combobox */
 	g_signal_connect (G_OBJECT(gn_conntype_combo), "changed", G_CALLBACK(cb_gn_conntype_changed), NULL);
@@ -130,7 +158,14 @@ gnetconfig_interface_init (void)
 	widget = glade_xml_get_widget (xml, "fwn_save_profile");
 	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_save_profile_clicked), NULL);
 	widget = glade_xml_get_widget (xml, "fwn_interface_save");
-	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_save_interface_clicked), NULL);
+	g_signal_connect (G_OBJECT(widget),
+						"clicked",
+						G_CALLBACK(cb_gn_save_interface_clicked),
+						(gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
+
+	/* new interface editor stuff */
+	widget = glade_xml_get_widget (xml, "fwn_if_edit");
+	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_interface_edited), (gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
 
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
@@ -191,20 +226,24 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	GtkTreeModel		*model = NULL;
 	GtkListStore		*store = NULL;
 	GtkTreeIter		iter;
+	GdkPixbuf		*pixbuf;
 
 	n_ifs = g_list_length (profile->interfaces);
-	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_interface_combo));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	store = GTK_LIST_STORE (model);
 	gtk_list_store_clear (store);
+	pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
+					GTK_STOCK_NETWORK,
+					GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
 	for (i=0;i<n_ifs;i++)
 	{
 		interface = g_list_nth_data (profile->interfaces, i);
 		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter, 0, interface->name, -1);
+		gtk_list_store_set (store, &iter, 0, pixbuf, 1, interface->name, -1);
 	}
 
-	if (n_ifs!=0)
-		gtk_combo_box_set_active (GTK_COMBO_BOX(gn_interface_combo), 0);
+	//if (n_ifs!=0)
+	//	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_interface_treeview), 0);
 
 	return;
 }
@@ -348,6 +387,88 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 		gnetconfig_load_profile (text);
 	}
 
+	return;
+}
+
+static void
+cb_gn_interface_edited (GtkButton *button, gpointer data)
+{
+	GtkTreeModel 		*model = NULL;
+	GtkTreeSelection	*selection = NULL;
+	GtkTreeIter		iter;
+	gchar 			*ifname = NULL;
+	GList			*interface = NULL;
+	GList			*options = NULL;
+	gboolean		found = FALSE;
+	fwnet_interface_t	*inte = NULL;
+	char			ip[20];
+	char			netmask[20];
+	gchar			*markup;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
+	if ( FALSE == gtk_tree_selection_get_selected (selection, &model, &iter) )
+		return;
+	gtk_tree_model_get (model, &iter, 1, &ifname, -1);
+	
+	/* We use the following code as g_list_find() doesn't seem to work for strings */
+	for (interface = active_profile->interfaces;interface != NULL;interface=g_list_next(interface))
+	{
+		inte = interface->data;
+		if (strcmp(ifname, inte->name) == 0)
+		{	
+			found = TRUE;
+			break;
+		}
+	}
+	
+	if (found == TRUE)
+	{
+		g_print ("Interface found\n");
+		/* set the correct connection type */
+		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
+		{	
+			/* Static IP Active */
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
+			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
+			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
+			gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
+			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
+			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
+			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
+			options = inte->options;
+			if (!options) return; /* FIX ME */
+			sscanf (options->data, "%s netmask %s", ip, netmask);
+			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
+			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
+			sscanf (inte->gateway, "%*s gw %s", ip);
+			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
+		}
+		else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface)))
+		{	
+			/* DHCP Active */
+			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
+			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
+			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 0);
+			gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
+			gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
+			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
+		}
+		else if (strlen(active_profile->adsl_interface))
+		{
+			/* DSL Active */
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 2);
+		}
+		/* set the interface name label */
+		markup = g_markup_printf_escaped ("<span size=\"medium\"><b>%s</b></span>", inte->name);
+		gtk_label_set_markup (GTK_LABEL(data), markup);
+		g_free (markup);
+		gtk_widget_show (GTK_WIDGET(gn_interface_dialog));
+	}
+	else
+		gn_error ("No network interface found.", ERROR_GUI);
+		
 	return;
 }
 
@@ -506,18 +627,23 @@ cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
 static void
 cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 {
-	fwnet_interface_t	*interface = NULL;
-	gint			if_pos;
-	gchar			*ipaddr = NULL;
-	gchar			*netmask = NULL;
-	gchar			*gateway = NULL;
-	gchar			*if_name = NULL;
+	gchar				*ipaddr = NULL;
+	gchar				*netmask = NULL;
+	gchar				*gateway = NULL;
+	gchar				*if_name = NULL;
 	GtkTreeModel		*model = NULL;
-	GtkTreeIter		iter;
-	char			opstring[50];
+	GtkTreeIter			iter;
+	char				opstring[50];
+	GList				*intf = NULL;
+	fwnet_interface_t	*interface = NULL;
 
-	if_pos = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_interface_combo));
-	interface = g_list_nth_data (active_profile->interfaces, if_pos);
+	if_name = gtk_label_get_text (GTK_LABEL(data));
+	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
+	{
+		interface = intf->data;
+		if (strcmp(if_name, interface->name) == 0)
+			break;
+	}
 
 	/* set the interface name if not already set */
 	/* generally this happens when a new profile is created */
