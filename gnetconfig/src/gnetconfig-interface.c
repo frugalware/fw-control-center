@@ -508,7 +508,7 @@ cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
 				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
 				options = inte->options;
 				if (!options) return; /* FIX ME */
-				sscanf (options->data, "%s netmask %s", ip, netmask);
+				sscanf (options->data, "options = %s netmask %s", ip, netmask);
 				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
 				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
 				sscanf (inte->gateway, "%*s gw %s", ip);
@@ -603,9 +603,9 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 static void
 cb_gn_save_profile_clicked (GtkButton *button, gpointer data)
 {
-	gint			c;
+	gint				c;
 	fwnet_profile_t		*profile;
-	char			hostname[256];
+	char				hostname[256];
 
 	c = gtk_combo_box_get_active (GTK_COMBO_BOX(gn_conntype_combo));
 	switch (c)
@@ -670,7 +670,11 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 					interface->options = g_list_append (interface->options, strdup(opstring));
 				}
 				else
-					sprintf (interface->options->data, "%s netmask %s", ipaddr, netmask);
+					//sprintf (interface->options->data, "options = %s netmask %s", ipaddr, netmask);
+					interface->options->data = g_strdup_printf ("options = %s netmask %s",
+																ipaddr,
+																netmask);
+				g_print (interface->options->data);
 				sprintf (interface->gateway, "%s", gateway);
 				break;
 			}
@@ -689,6 +693,14 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				break;
 			}
 	}
+
+	/* save the profile */
+	cb_gn_save_profile_clicked (NULL, NULL);
+	
+	/* the profile data gets corrupted after saving and
+	 * hence needs to be reloaded */
+	g_free (active_profile);
+	active_profile = fwnet_parseprofile ("default");
 
 	return;
 }
