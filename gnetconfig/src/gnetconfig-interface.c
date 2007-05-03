@@ -392,15 +392,16 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 {
 	GtkTreeModel 		*model = NULL;
 	GtkTreeSelection	*selection = NULL;
-	GtkTreeIter		iter;
-	gchar 			*ifname = NULL;
-	GList			*interface = NULL;
-	GList			*options = NULL;
-	gboolean		found = FALSE;
+	GtkTreeIter			iter;
+	gchar				*ifname = NULL;
+	GList				*interface = NULL;
+	GList				*options = NULL;
+	gboolean			found = FALSE;
 	fwnet_interface_t	*inte = NULL;
-	char			ip[20];
-	char			netmask[20];
-	gchar			*markup;
+	char				ip[20];
+	char				netmask[20];
+	char				host[256];
+	gchar				*markup = NULL;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
@@ -451,6 +452,9 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 			gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
+			sscanf (inte->dhcp_opts, "%*s -h %s", host);
+			g_print ("\nhost : %d", strlen(host));
+			gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host); 
 		}
 		else if (strlen(active_profile->adsl_interface))
 		{
@@ -553,6 +557,9 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_show (gn_staticip_table);
 			gtk_widget_hide (gn_dhcp_table);
 			gtk_widget_hide (gn_dsl_table);
+			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
+			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
+			gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
 			break;
 
 		case GN_DSL: /* DSL */
@@ -657,8 +664,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			}
 		case GN_DHCP:
 			{
-				snprintf (interface->dhcp_opts, PATH_MAX,
-					"dhcp_opts = -t 10 -h %s\n",
+				snprintf (interface->dhcp_opts, PATH_MAX, "dhcp_opts = -t 10 -h %s\n",
 					(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
 				if (interface->options == NULL)
 				{
@@ -690,6 +696,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	buf = g_strdup (active_profile->name);
 	g_free (active_profile); // Replace with a better function
 	active_profile = fwnet_parseprofile (buf);
+
 	g_free (buf);
 
 	return;
