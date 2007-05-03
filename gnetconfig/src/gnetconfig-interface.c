@@ -70,7 +70,6 @@ static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpoint
 
 /* callbacks */
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
-static void cb_gn_interface_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
@@ -470,72 +469,6 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	else
 		gn_error ("No network interface found.", ERROR_GUI);
 		
-	return;
-}
-
-static void
-cb_gn_interface_changed (GtkComboBox *combo, gpointer data)
-{
-	GList			*interface = NULL;
-	GList			*options = NULL;
-	fwnet_interface_t	*inte;
-	GtkTreeIter		iter;
-	GtkTreeModel		*model = NULL;
-	gchar			*text = NULL;
-	char			ip[20];
-	char			netmask[20];
-	gint			if_pos = -1;
-
-	if (gtk_combo_box_get_active_iter(combo, &iter))
-	{
-		model = gtk_combo_box_get_model(combo);
-		gtk_tree_model_get (model, &iter, 0, &text, -1);
-		if_pos = gtk_combo_box_get_active (combo);
-		interface = g_list_nth (active_profile->interfaces, if_pos);
-		if (interface != NULL)
-		{
-			inte = interface->data;
-
-			/* set the correct connection type */
-			if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
-			{	
-				/* Static IP Active */
-				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
-				gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
-				gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
-				gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
-				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
-				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
-				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
-				options = inte->options;
-				if (!options) return; /* FIX ME */
-				sscanf (options->data, "options = %s netmask %s", ip, netmask);
-				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
-				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
-				sscanf (inte->gateway, "%*s gw %s", ip);
-				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
-			}
-			else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface)))
-			{	
-				/* DHCP Active */
-				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
-				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
-				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
-				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 0);
-				gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
-				gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
-				gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
-			}
-			else if (strlen(active_profile->adsl_interface))
-			{
-				/* DSL Active */
-				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 2);
-			}
-		}
-		else
-			gn_error ("No network interface found.", ERROR_GUI);
-	}
-
 	return;
 }
 
