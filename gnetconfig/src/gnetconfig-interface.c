@@ -80,6 +80,7 @@ static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
 /* new callbacks */
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
+static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
 
 void
 gnetconfig_interface_init (void)
@@ -177,6 +178,11 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(gnetconfig_new_nameserver_dialog_show),
+			NULL);
+	widget = glade_xml_get_widget (xml, "fwn_dns_delete");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_delete_dns_clicked),
 			NULL);
 
 	/* Load main stuff */
@@ -634,6 +640,37 @@ cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(dlg));
+
+	return;
+}
+
+static void
+cb_gn_delete_dns_clicked (GtkButton *button, gpointer data)
+{
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter			iter;
+	GtkTreeSelection	*selection = NULL;
+	gchar				*dns = NULL;
+	GList				*l = NULL;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_dns_listview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_dns_listview));
+	if ( FALSE == gtk_tree_selection_get_selected (selection, &model, &iter) )
+		return;
+
+	gtk_tree_model_get (model, &iter, 0, &dns, -1);
+	for (l = active_profile->dnses; l!=NULL; l=l->next)
+	{
+		if (l->data && !strcmp((char*)l->data, dns))
+		{
+			active_profile->dnses = g_list_delete_link (active_profile->dnses, l);
+			break;
+		}
+	}
+
+	gnetconfig_save_profile (active_profile);
+	gnetconfig_populate_dns_list (active_profile->dnses);
+	g_free (dns);
 
 	return;
 }
