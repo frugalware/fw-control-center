@@ -93,7 +93,6 @@ gnetconfig_interface_init (void)
 	/* setup widgets */
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
 	gn_profile_combo	= glade_xml_get_widget (xml, "fwn_profile_list");
-//	gn_interface_combo	= glade_xml_get_widget (xml, "fwn_interface_list");
 	gn_conntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list");
 	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
 	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
@@ -135,14 +134,6 @@ gnetconfig_interface_init (void)
 	gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_profile_combo), renderer, "text", 1);
 	gtk_combo_box_set_model (GTK_COMBO_BOX(gn_profile_combo), model);
 	g_signal_connect (G_OBJECT(gn_profile_combo), "changed", G_CALLBACK(cb_gn_profile_changed), NULL);
-
-	/* setup interfaces combobox */
-	//model = GTK_TREE_MODEL(gtk_list_store_new (1, G_TYPE_STRING));
-	//renderer = gtk_cell_renderer_text_new ();
-	//gtk_cell_layout_pack_start (GTK_CELL_LAYOUT(gn_interface_combo), renderer, FALSE);
-	//gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_interface_combo), renderer, "text", 0);
-	//gtk_combo_box_set_model (GTK_COMBO_BOX(gn_interface_combo), model);
-	//g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
 	
 	/* setup connection type combobox */
 	g_signal_connect (G_OBJECT(gn_conntype_combo), "changed", G_CALLBACK(cb_gn_conntype_changed), NULL);
@@ -152,7 +143,6 @@ gnetconfig_interface_init (void)
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(gn_dns_listview), -1, "IP Address", renderer, "text", 0, NULL);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_dns_listview), model);
-	//g_signal_connect (G_OBJECT(gn_interface_combo), "changed", G_CALLBACK(cb_gn_interface_changed), NULL);
 
 	/* setup new profile dialog */
 	widget = glade_xml_get_widget (xml, "fwn_menu_newprofile");
@@ -259,9 +249,6 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, pixbuf, 1, interface->name, -1);
 	}
-
-	//if (n_ifs!=0)
-	//	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_interface_treeview), 0);
 
 	return;
 }
@@ -648,10 +635,10 @@ static void
 cb_gn_delete_dns_clicked (GtkButton *button, gpointer data)
 {
 	GtkTreeModel		*model = NULL;
-	GtkTreeIter			iter;
+	GtkTreeIter		iter;
 	GtkTreeSelection	*selection = NULL;
-	gchar				*dns = NULL;
-	GList				*l = NULL;
+	gchar			*dns = NULL;
+	GList			*l = NULL;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_dns_listview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_dns_listview));
