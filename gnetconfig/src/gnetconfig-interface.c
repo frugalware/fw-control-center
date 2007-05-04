@@ -629,6 +629,7 @@ cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog
 		/* further processing */
 		active_profile->dnses = g_list_append (active_profile->dnses, (gpointer)g_strdup(ip));
 		gnetconfig_save_profile (active_profile);
+		gnetconfig_populate_dns_list (active_profile->dnses);
 		g_list_free (wlist);
 	}
 
