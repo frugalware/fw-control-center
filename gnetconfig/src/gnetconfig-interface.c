@@ -83,6 +83,7 @@ static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
 static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
+static void cb_gn_interface_double_click (GtkTreeView *treeview);
 
 void
 gnetconfig_interface_init (void)
@@ -91,7 +92,7 @@ gnetconfig_interface_init (void)
 	GtkTreeModel	*model = NULL;
 	GtkCellRenderer	*renderer = NULL;
 	GtkListStore	*store = NULL;
-	
+
 	/* setup widgets */
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
 	gn_profile_combo	= glade_xml_get_widget (xml, "fwn_profile_list");
@@ -125,6 +126,10 @@ gnetconfig_interface_init (void)
 							NULL);
 	store = gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_interface_treeview), GTK_TREE_MODEL(store));
+	g_signal_connect (gn_interface_treeview,
+			"row-activated",
+			G_CALLBACK(cb_gn_interface_double_click),
+			NULL);
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING));
@@ -320,7 +325,7 @@ gnetconfig_save_profile (fwnet_profile_t *profile)
 {
 	gchar	hostname[256];
 	gchar	*buf = NULL;
-	
+
 	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
 
 	buf = g_strdup (profile->name);
@@ -450,7 +455,7 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 	GtkTreeIter	iter;
 	GtkTreeModel	*model = NULL;
 	gchar		*text = NULL;
-	
+
 	if (gtk_combo_box_get_active_iter(combo, &iter))
 	{
 		model = gtk_combo_box_get_model(combo);
@@ -545,6 +550,14 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	else
 		gn_error ("No network interface found.", ERROR_GUI);
 		
+	return;
+}
+
+static void
+cb_gn_interface_double_click (GtkTreeView *treeview)
+{
+	cb_gn_interface_edited (NULL, NULL);
+
 	return;
 }
 
