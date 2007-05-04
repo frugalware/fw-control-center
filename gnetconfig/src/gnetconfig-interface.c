@@ -505,12 +505,10 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	
 	if (found == TRUE)
 	{
-		g_print ("Interface found\n");
 		/* set the correct connection type */
 		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
 		{	
 			/* Static IP Active */
-			g_print ("i'm static %s\n", inte->name);
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
 			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
@@ -753,7 +751,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			}
 		case GN_DHCP:
 			{
-				snprintf (interface->dhcp_opts, PATH_MAX, "dhcp_opts = -t 10 -h %s\n",
+				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n",
 					(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
 				if (interface->options == NULL)
 				{
