@@ -317,7 +317,6 @@ gnetconfig_load_profile (const char *name)
 static int
 gnetconfig_save_profile (fwnet_profile_t *profile)
 {
-	gint	nettype;
 	gchar	hostname[256];
 	gchar	*buf = NULL;
 	
@@ -551,10 +550,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 static void
 cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 {
-	gint sel;
-
-	sel = gtk_combo_box_get_active (combo);
-	switch (sel)
+	switch (gtk_combo_box_get_active (combo))
 	{
 		case GN_DHCP: /* DHCP */
 			gtk_widget_show (gn_dhcp_table);
@@ -616,14 +612,11 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 static void
 cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 {
-	GList		*wlist = NULL;
-	const gchar	*ip;
-	fwnet_interface_t *inte;
 	if (arg1 == GTK_RESPONSE_ACCEPT)
 	{
-		wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
+		GList *wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
 		wlist = g_list_next (wlist);
-		ip = gtk_entry_get_text (GTK_ENTRY(wlist->data));
+		const gchar *ip = gtk_entry_get_text (GTK_ENTRY(wlist->data));
 
 		/* check if the entry is blank */
 		if (!strlen(ip))
@@ -635,14 +628,11 @@ cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog
 
 		/* further processing */
 		active_profile->dnses = g_list_append (active_profile->dnses, (gpointer)g_strdup(ip));
-		g_print ("Before saving\n");
-		inte = g_list_nth_data (active_profile->interfaces, 0);
-		g_print ("%s\n", inte->options->data);
 		gnetconfig_save_profile (active_profile);
+		g_list_free (wlist);
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(dlg));
-	g_list_free (wlist);
 
 	return;
 }
@@ -659,8 +649,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	char			opstring[50];
 	GList			*intf = NULL;
 	fwnet_interface_t	*interface = NULL;
-	gchar			*buf;
-	gint			nettype;
 
 	if_name = gtk_label_get_text (GTK_LABEL(data));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
@@ -695,7 +683,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 					interface->options = g_list_append (interface->options, strdup(opstring));
 				}
 				else
-					//sprintf (interface->options->data, "options = %s netmask %s", ipaddr, netmask);
 					interface->options->data = g_strdup_printf ("%s netmask %s",
 										ipaddr,
 										netmask);
@@ -715,17 +702,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				}
 				else
 					sprintf (interface->options->data, "dhcp");
-				break;
-			}
-	}
-
-	/* save the profile */
-	nettype = gtk_combo_box_get_active(GTK_COMBO_BOX(gn_conntype_combo));
-	switch (nettype)
-	{
-		case GN_STATIC:
-			{
-				g_print ("static ip saving..");
 				break;
 			}
 	}
