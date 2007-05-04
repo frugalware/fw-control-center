@@ -23,5 +23,7 @@ int gnetconfig_set_hostname (const char *);
 
 fwnet_profile_t * gnetconfig_new_profile (const char *);
 
+void gnetconfig_profile_free (fwnet_profile_t *profile);
+
 #endif
 

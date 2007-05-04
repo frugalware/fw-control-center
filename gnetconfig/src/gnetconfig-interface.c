@@ -298,6 +298,10 @@ gnetconfig_load_profile (const char *name)
 	fwnet_profile_t		*profile;
 	char			hostname[256];
 
+	/* free old profile */
+	if (active_profile != NULL)
+		gnetconfig_profile_free (active_profile);
+
 	if (!(profile = fwnet_parseprofile ((char*)name)))
 		return;
 
@@ -336,7 +340,7 @@ gnetconfig_save_profile (fwnet_profile_t *profile)
 	
 	/* the profile data gets corrupted after saving and
 	 * hence needs to be reloaded */
-	g_free (profile); // Replace with a better function
+	gnetconfig_profile_free (profile);
 	active_profile = fwnet_parseprofile (buf);
 	g_free (buf);
 

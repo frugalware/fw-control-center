@@ -21,6 +21,7 @@
  */
 
 #include "gnetconfig-misc.h"
+#include "glib.h"
 
 #define _GNU_SOURCE
 
@@ -77,4 +78,33 @@ gnetconfig_new_profile (const char *name)
 	sprintf (profile->name, name);
 
 	return profile;
+}
+
+void
+gnetconfig_profile_free (fwnet_profile_t *profile)
+{
+	int i, l = 0;
+
+	if (profile == NULL)
+		return;
+
+	l = g_list_length (profile->interfaces);
+	for (i=0;i<l;i++)
+	{
+		fwnet_interface_t *iface = (fwnet_interface_t *)g_list_nth_data (profile->interfaces, i);
+		if (iface != NULL)
+		{
+			g_list_free (iface->options);
+			g_list_free (iface->pre_ups);
+			g_list_free (iface->pre_downs);
+			g_list_free (iface->post_ups);
+			g_list_free (iface->post_downs);
+		}
+		g_free (iface);
+	}
+	g_list_free (profile->interfaces);
+	g_list_free (profile->dnses);
+	g_free (profile);
+
+	return;
 }
