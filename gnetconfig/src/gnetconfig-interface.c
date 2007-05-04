@@ -536,9 +536,8 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 			gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
-			sscanf (inte->dhcp_opts, "%*s -h %s", host);
-			g_print ("\nhost : %d", strlen(host));
-			gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host); 
+			if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
+				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host); 
 		}
 		else if (strlen(active_profile->adsl_interface))
 		{
