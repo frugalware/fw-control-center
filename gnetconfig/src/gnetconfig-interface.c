@@ -24,6 +24,7 @@
 #include <locale.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
+#include <gdk/gdkkeysyms.h>
 
 #ifdef HAVE_CONFIG_H
 #	include "config.h"
@@ -81,6 +82,7 @@ static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 /* new callbacks */
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
+static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
 
 void
 gnetconfig_interface_init (void)
@@ -173,6 +175,12 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_delete_dns_clicked),
+			NULL);
+
+	/* keybindings */
+	g_signal_connect (gn_dns_listview,
+			"key_release_event",
+			G_CALLBACK (cb_gn_dns_listview_keypress),
 			NULL);
 
 	/* Load main stuff */
@@ -627,6 +635,17 @@ cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog
 	}
 
 	gtk_widget_destroy (GTK_WIDGET(dlg));
+
+	return;
+}
+
+static void
+cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+	if (event->keyval != GDK_Delete)
+		return;
+
+	cb_gn_delete_dns_clicked (NULL, NULL);
 
 	return;
 }
