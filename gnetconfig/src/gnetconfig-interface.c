@@ -63,10 +63,15 @@ static void gnetconfig_populate_interface_list (fwnet_profile_t *profile);
 static void gnetconfig_load_profile (const char *name);
 static void gnetconfig_populate_dns_list (GList *list);
 static void gnetconfig_setup_new_profile (const char *profile);
+static int gnetconfig_save_profile (fwnet_profile_t *profile);
 
 /* new profile dialog */
 static void gnetconfig_new_profile_dialog_show (void);
 static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
+
+/* new nameserver dialog */
+static void gnetconfig_new_nameserver_dialog_show (void);
+static void cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
 
 /* callbacks */
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
@@ -150,18 +155,29 @@ gnetconfig_interface_init (void)
 
 	/* setup new profile dialog */
 	widget = glade_xml_get_widget (xml, "fwn_menu_newprofile");
-	g_signal_connect (G_OBJECT(widget), "activate", G_CALLBACK(gnetconfig_new_profile_dialog_show), NULL);
+	g_signal_connect (G_OBJECT(widget),
+			"activate",
+			G_CALLBACK(gnetconfig_new_profile_dialog_show),
+			NULL);
 
 	/* other stuff */
 	widget = glade_xml_get_widget (xml, "fwn_interface_save");
 	g_signal_connect (G_OBJECT(widget),
-						"clicked",
-						G_CALLBACK(cb_gn_save_interface_clicked),
-						(gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
+			"clicked",
+			G_CALLBACK(cb_gn_save_interface_clicked),
+			(gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
 
 	/* new interface editor stuff */
 	widget = glade_xml_get_widget (xml, "fwn_if_edit");
-	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_interface_edited), (gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_interface_edited),
+			(gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
+	widget = glade_xml_get_widget (xml, "fwn_dns_save");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(gnetconfig_new_nameserver_dialog_show),
+			NULL);
 
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
@@ -298,6 +314,30 @@ gnetconfig_load_profile (const char *name)
 	return;
 }
 
+static int
+gnetconfig_save_profile (fwnet_profile_t *profile)
+{
+	gint	nettype;
+	gchar	hostname[256];
+	gchar	*buf = NULL;
+	
+	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
+
+	buf = g_strdup (profile->name);
+	if(!fwnet_writeconfig (profile, hostname))
+		printf ("profile saved\n");
+	else
+		printf ("profile not saved \n");
+	
+	/* the profile data gets corrupted after saving and
+	 * hence needs to be reloaded */
+	g_free (profile); // Replace with a better function
+	active_profile = fwnet_parseprofile (buf);
+	g_free (buf);
+
+	return 0;
+}
+
 static void
 gnetconfig_new_profile_dialog_show (void)
 {
@@ -321,6 +361,41 @@ gnetconfig_new_profile_dialog_show (void)
 	g_signal_connect_swapped (dialog,
                              "response",
                              G_CALLBACK (cb_gn_new_profile_dialog_response),
+                             dialog);
+	gtk_misc_set_padding (GTK_MISC(label), 5, 5);
+	gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER((GTK_DIALOG(dialog))->vbox), 10);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), entry);
+
+	gtk_widget_show_all (dialog);
+
+	return;
+}
+
+static void
+gnetconfig_new_nameserver_dialog_show (void)
+{
+	GtkWidget 	*dialog;
+	GtkWidget 	*label;
+	GtkWidget 	*entry;
+	static gchar	*message = "Enter the ip address of the nameserver: ";
+
+	dialog = gtk_dialog_new_with_buttons (_("New DNS"),
+                                         NULL,
+                                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                                         GTK_STOCK_OK,
+                                         GTK_RESPONSE_ACCEPT,
+                                         GTK_STOCK_CANCEL,
+                                         GTK_RESPONSE_REJECT,
+                                         NULL);
+	gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
+	label = gtk_label_new (message);
+	entry = gtk_entry_new ();
+
+	g_signal_connect_swapped (dialog,
+                             "response",
+                             G_CALLBACK (cb_gn_new_nameserver_dialog_response),
                              dialog);
 	gtk_misc_set_padding (GTK_MISC(label), 5, 5);
 	gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
@@ -391,16 +466,16 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 {
 	GtkTreeModel 		*model = NULL;
 	GtkTreeSelection	*selection = NULL;
-	GtkTreeIter			iter;
-	gchar				*ifname = NULL;
-	GList				*interface = NULL;
-	GList				*options = NULL;
-	gboolean			found = FALSE;
+	GtkTreeIter		iter;
+	gchar			*ifname = NULL;
+	GList			*interface = NULL;
+	GList			*options = NULL;
+	gboolean		found = FALSE;
 	fwnet_interface_t	*inte = NULL;
-	char				ip[20];
-	char				netmask[20];
-	char				host[256];
-	gchar				*markup = NULL;
+	char			ip[20];
+	char			netmask[20];
+	char			host[256];
+	gchar			*markup = NULL;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
@@ -426,6 +501,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
 		{	
 			/* Static IP Active */
+			g_print ("i'm static %s\n", inte->name);
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
 			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
@@ -538,20 +614,53 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 }
 
 static void
+cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
+{
+	GList		*wlist = NULL;
+	const gchar	*ip;
+	fwnet_interface_t *inte;
+	if (arg1 == GTK_RESPONSE_ACCEPT)
+	{
+		wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
+		wlist = g_list_next (wlist);
+		ip = gtk_entry_get_text (GTK_ENTRY(wlist->data));
+
+		/* check if the entry is blank */
+		if (!strlen(ip))
+		{	
+			gn_error ("Enter a valid ip address", ERROR_GUI);
+			g_list_free (wlist);
+			return;
+		}
+
+		/* further processing */
+		active_profile->dnses = g_list_append (active_profile->dnses, (gpointer)g_strdup(ip));
+		g_print ("Before saving\n");
+		inte = g_list_nth_data (active_profile->interfaces, 0);
+		g_print ("%s\n", inte->options->data);
+		gnetconfig_save_profile (active_profile);
+	}
+
+	gtk_widget_destroy (GTK_WIDGET(dlg));
+	g_list_free (wlist);
+
+	return;
+}
+
+static void
 cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 {
-	gchar				*ipaddr = NULL;
-	gchar				*netmask = NULL;
-	gchar				*gateway = NULL;
-	gchar				*if_name = NULL;
+	gchar			*ipaddr = NULL;
+	gchar			*netmask = NULL;
+	gchar			*gateway = NULL;
+	gchar			*if_name = NULL;
 	GtkTreeModel		*model = NULL;
-	GtkTreeIter			iter;
-	char				opstring[50];
-	GList				*intf = NULL;
+	GtkTreeIter		iter;
+	char			opstring[50];
+	GList			*intf = NULL;
 	fwnet_interface_t	*interface = NULL;
-	char				hostname[256];
-	gchar				*buf;
-	gint				nettype;
+	gchar			*buf;
+	gint			nettype;
 
 	if_name = gtk_label_get_text (GTK_LABEL(data));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
@@ -587,9 +696,9 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				}
 				else
 					//sprintf (interface->options->data, "options = %s netmask %s", ipaddr, netmask);
-					interface->options->data = g_strdup_printf ("options = %s netmask %s",
-																ipaddr,
-																netmask);
+					interface->options->data = g_strdup_printf ("%s netmask %s",
+										ipaddr,
+										netmask);
 				g_print (interface->options->data);
 				sprintf (interface->gateway, "%s", gateway);
 				printf ("saving..\n");
@@ -601,11 +710,11 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 					(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
 				if (interface->options == NULL)
 				{
-					snprintf (opstring, 49, "options = dhcp");
+					snprintf (opstring, 49, "dhcp");
 					interface->options = g_list_append (interface->options, strdup(opstring));
 				}
 				else
-					sprintf (interface->options->data, "options = dhcp");
+					sprintf (interface->options->data, "dhcp");
 				break;
 			}
 	}
@@ -621,16 +730,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			}
 	}
 
-	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
-	gnetconfig_save_profile (active_profile, hostname, nettype);
-	
-	/* the profile data gets corrupted after saving and
-	 * hence needs to be reloaded */
-	buf = g_strdup (active_profile->name);
-	g_free (active_profile); // Replace with a better function
-	active_profile = fwnet_parseprofile (buf);
-
-	g_free (buf);
+	gnetconfig_save_profile (active_profile);
 
 	return;
 }

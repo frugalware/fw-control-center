@@ -78,34 +78,3 @@ gnetconfig_new_profile (const char *name)
 
 	return profile;
 }
-
-int
-gnetconfig_save_profile (fwnet_profile_t *profile, char *hostname, GN_CONN_TYPE type)
-{
-	switch (type)
-	{
-		case GN_DHCP:
-			{
-				printf ("saving dhcp...");
-				if(!fwnet_writeconfig (profile, hostname, "dhcp"))
-					printf ("profile saved\n");
-				else
-					printf ("profile not saved \n");
-				break;
-			}
-		case GN_STATIC:
-			{
-				printf ("\nsaving.. %s\n", profile->name);
-				if (profile == NULL)
-					printf ("eww profile NULL\n");
-				if (!fwnet_writeconfig (profile, hostname, "static"))
-					printf ("provile saved..\n");
-				else
-					printf ("provile not saved \n");
-				break;
-			}
-	}
-
-	return 0;
-}
-
