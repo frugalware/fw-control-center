@@ -53,6 +53,7 @@ GtkWidget *gn_dhcp_hostname_entry;
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
 GtkWidget *gn_interface_dialog;
+GtkWidget *gn_interface_textview;
 
 GtkWidget *gn_staticip_table;
 GtkWidget *gn_dhcp_table;
@@ -81,6 +82,7 @@ static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
 /* new callbacks */
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
+static void cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data);
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
 static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
 static void cb_gn_interface_double_click (GtkTreeView *treeview);
@@ -106,6 +108,7 @@ gnetconfig_interface_init (void)
 	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
 	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
 	gn_dsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table");
+	gn_interface_textview = glade_xml_get_widget (xml, "fwn_interface_textview");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -130,6 +133,11 @@ gnetconfig_interface_init (void)
 			"row-activated",
 			G_CALLBACK(cb_gn_interface_double_click),
 			NULL);
+	g_signal_connect (G_OBJECT(gtk_tree_view_get_selection(GTK_TREE_VIEW(gn_interface_treeview))),
+			"changed",
+			G_CALLBACK(cb_gn_interface_selected),
+			NULL);
+
 
 	/* setup profiles combobox */
 	model = GTK_TREE_MODEL(gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING));
@@ -551,6 +559,82 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	else
 		gn_error ("No network interface found.", ERROR_GUI);
 		
+	return;
+}
+
+static void
+cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
+{
+	GList				*list = NULL;
+	GList				*interface = NULL;
+	GtkTreeModel		*model = NULL;
+	gchar				*iface = NULL;
+	gchar				*string = NULL;
+	GtkTextBuffer		*buffer = NULL;
+	GtkTreeIter			iter;
+	GtkTextIter			t_iter;
+	fwnet_interface_t	*inte = NULL;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
+	list = gtk_tree_selection_get_selected_rows (selection, &model);
+	if (!list)
+		return;
+	gtk_tree_model_get_iter (model, &iter, list->data);
+	gtk_tree_model_get (model, &iter, 1, &iface, -1);
+
+	for (interface = active_profile->interfaces;interface != NULL;interface=g_list_next(interface))
+	{
+		inte = interface->data;
+		if (strcmp(iface, inte->name) == 0)
+			break;
+	}
+	
+	/* initialize the buffer */
+	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(gn_interface_textview));
+	gtk_text_buffer_set_text (buffer, "", 0);
+	gtk_text_buffer_get_iter_at_offset (buffer, &t_iter, 0);
+
+	if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
+	{	
+		char	ip[16], netmask[16];
+		GList	*options = NULL;
+
+		options = inte->options;
+		if (!options) return;
+		sscanf (options->data, "%s netmask %s", ip, netmask);
+		string = g_strdup_printf ("Connection type: Static IP\n\nIP Address:\t %s\nSubnet Mask:\t %s\n", ip, netmask);
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		g_free (string);
+		sscanf (inte->gateway, "%*s gw %s", ip);
+		string = g_strdup_printf ("Gateway:\t\t %s\n", ip);
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		g_free (string);
+	}
+	else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface)))
+	{
+		char host[255];
+
+		string = g_strdup_printf ("Connection type:\t DHCP\n\n");
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		g_free (string);
+		if (sscanf(inte->dhcp_opts, "%*s %*s -h %s", host) != 0)
+			string = g_strdup_printf ("DHCP Hostname:\t %s\n", host);
+		else
+			string = g_strdup_printf ("DHCP Hostname:\t (none)\n");
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		g_free (string);
+		if (strlen(inte->dhcpclient))
+			string = g_strdup_printf ("DHCP Client:\t\t %s\n", inte->dhcpclient);
+		else
+			string = g_strdup_printf ("DHCP Client:\t\t dhcpcd\n");
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		g_free (string);
+	}
+
+	g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
+	g_list_free (list);
+	g_free (iface);
+
 	return;
 }
 
