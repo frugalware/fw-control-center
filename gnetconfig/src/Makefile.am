@@ -9,5 +9,5 @@ gnetconfig_SOURCES=	 gnetconfig.c \
 					 gnetconfig-messages.c \
 					 gnetconfig-interface.c
 
-gnetconfig_LDADD= @GNETCONFIG_LIBS@ -lfwnetconfig
+gnetconfig_LDADD= @GNETCONFIG_LIBS@ -lfwnetconfig -lfwutil
 

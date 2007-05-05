@@ -34,6 +34,8 @@
 #include "gnetconfig-messages.h"
 #include "gnetconfig-misc.h"
 
+#include <libfwutil.h>
+
 extern GladeXML *xml;
 
 fwnet_profile_t *active_profile;
@@ -94,6 +96,7 @@ gnetconfig_interface_init (void)
 	GtkTreeModel	*model = NULL;
 	GtkCellRenderer	*renderer = NULL;
 	GtkListStore	*store = NULL;
+	GtkTreeViewColumn *column;
 
 	/* setup widgets */
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
@@ -113,21 +116,42 @@ gnetconfig_interface_init (void)
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
 	gn_interface_treeview = glade_xml_get_widget (xml, "interface_treeview");
+
 	renderer = gtk_cell_renderer_pixbuf_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (gn_interface_treeview),
-							-1,
-							"Icon",
-							renderer,
-							"pixbuf", 0,
-							NULL);
+	column = gtk_tree_view_column_new_with_attributes (_("IF_Icon"),
+														renderer,
+														"pixbuf", 0,
+														NULL);
+	gtk_tree_view_column_set_resizable (column, FALSE);
+	gtk_tree_view_append_column (gn_interface_treeview, column);
+	
 	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (gn_interface_treeview),
-							-1,
-							"Name",
-							renderer,
-							"text", 1,
-							NULL);
-	store = gtk_list_store_new (2, GDK_TYPE_PIXBUF, G_TYPE_STRING);
+	column = gtk_tree_view_column_new_with_attributes (_("IF_Name"),
+														renderer,
+														"markup", 1,
+														NULL);
+	gtk_tree_view_column_set_resizable (column, FALSE);
+	gtk_tree_view_column_set_min_width (column, 120);
+	g_object_set (G_OBJECT(column), "expand", TRUE, "spacing", 4, NULL);
+	gtk_tree_view_append_column (gn_interface_treeview, column);
+
+	renderer = gtk_cell_renderer_pixbuf_new ();
+	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusIcon"),
+														renderer,
+														"pixbuf", 2,
+														NULL);
+	gtk_tree_view_column_set_resizable (column, FALSE);
+	gtk_tree_view_append_column (gn_interface_treeview, column);
+	
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusText"),
+														renderer,
+														"text", 3,
+														NULL);
+	gtk_tree_view_column_set_resizable (column, FALSE);
+	gtk_tree_view_append_column (gn_interface_treeview, column);
+	
+	store = gtk_list_store_new (4, GDK_TYPE_PIXBUF, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_interface_treeview), GTK_TREE_MODEL(store));
 	g_signal_connect (gn_interface_treeview,
 			"row-activated",
@@ -256,6 +280,9 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	GtkListStore		*store = NULL;
 	GtkTreeIter		iter;
 	GdkPixbuf		*pixbuf;
+	GdkPixbuf		*yes_pixbuf;
+	GdkPixbuf		*no_pixbuf;
+	gchar			*ptr = NULL;
 
 	n_ifs = g_list_length (profile->interfaces);
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
@@ -264,13 +291,30 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
 					GTK_STOCK_NETWORK,
 					GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
+	yes_pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
+					GTK_STOCK_YES,
+					GTK_ICON_SIZE_MENU, NULL);
+	no_pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
+					GTK_STOCK_NO,
+					GTK_ICON_SIZE_MENU, NULL);
+
 	for (i=0;i<n_ifs;i++)
 	{
 		interface = g_list_nth_data (profile->interfaces, i);
 		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter, 0, pixbuf, 1, interface->name, -1);
+		ptr = g_markup_printf_escaped ("<span size=\"medium\" weight=\"bold\">%s</span>", interface->name);
+		gtk_list_store_set (store, &iter, 0, pixbuf, 1, ptr, -1);
+		g_free (ptr);
+		ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", interface->name);
+		if (!fwutil_system(ptr))
+			gtk_list_store_set (store, &iter, 2, yes_pixbuf, 3, " UP", -1);
+		else
+			gtk_list_store_set (store, &iter, 2, no_pixbuf, 3, " DOWN", -1);
+		g_free (ptr);
 	}
 	g_object_unref (pixbuf);
+	g_object_unref (yes_pixbuf);
+	g_object_unref (no_pixbuf);
 
 	return;
 }
