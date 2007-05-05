@@ -589,7 +589,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	{
 		/* set the correct connection type */
 		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface))
-			&& (!strlen(inte->essid)) && (!strlen(inte->key)))
+			&& (!strlen(inte->essid)) && (!strlen(inte->key)) && (!fwnet_is_wireless_device(inte->name)))
 		{
 			/* Static IP Active */
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_STATIC);
@@ -608,7 +608,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
 		}
 		else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface))
-				&& (!strlen(inte->essid)) && (!strlen(inte->key)))
+				&& (!strlen(inte->essid)) && (!strlen(inte->key)) && (!fwnet_is_wireless_device(inte->name)))
 		{	
 			/* DHCP Active */
 			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
@@ -954,6 +954,33 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			}
 			else
 				sprintf (interface->options->data, "dhcp");
+			break;
+		}
+		case GN_WIRELESS:
+		{
+			char *key, *essid;
+			ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
+			netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
+			gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
+			essid	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_essid_entry));
+			key		= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
+
+			if (strlen(key))
+				snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
+			if (strlen(essid))
+				snprintf (interface->essid, FWNET_ESSID_MAX_SIZE, essid);
+			
+			if (interface->options == NULL)
+			{	
+				snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
+				interface->options = g_list_append (interface->options, strdup(opstring));
+			}
+			else
+				interface->options->data = g_strdup_printf ("%s netmask %s",
+															ipaddr,
+															netmask);
+			g_print (interface->options->data);
+			sprintf (interface->gateway, "default gw %s", gateway);
 			break;
 		}
 	}
