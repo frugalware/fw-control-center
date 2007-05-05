@@ -641,6 +641,12 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
 	}
+	if (strlen(inte->mac))
+	{
+		string = g_strdup_printf ("MAC Address:\t %s", inte->mac);
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		g_free (string);
+	}
 
 	g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
 	g_list_free (list);
