@@ -128,7 +128,7 @@ gnetconfig_interface_init (void)
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_Name"),
 														renderer,
-														"markup", 1,
+														"text", 1,
 														NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_column_set_min_width (column, 120);
@@ -306,9 +306,7 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	{
 		interface = g_list_nth_data (profile->interfaces, i);
 		gtk_list_store_append (store, &iter);
-		ptr = g_markup_printf_escaped ("<span size=\"medium\" weight=\"bold\">%s</span>", interface->name);
-		gtk_list_store_set (store, &iter, 0, pixbuf, 1, ptr, -1);
-		g_free (ptr);
+		gtk_list_store_set (store, &iter, 0, pixbuf, 1, interface->name, -1);
 		ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", interface->name);
 		if (flag == TRUE)
 		{
@@ -565,7 +563,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	if ( FALSE == gtk_tree_selection_get_selected (selection, &model, &iter) )
 		return;
 	gtk_tree_model_get (model, &iter, 1, &ifname, -1);
-	
+
 	/* We use the following code as g_list_find() doesn't seem to work for strings */
 	for (interface = active_profile->interfaces;interface != NULL;interface=g_list_next(interface))
 	{
