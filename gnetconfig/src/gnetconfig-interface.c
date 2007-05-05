@@ -39,7 +39,6 @@
 extern GladeXML *xml;
 
 fwnet_profile_t *active_profile;
-char *active_interface = NULL;
 
 GtkWidget *gn_main_window;
 GtkWidget *gn_profile_combo;
@@ -92,11 +91,11 @@ static void cb_gn_interface_double_click (GtkTreeView *treeview);
 void
 gnetconfig_interface_init (void)
 {
-	GtkWidget	*widget = NULL;
-	GtkTreeModel	*model = NULL;
-	GtkCellRenderer	*renderer = NULL;
-	GtkListStore	*store = NULL;
-	GtkTreeViewColumn *column;
+	GtkWidget		*widget = NULL;
+	GtkTreeModel		*model = NULL;
+	GtkCellRenderer		*renderer = NULL;
+	GtkListStore		*store = NULL;
+	GtkTreeViewColumn 	*column = NULL;
 
 	/* setup widgets */
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
@@ -111,7 +110,7 @@ gnetconfig_interface_init (void)
 	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
 	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
 	gn_dsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table");
-	gn_interface_textview = glade_xml_get_widget (xml, "fwn_interface_textview");
+	gn_interface_textview 	= glade_xml_get_widget (xml, "fwn_interface_textview");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -119,17 +118,17 @@ gnetconfig_interface_init (void)
 
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_Icon"),
-														renderer,
-														"pixbuf", 0,
-														NULL);
+							renderer,
+							"pixbuf", 0,
+							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
-	
+
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_Name"),
-														renderer,
-														"text", 1,
-														NULL);
+							renderer,
+							"text", 1,
+							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_column_set_min_width (column, 120);
 	g_object_set (G_OBJECT(column), "expand", TRUE, "spacing", 4, NULL);
@@ -137,20 +136,20 @@ gnetconfig_interface_init (void)
 
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusIcon"),
-														renderer,
-														"pixbuf", 2,
-														NULL);
+							renderer,
+							"pixbuf", 2,
+							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
-	
+
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusText"),
-														renderer,
-														"text", 3,
-														NULL);
+							renderer,
+							"text", 3,
+							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
-	
+
 	store = gtk_list_store_new (4, GDK_TYPE_PIXBUF, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_interface_treeview), GTK_TREE_MODEL(store));
 	g_signal_connect (gn_interface_treeview,
@@ -173,7 +172,7 @@ gnetconfig_interface_init (void)
 	gtk_cell_layout_add_attribute (GTK_CELL_LAYOUT(gn_profile_combo), renderer, "text", 1);
 	gtk_combo_box_set_model (GTK_COMBO_BOX(gn_profile_combo), model);
 	g_signal_connect (G_OBJECT(gn_profile_combo), "changed", G_CALLBACK(cb_gn_profile_changed), NULL);
-	
+
 	/* setup connection type combobox */
 	g_signal_connect (G_OBJECT(gn_conntype_combo), "changed", G_CALLBACK(cb_gn_conntype_changed), NULL);
 
@@ -223,6 +222,9 @@ gnetconfig_interface_init (void)
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
 	gtk_widget_show (gn_main_window);
+
+	/* unref xml object */
+	g_object_unref (xml);
 
 	return;
 }
@@ -399,7 +401,7 @@ gnetconfig_save_profile (fwnet_profile_t *profile)
 		printf ("profile saved\n");
 	else
 		printf ("profile not saved \n");
-	
+
 	/* the profile data gets corrupted after saving and
 	 * hence needs to be reloaded */
 	gnetconfig_profile_free (profile);
@@ -530,7 +532,7 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 
 		/* clear interface textview */
 		GtkTextBuffer	*buffer = NULL;
-		GtkTextIter		t_iter;
+		GtkTextIter	t_iter;
 		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(gn_interface_textview));
 		if (buffer)
 		{
@@ -574,7 +576,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			break;
 		}
 	}
-	
+
 	if (found == TRUE)
 	{
 		/* set the correct connection type */
@@ -622,7 +624,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	}
 	else
 		gn_error ("No network interface found.", ERROR_GUI);
-		
+
 	return;
 }
 
@@ -883,37 +885,37 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	switch (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_conntype_combo)))
 	{
 		case GN_STATIC:
-			{
-				ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
-				netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
-				gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
+		{
+			ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
+			netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
+			gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
 
-				if (interface->options == NULL)
-				{	
-					snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
-					interface->options = g_list_append (interface->options, strdup(opstring));
-				}
-				else
-					interface->options->data = g_strdup_printf ("%s netmask %s",
-										ipaddr,
-										netmask);
-				g_print (interface->options->data);
-				sprintf (interface->gateway, "%s", gateway);
-				break;
+			if (interface->options == NULL)
+			{	
+				snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
+				interface->options = g_list_append (interface->options, strdup(opstring));
 			}
+			else
+				interface->options->data = g_strdup_printf ("%s netmask %s",
+									ipaddr,
+									netmask);
+			g_print (interface->options->data);
+			sprintf (interface->gateway, "default gw %s", gateway);
+			break;
+		}
 		case GN_DHCP:
+		{
+			snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n",
+				(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
+			if (interface->options == NULL)
 			{
-				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n",
-					(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
-				if (interface->options == NULL)
-				{
-					snprintf (opstring, 49, "dhcp");
-					interface->options = g_list_append (interface->options, strdup(opstring));
-				}
-				else
-					sprintf (interface->options->data, "dhcp");
-				break;
+				snprintf (opstring, 49, "dhcp");
+				interface->options = g_list_append (interface->options, strdup(opstring));
 			}
+			else
+				sprintf (interface->options->data, "dhcp");
+			break;
+		}
 	}
 
 	gnetconfig_save_profile (active_profile);
