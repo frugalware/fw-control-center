@@ -473,6 +473,16 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 		model = gtk_combo_box_get_model(combo);
 		gtk_tree_model_get (model, &iter, 1, &text, -1);
 		gnetconfig_load_profile (text);
+
+		/* clear interface textview */
+		GtkTextBuffer	*buffer = NULL;
+		GtkTextIter		t_iter;
+		buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(gn_interface_textview));
+		if (buffer)
+		{
+			gtk_text_buffer_set_text (buffer, "", 0);
+			gtk_text_buffer_get_iter_at_offset (buffer, &t_iter, 0);
+		}
 	}
 
 	return;
