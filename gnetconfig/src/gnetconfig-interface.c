@@ -970,12 +970,17 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 
 			if (strlen(key))
 				snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
+			else
+				*interface->key = '\0';
+
 			if (strlen(essid))
 				snprintf (interface->essid, FWNET_ESSID_MAX_SIZE, essid);
+			else
+				*interface->essid = '\0';
+
 			if (mode!=NULL && (strlen(mode)))
 			{	
 				snprintf (interface->mode, FWNET_MODE_MAX_SIZE, mode);
-				g_print (interface->mode);
 				g_free (mode);
 			}
 
@@ -988,7 +993,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				interface->options->data = g_strdup_printf ("%s netmask %s",
 															ipaddr,
 															netmask);
-			g_print (interface->options->data);
 			sprintf (interface->gateway, "default gw %s", gateway);
 			break;
 		}
