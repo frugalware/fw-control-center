@@ -47,9 +47,12 @@ GtkWidget *gn_conntype_combo;
 GtkWidget *gn_ipaddress_entry;
 GtkWidget *gn_netmask_entry;
 GtkWidget *gn_gateway_entry;
+GtkWidget *gn_essid_entry;
+GtkWidget *gn_key_entry;
 GtkWidget *gn_hostname_entry;
 GtkWidget *gn_dns_listview;
 GtkWidget *gn_dhcp_hostname_entry;
+GtkWidget *gn_wireless_mode_combo;
 
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
@@ -59,6 +62,7 @@ GtkWidget *gn_interface_textview;
 GtkWidget *gn_staticip_table;
 GtkWidget *gn_dhcp_table;
 GtkWidget *gn_dsl_table;
+GtkWidget *gn_wireless_table;
 
 /* utility functions */
 static void gnetconfig_populate_profile_list (void);
@@ -104,13 +108,17 @@ gnetconfig_interface_init (void)
 	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
 	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
 	gn_gateway_entry	= glade_xml_get_widget (xml, "fwn_gateway");
+	gn_essid_entry		= glade_xml_get_widget (xml, "fwn_essid_entry");
+	gn_key_entry		= glade_xml_get_widget (xml, "fwn_key_entry");
 	gn_hostname_entry	= glade_xml_get_widget (xml, "fwn_hostname");
-	gn_dhcp_hostname_entry	= glade_xml_get_widget (xml, "fwn_dhcp_hostname");
 	gn_dns_listview		= glade_xml_get_widget (xml, "fwn_dns_list");
 	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
 	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
 	gn_dsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table");
+	gn_wireless_table	= glade_xml_get_widget (xml, "fwn_wireless_table");
+	gn_dhcp_hostname_entry	= glade_xml_get_widget (xml, "fwn_dhcp_hostname");
 	gn_interface_textview 	= glade_xml_get_widget (xml, "fwn_interface_textview");
+	gn_wireless_mode_combo	= glade_xml_get_widget (xml, "fwn_wmode_combo");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -580,10 +588,11 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	if (found == TRUE)
 	{
 		/* set the correct connection type */
-		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
-		{	
+		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface))
+			&& (!strlen(inte->essid)) && (!strlen(inte->key)))
+		{
 			/* Static IP Active */
-			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_STATIC);
 			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
 			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
 			gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
@@ -598,24 +607,45 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			sscanf (inte->gateway, "%*s gw %s", ip);
 			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
 		}
-		else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface)))
+		else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface))
+				&& (!strlen(inte->essid)) && (!strlen(inte->key)))
 		{	
 			/* DHCP Active */
 			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
 			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
 			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
-			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 0);
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DHCP);
 			gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 			gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
 			if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
 				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host); 
 		}
+		else if (fwnet_is_wireless_device(inte->name) || ((strlen(inte->key)) && (strlen(inte->essid)) ))
+		{
+			/* Wireless Active */
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_WIRELESS);
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_wireless_mode_combo), gnetconfig_get_wireless_mode (inte->mode));
+			if (strlen(inte->essid))
+				gtk_entry_set_text (GTK_ENTRY(gn_essid_entry), inte->essid);
+			if (strlen(inte->key))
+				gtk_entry_set_text (GTK_ENTRY(gn_key_entry), inte->key);
+			options = inte->options;
+			if (!options) return;
+			sscanf (options->data, "%s netmask %s", ip, netmask);
+			if (strlen(ip))
+				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
+			if (strlen(netmask))
+				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
+			if (sscanf (inte->gateway, "%*s gw %s", ip))
+				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
+		}
 		else if (strlen(active_profile->adsl_interface))
 		{
 			/* DSL Active */
-			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 2);
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DSL);
 		}
+
 		/* set the interface name label */
 		markup = g_markup_printf_escaped ("<span size=\"medium\"><b>%s</b></span>", inte->name);
 		gtk_label_set_markup (GTK_LABEL(data), markup);
@@ -727,6 +757,7 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_show (gn_dhcp_table);
 			gtk_widget_hide (gn_staticip_table);
 			gtk_widget_hide (gn_dsl_table);
+			gtk_widget_hide (gn_wireless_table);
 			break;
 
 		case GN_STATIC: /* Static ip */
@@ -742,6 +773,15 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_hide (gn_staticip_table);
 			gtk_widget_hide (gn_dhcp_table);
 			gtk_widget_show (gn_dsl_table);
+			break;
+
+		case GN_WIRELESS: /* Wireless */
+			gtk_widget_hide (gn_dhcp_table);
+			gtk_widget_show (gn_wireless_table);
+			gtk_widget_show (gn_staticip_table);
+			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
+			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
+			gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
 			break;
 
 		case GN_LO: /* lo */
