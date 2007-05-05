@@ -681,7 +681,6 @@ You should have received a copy of the GNU General Public Licence along with thi
                     <property name="items" translatable="yes">DHCP
 Static IP
 DSL
-Wireless
 lo
 </property>
                   </widget>
@@ -746,7 +745,6 @@ Monitor
 Repeater
 Secondary
 Auto
-
 </property>
                   </widget>
                   <packing>
