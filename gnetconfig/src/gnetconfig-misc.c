@@ -130,3 +130,30 @@ gnetconfig_get_wireless_mode (const char *mode)
 		return -1;
 }
 
+char *
+gnetconfig_get_wireless_mode_string (int mode)
+{
+	char *ret = NULL;
+
+	switch (mode)
+	{
+		case GN_AD_HOC:		ret = g_strdup ("ad-hoc");
+							break;
+		case GN_MANAGED:	ret = g_strdup ("managed");
+							break;
+		case GN_MASTER:		ret = g_strdup ("master");
+							break;
+		case GN_MONITOR:	ret = g_strdup ("monitor");
+							break;
+		case GN_REPEATER:	ret = g_strdup ("repeater");
+							break;
+		case GN_SECONDARY:	ret = g_strdup ("secondary");
+							break;
+		case GN_AUTO:		ret = g_strdup ("auto");
+							break;
+		default:			break;
+	}
+
+	return ret;
+}
+

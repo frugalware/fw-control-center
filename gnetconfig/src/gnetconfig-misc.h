@@ -39,5 +39,7 @@ void gnetconfig_profile_free (fwnet_profile_t *profile);
 
 int gnetconfig_get_wireless_mode (const char *);
 
+char * gnetconfig_get_wireless_mode_string (int);
+
 #endif
 

@@ -959,17 +959,26 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		case GN_WIRELESS:
 		{
 			char *key, *essid;
+			char *mode;
+
 			ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
 			netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
 			gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
 			essid	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_essid_entry));
 			key		= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
+			mode	= gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_wireless_mode_combo)));
 
 			if (strlen(key))
 				snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
 			if (strlen(essid))
 				snprintf (interface->essid, FWNET_ESSID_MAX_SIZE, essid);
-			
+			if (mode!=NULL && (strlen(mode)))
+			{	
+				snprintf (interface->mode, FWNET_MODE_MAX_SIZE, mode);
+				g_print (interface->mode);
+				g_free (mode);
+			}
+
 			if (interface->options == NULL)
 			{	
 				snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
