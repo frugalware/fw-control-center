@@ -14,7 +14,6 @@ typedef enum _gn_conn_type
 	GN_DHCP = 0,
 	GN_STATIC,
 	GN_DSL,
-	GN_WIRELESS,
 	GN_LO
 } GN_CONN_TYPE;
 

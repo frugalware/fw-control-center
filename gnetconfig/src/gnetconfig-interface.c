@@ -240,15 +240,15 @@ gnetconfig_interface_init (void)
 static void
 gnetconfig_populate_profile_list (void)
 {
-	GDir			*dir = NULL;
-	GError			*error = NULL;
-	const gchar		*file;
-	GtkTreeModel		*gn_profile_model = NULL;
-	GtkListStore		*gn_profile_store = NULL;
-	GtkTreeIter		iter;
-	GdkPixbuf		*pixbuf = NULL;
-	char			*fn = NULL;
-	gint			index = -1;
+	GDir		*dir = NULL;
+	GError		*error = NULL;
+	const gchar	*file;
+	GtkTreeModel	*gn_profile_model = NULL;
+	GtkListStore	*gn_profile_store = NULL;
+	GtkTreeIter	iter;
+	GdkPixbuf	*pixbuf = NULL;
+	char		*fn = NULL;
+	gint		index = -1;
 
 	if (!(dir = g_dir_open ("/etc/sysconfig/network", 0, &error)))
 	{
@@ -588,8 +588,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	if (found == TRUE)
 	{
 		/* set the correct connection type */
-		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface))
-			&& (!strlen(inte->essid)) && (!strlen(inte->key)) && (!fwnet_is_wireless_device(inte->name)))
+		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
 		{
 			/* Static IP Active */
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_STATIC);
@@ -608,7 +607,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
 		}
 		else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface))
-				&& (!strlen(inte->essid)) && (!strlen(inte->key)) && (!fwnet_is_wireless_device(inte->name)))
+				&& (!fwnet_is_wireless_device(inte->name)))
 		{	
 			/* DHCP Active */
 			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
@@ -621,10 +620,15 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
 				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host); 
 		}
-		else if (fwnet_is_wireless_device(inte->name) || ((strlen(inte->key)) && (strlen(inte->essid)) ))
+		else if (strlen(active_profile->adsl_interface))
+		{
+			/* DSL Active */
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DSL);
+		}
+		if (fwnet_is_wireless_device(inte->name) || ((strlen(inte->key)) || (strlen(inte->essid)) ))
 		{
 			/* Wireless Active */
-			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_WIRELESS);
+			gtk_widget_show (gn_wireless_table);
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_wireless_mode_combo), gnetconfig_get_wireless_mode (inte->mode));
 			if (strlen(inte->essid))
 				gtk_entry_set_text (GTK_ENTRY(gn_essid_entry), inte->essid);
@@ -639,11 +643,6 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
 			if (sscanf (inte->gateway, "%*s gw %s", ip))
 				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
-		}
-		else if (strlen(active_profile->adsl_interface))
-		{
-			/* DSL Active */
-			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DSL);
 		}
 
 		/* set the interface name label */
@@ -773,15 +772,6 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_hide (gn_staticip_table);
 			gtk_widget_hide (gn_dhcp_table);
 			gtk_widget_show (gn_dsl_table);
-			break;
-
-		case GN_WIRELESS: /* Wireless */
-			gtk_widget_hide (gn_dhcp_table);
-			gtk_widget_show (gn_wireless_table);
-			gtk_widget_show (gn_staticip_table);
-			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
-			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
-			gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
 			break;
 
 		case GN_LO: /* lo */
@@ -956,46 +946,42 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				sprintf (interface->options->data, "dhcp");
 			break;
 		}
-		case GN_WIRELESS:
-		{
-			char *key, *essid;
-			char *mode;
+	}
+	if ( fwnet_is_wireless_device(interface->name) || strlen(interface->essid) || strlen(interface->key) )
+	{
+		char *key, *essid;
+		char *mode;
+		ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
+		netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
+		gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
+		essid	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_essid_entry));
+		key	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
+		mode	= gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_wireless_mode_combo)));
 
-			ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
-			netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
-			gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
-			essid	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_essid_entry));
-			key		= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
-			mode	= gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_wireless_mode_combo)));
+		if (strlen(key))
+			snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
+		else
+			*interface->key = '\0';
 
-			if (strlen(key))
-				snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
-			else
-				*interface->key = '\0';
+		if (strlen(essid))
+			snprintf (interface->essid, FWNET_ESSID_MAX_SIZE, essid);
+		else
+			*interface->essid = '\0';
 
-			if (strlen(essid))
-				snprintf (interface->essid, FWNET_ESSID_MAX_SIZE, essid);
-			else
-				*interface->essid = '\0';
-
-			if (mode!=NULL && (strlen(mode)))
-			{	
-				snprintf (interface->mode, FWNET_MODE_MAX_SIZE, mode);
-				g_free (mode);
-			}
-
-			if (interface->options == NULL)
-			{	
-				snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
-				interface->options = g_list_append (interface->options, strdup(opstring));
-			}
-			else
-				interface->options->data = g_strdup_printf ("%s netmask %s",
-															ipaddr,
-															netmask);
-			sprintf (interface->gateway, "default gw %s", gateway);
-			break;
+		if (mode!=NULL && (strlen(mode)))
+		{	
+			snprintf (interface->mode, FWNET_MODE_MAX_SIZE, mode);
+			g_free (mode);
 		}
+
+		if (interface->options == NULL)
+		{	
+			snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
+			interface->options = g_list_append (interface->options, strdup(opstring));
+		}
+		else
+			interface->options->data = g_strdup_printf ("%s netmask %s", ipaddr,	netmask);
+		sprintf (interface->gateway, "default gw %s", gateway);
 	}
 
 	gnetconfig_save_profile (active_profile);
