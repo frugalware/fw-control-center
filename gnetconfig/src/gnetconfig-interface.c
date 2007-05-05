@@ -123,7 +123,7 @@ gnetconfig_interface_init (void)
 														"pixbuf", 0,
 														NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
-	gtk_tree_view_append_column (gn_interface_treeview, column);
+	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 	
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_Name"),
@@ -133,7 +133,7 @@ gnetconfig_interface_init (void)
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_column_set_min_width (column, 120);
 	g_object_set (G_OBJECT(column), "expand", TRUE, "spacing", 4, NULL);
-	gtk_tree_view_append_column (gn_interface_treeview, column);
+	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusIcon"),
@@ -141,7 +141,7 @@ gnetconfig_interface_init (void)
 														"pixbuf", 2,
 														NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
-	gtk_tree_view_append_column (gn_interface_treeview, column);
+	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 	
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusText"),
@@ -149,7 +149,7 @@ gnetconfig_interface_init (void)
 														"text", 3,
 														NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
-	gtk_tree_view_append_column (gn_interface_treeview, column);
+	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 	
 	store = gtk_list_store_new (4, GDK_TYPE_PIXBUF, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_interface_treeview), GTK_TREE_MODEL(store));
