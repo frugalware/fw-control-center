@@ -565,14 +565,14 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 static void
 cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 {
-	GList				*list = NULL;
-	GList				*interface = NULL;
+	GList			*list = NULL;
+	GList			*interface = NULL;
 	GtkTreeModel		*model = NULL;
-	gchar				*iface = NULL;
-	gchar				*string = NULL;
+	gchar			*iface = NULL;
+	gchar			*string = NULL;
 	GtkTextBuffer		*buffer = NULL;
-	GtkTreeIter			iter;
-	GtkTextIter			t_iter;
+	GtkTreeIter		iter;
+	GtkTextIter		t_iter;
 	fwnet_interface_t	*inte = NULL;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
@@ -588,14 +588,14 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		if (strcmp(iface, inte->name) == 0)
 			break;
 	}
-	
+
 	/* initialize the buffer */
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW(gn_interface_textview));
 	gtk_text_buffer_set_text (buffer, "", 0);
 	gtk_text_buffer_get_iter_at_offset (buffer, &t_iter, 0);
 
 	if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
-	{	
+	{
 		char	ip[16], netmask[16];
 		GList	*options = NULL;
 
