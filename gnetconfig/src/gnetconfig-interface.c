@@ -283,6 +283,7 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	GdkPixbuf		*yes_pixbuf;
 	GdkPixbuf		*no_pixbuf;
 	gchar			*ptr = NULL;
+	gboolean		flag = FALSE;
 
 	n_ifs = g_list_length (profile->interfaces);
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
@@ -298,6 +299,9 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 					GTK_STOCK_NO,
 					GTK_ICON_SIZE_MENU, NULL);
 
+	if ((strcmp(profile->name, fwnet_lastprofile())) == 0)
+		flag = TRUE;
+
 	for (i=0;i<n_ifs;i++)
 	{
 		interface = g_list_nth_data (profile->interfaces, i);
@@ -306,10 +310,17 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 		gtk_list_store_set (store, &iter, 0, pixbuf, 1, ptr, -1);
 		g_free (ptr);
 		ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", interface->name);
-		if (!fwutil_system(ptr))
-			gtk_list_store_set (store, &iter, 2, yes_pixbuf, 3, " UP", -1);
+		if (flag == TRUE)
+		{
+			if (!fwutil_system(ptr))
+			{
+				gtk_list_store_set (store, &iter, 2, yes_pixbuf, 3, " UP", -1);
+			}
+		}
 		else
+		{
 			gtk_list_store_set (store, &iter, 2, no_pixbuf, 3, " DOWN", -1);
+		}
 		g_free (ptr);
 	}
 	g_object_unref (pixbuf);
