@@ -108,3 +108,25 @@ gnetconfig_profile_free (fwnet_profile_t *profile)
 
 	return;
 }
+
+int
+gnetconfig_get_wireless_mode (const char *mode)
+{
+	if (!strlen(mode) && (!strcmp(mode, "ad-hoc")))
+		return GN_AD_HOC;
+	else if (!strlen(mode) && (!strcmp(mode, "managed")))
+		return GN_MANAGED;
+	else if (!strlen(mode) && (!strcmp(mode, "master")))
+		return GN_MASTER;
+	else if (!strlen(mode) && (!strcmp(mode, "monitor")))
+		return GN_MONITOR;
+	else if (!strlen(mode) && (!strcmp(mode, "repeater")))
+		return GN_REPEATER;
+	else if (!strlen(mode) && (!strcmp(mode, "secondary")))
+		return GN_SECONDARY;
+	else if (!strlen(mode) && (!strcmp(mode, "auto")))
+		return GN_AUTO;
+	else
+		return -1;
+}
+
