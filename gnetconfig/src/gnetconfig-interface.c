@@ -270,6 +270,7 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 0, pixbuf, 1, interface->name, -1);
 	}
+	g_object_unref (pixbuf);
 
 	return;
 }
