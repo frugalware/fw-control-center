@@ -587,6 +587,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 
 	if (found == TRUE)
 	{
+		gtk_widget_hide (gn_wireless_table);
 		/* set the correct connection type */
 		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
 		{
@@ -756,7 +757,6 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_show (gn_dhcp_table);
 			gtk_widget_hide (gn_staticip_table);
 			gtk_widget_hide (gn_dsl_table);
-			gtk_widget_hide (gn_wireless_table);
 			break;
 
 		case GN_STATIC: /* Static ip */
@@ -893,6 +893,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	char			opstring[50];
 	GList			*intf = NULL;
 	fwnet_interface_t	*interface = NULL;
+	gint			type;
 
 	if_name = gtk_label_get_text (GTK_LABEL(data));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
@@ -931,6 +932,8 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 									netmask);
 			g_print (interface->options->data);
 			sprintf (interface->gateway, "default gw %s", gateway);
+			type = GN_STATIC;
+
 			break;
 		}
 		case GN_DHCP:
@@ -944,6 +947,8 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			}
 			else
 				sprintf (interface->options->data, "dhcp");
+			type = GN_DHCP;
+
 			break;
 		}
 	}
@@ -955,7 +960,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
 		gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
 		essid	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_essid_entry));
-		key	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
+		key		= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
 		mode	= gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_wireless_mode_combo)));
 
 		if (strlen(key))
@@ -974,14 +979,28 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			g_free (mode);
 		}
 
-		if (interface->options == NULL)
-		{	
-			snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
-			interface->options = g_list_append (interface->options, strdup(opstring));
+		if (type == GN_STATIC)
+		{
+			if (interface->options == NULL)
+			{	
+				snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
+				interface->options = g_list_append (interface->options, strdup(opstring));
+			}
+			else
+				interface->options->data = g_strdup_printf ("%s netmask %s", ipaddr,	netmask);
+			sprintf (interface->gateway, "default gw %s", gateway);
 		}
-		else
-			interface->options->data = g_strdup_printf ("%s netmask %s", ipaddr,	netmask);
-		sprintf (interface->gateway, "default gw %s", gateway);
+		else if (type == GN_DHCP)
+		{
+			if (interface->options == NULL)
+			{
+				snprintf (opstring, 49, "dhcp");
+				interface->options = g_list_append (interface->options, strdup(opstring));
+			}
+			else
+				interface->options->data = g_strdup_printf ("dhcp");
+			snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", (char*)gtk_entry_get_text(gn_dhcp_hostname_entry));
+		}
 	}
 
 	gnetconfig_save_profile (active_profile);
