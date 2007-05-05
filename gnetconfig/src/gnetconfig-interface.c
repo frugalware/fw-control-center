@@ -724,7 +724,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		model = gtk_combo_box_get_model(GTK_COMBO_BOX(gn_interface_combo));
 		gtk_tree_model_get (model, &iter, 0, &if_name, -1);
 		snprintf (interface->name, IF_NAMESIZE, if_name);
-		g_print ("setting interface name %s\n", if_name);
 	}
 
 	switch (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_conntype_combo)))
@@ -746,7 +745,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 										netmask);
 				g_print (interface->options->data);
 				sprintf (interface->gateway, "%s", gateway);
-				printf ("saving..\n");
 				break;
 			}
 		case GN_DHCP:
