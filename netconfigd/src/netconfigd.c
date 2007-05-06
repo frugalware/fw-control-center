@@ -20,13 +20,17 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <glib.h>
 #include <dbus/dbus-glib-bindings.h>
 #include <libfwnetconfig.h>
 #include <libfwutil.h>
 #include <dirent.h>
+#include <config.h>
+#include <syslog.h>
 #include "netconfigd.h"
 #include "netconfigd-dbus-glue.h"
 
@@ -73,7 +77,7 @@ int handle_network_stop() {
 	
 	if ((fn=fwnet_lastprofile())) {
 		if (!fn)
-			printf("[DEBUG] No profile is loaded. Cannot stop networking\n");
+			return(1);
 		
 		profile = fwnet_parseprofile(fn);
 		
@@ -84,11 +88,11 @@ int handle_network_stop() {
 		}
 		
 		fwnet_setlastprofile(NULL);
-		printf("[DEBUG] Handled network stop request.\n");
+		syslog(LOG_INFO, "Network stopped.");
 		return(0);
 	}
 	
-	printf("[DEBUG] Network stop request failed!\n");
+	syslog(LOG_WARNING, "Network stop request failed!");
 	return(1);
 }
 
@@ -118,27 +122,29 @@ int handle_network_start() {
 	FWUTIL_FREE(fn);
 	
 	if (ret != 0)
-		printf("[DEBUG] Network start request failed!\n");
+		syslog(LOG_WARNING, "Network start request failed!");
 	else
-		printf("[DEBUG] Handled network start request.\n");
+		syslog(LOG_INFO, "Network started");
 	return(ret);
 }
 
 gboolean netconfig_get_current_profile(NetConfig *obj, gchar **profile, GError **error) {
 	*profile = fwnet_lastprofile();
-	printf("[DEBUG] Handled current profile request.\n");
 	return TRUE;
 }
 
 gboolean netconfig_change_profile(NetConfig *obj, gchar *profile, gint32 *ret, GError **error) {
 	*ret = 0;
 	
-	printf("[DEBUG] Changing profile to %s...\n", profile);
 	*ret += handle_network_stop();
 	fwnet_setlastprofile(profile);
 	*ret += handle_network_start();
 	
-	printf("[DEBUG] Profile change successful\n");
+	if (!ret) {
+		syslog(LOG_INFO, "Changed profile to %s", profile);
+	} else {
+		syslog(LOG_WARNING, "Changing profile to %s failed!", profile);
+	}
 	
 	return TRUE;
 }
@@ -174,14 +180,61 @@ gboolean netconfig_get_profiles(NetConfig *obj, gchar **profiles, GError **error
 	*profiles = g_strdup(tmp);
 	tmp = NULL;
 	
-	printf("[DEBUG] Handled profile list request.\n");
-	
 	return TRUE;
+}
+
+void usage() {
+	printf("Netconfigd v" VERSION "\n");
+	printf(" --help        Display this help text\n");
+	printf(" --daemon      Fork into the background\n");
 }
 
 int main (int argc, char *argv[]) {
 	GMainLoop *main_loop;
 	NetConfig *server;
+	int i = 1;
+	int daemonize = 0;
+	
+	// Parse command line options
+	for (i = 1; i < argc; i++) {
+		if (!strcmp(argv[i], "--daemon"))
+			daemonize = 1;
+		else if (!strcmp(argv[i], "--help")) {
+			usage();
+			return 0;
+		} else {
+			usage();
+			return 1;
+		}
+	}
+	
+	if (getuid() != 0) {
+		printf("Must run as root!\n");
+		exit(1);
+	}
+	
+	// Daemonize if wanted
+	if (daemonize) {
+		switch (fork()) {
+			case 0:
+				break;
+			case -1:
+				printf("Can't fork: %s\n", strerror(errno));
+				exit(1);
+				break;
+			default:
+				exit(0);
+		}
+		
+		fclose(stdin);
+		fclose(stdout);
+		fclose(stderr);
+	}
+	
+	// Connect to syslog
+	openlog("netconfigd", LOG_PID, LOG_DAEMON);
+	
+	syslog(LOG_INFO, "Netconfigd v" VERSION " started...");
 	
 	g_type_init();
 	
