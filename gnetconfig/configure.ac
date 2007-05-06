@@ -12,7 +12,7 @@ AM_INIT_AUTOMAKE
 
 AC_PROG_CC
 AC_HEADER_STDC
-AC_CHECK_HEADERS([locale.h stdlib.h string.h sys/ioctl.h unistd.h libfwnetconfig.h])
+AC_CHECK_HEADERS([locale.h stdlib.h string.h sys/ioctl.h unistd.h libfwnetconfig.h libfwutil.h])
 
 if test "${GCC}" = "yes"
 then
