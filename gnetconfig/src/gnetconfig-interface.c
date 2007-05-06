@@ -714,7 +714,7 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		string = g_strdup_printf ("Connection type:\t DHCP\n\n");
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
-		if (!sscanf(inte->dhcp_opts, "%*s %*s -h %s", host))
+		if (!sscanf(inte->dhcp_opts, "%*s %*s -h %s", host) || (strlen(host)))
 			string = g_strdup_printf ("DHCP Hostname:\t %s\n", host);
 		else
 			string = g_strdup_printf ("DHCP Hostname:\t (none)\n");
@@ -942,7 +942,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			char *dhcp_hname = NULL;
 			
 			dhcp_hname = (char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry));
-			if (!dhcp_hname && strlen(dhcp_hname))
+			if (strlen(dhcp_hname))
 				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", dhcp_hname);
 			else
 				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10\n");
