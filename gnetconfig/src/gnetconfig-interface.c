@@ -618,8 +618,9 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 			gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
-			if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
-				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host); 
+			if (!sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
+				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host);
+
 		}
 		else if (strlen(active_profile->adsl_interface))
 		{
@@ -713,7 +714,7 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		string = g_strdup_printf ("Connection type:\t DHCP\n\n");
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
-		if (sscanf(inte->dhcp_opts, "%*s %*s -h %s", host) != 0)
+		if (!sscanf(inte->dhcp_opts, "%*s %*s -h %s", host) != 0)
 			string = g_strdup_printf ("DHCP Hostname:\t %s\n", host);
 		else
 			string = g_strdup_printf ("DHCP Hostname:\t (none)\n");
@@ -938,8 +939,14 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		}
 		case GN_DHCP:
 		{
-			snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n",
-				(char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry)));
+			char *dhcp_hname = NULL;
+			
+			dhcp_hname = (char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry));
+			if (!dhcp_hname && strlen(dhcp_hname))
+				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", dhcp_hname);
+			else
+				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10\n");
+
 			if (interface->options == NULL)
 			{
 				snprintf (opstring, 49, "dhcp");
