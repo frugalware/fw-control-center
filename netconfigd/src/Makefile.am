@@ -2,7 +2,7 @@ INCLUDES = @NETCONFIGD_CFLAGS@ \
 	-DPREFIX=\"$(prefix)\" \
 	-fPIC
 
-sbin_PROGRAMS = netconfigd
+sbin_PROGRAMS = netconfigd netconfig-command
 
 netconfigd_SOURCES = netconfigd.c
 
