@@ -632,7 +632,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			/* DSL Active */
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DSL);
 		}
-		if (fwnet_is_wireless_device(inte->name) || ((strlen(inte->key)) || (strlen(inte->essid)) ))
+		if (fwnet_is_wireless_device(inte->name) && (strlen(inte->essid)))
 		{
 			/* Wireless Active */
 			gtk_widget_show (gn_wireless_table);
