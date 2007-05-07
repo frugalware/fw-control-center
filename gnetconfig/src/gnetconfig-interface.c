@@ -601,11 +601,16 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
 			options = inte->options;
 			if (!options) return; /* FIX ME */
-			sscanf (options->data, "%s netmask %s", ip, netmask);
-			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
-			gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
+			if (sscanf (options->data, "%s netmask %s", ip, netmask))
+			{
+				if (strlen(ip))
+					gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
+				if (strlen(netmask))
+					gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
+			}
 			sscanf (inte->gateway, "%*s gw %s", ip);
-			gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
+			if (strlen(ip))
+				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
 		}
 		else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface))
 				&& (!fwnet_is_wireless_device(inte->name)))
@@ -618,7 +623,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 			gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
-			if (!sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
+			if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
 				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host);
 
 		}
@@ -638,11 +643,14 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 				gtk_entry_set_text (GTK_ENTRY(gn_key_entry), inte->key);
 			options = inte->options;
 			if (!options) return;
-			sscanf (options->data, "%s netmask %s", ip, netmask);
-			if (strlen(ip))
-				gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
-			if (strlen(netmask))
-				gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
+			if (sscanf (options->data, "%s netmask %s", ip, netmask) == 2)
+			{
+				if (strlen(ip))
+					gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), ip);
+				if (strlen(netmask))
+					gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
+			}
+			*ip = '\0';
 			if (sscanf (inte->gateway, "%*s gw %s", ip))
 				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
 		}
@@ -754,6 +762,10 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 {
 	switch (gtk_combo_box_get_active (combo))
 	{
+		gtk_text_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), NULL);
+		gtk_text_entry_set_text (GTK_ENTRY(gn_netmask_entry), NULL);
+		gtk_text_entry_set_text (GTK_ENTRY(gn_gateway_entry), NULL);
+		
 		case GN_DHCP: /* DHCP */
 			gtk_widget_show (gn_dhcp_table);
 			gtk_widget_hide (gn_staticip_table);
