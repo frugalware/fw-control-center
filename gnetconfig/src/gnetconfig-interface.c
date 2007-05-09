@@ -798,9 +798,9 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 {
 	switch (gtk_combo_box_get_active (combo))
 	{
-		gtk_text_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), NULL);
-		gtk_text_entry_set_text (GTK_ENTRY(gn_netmask_entry), NULL);
-		gtk_text_entry_set_text (GTK_ENTRY(gn_gateway_entry), NULL);
+		gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
+		gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
+		gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
 		
 		case GN_DHCP: /* DHCP */
 			gtk_widget_show (gn_dhcp_table);
@@ -939,7 +939,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	char			opstring[50];
 	GList			*intf = NULL;
 	fwnet_interface_t	*interface = NULL;
-	gint			type;
+	gint			type = -1;
 
 	if_name = gtk_label_get_text (GTK_LABEL(data));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
