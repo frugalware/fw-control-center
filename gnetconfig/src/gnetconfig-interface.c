@@ -574,6 +574,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	char			netmask[20];
 	char			host[256];
 	gchar			*markup = NULL;
+	gint			dsl_conn = -1;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
@@ -618,6 +619,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			sscanf (inte->gateway, "%*s gw %s", ip);
 			if (strlen(ip))
 				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
+			dsl_conn = GN_STATIC;
 		}
 		else if ((fwnet_is_dhcp(inte)==1) && (!fwnet_is_wireless_device(inte->name)))
 		{	
@@ -631,11 +633,26 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
 			if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
 				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host);
-
+			dsl_conn = GN_DHCP;
 		}
 		if (strlen(active_profile->adsl_interface))
 		{
 			/* DSL Active */
+			switch (dsl_conn)
+			{
+				case GN_STATIC:
+					gtk_widget_show (gn_staticip_table);
+					gtk_widget_hide (gn_dhcp_table);
+					break;
+				case GN_DHCP:
+					gtk_widget_show (gn_dhcp_table);
+					gtk_widget_hide (gn_staticip_table);
+					break;
+				default:
+					gtk_widget_hide (gn_dhcp_table);
+					gtk_widget_hide (gn_staticip_table);
+					break;
+			}
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DSL);
 			gtk_entry_set_text (GTK_ENTRY(gn_dsl_username_entry), (active_profile->adsl_username!=NULL)?active_profile->adsl_username : "");
 			gtk_entry_set_text (GTK_ENTRY(gn_dsl_password_entry), (active_profile->adsl_password!=NULL)?active_profile->adsl_password : "");
@@ -784,15 +801,12 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 		case GN_STATIC: /* Static ip */
 			gtk_widget_show (gn_staticip_table);
 			gtk_widget_hide (gn_dhcp_table);
-			gtk_widget_hide (gn_dsl_table);
 			gtk_widget_set_sensitive (gn_ipaddress_entry, TRUE);
 			gtk_widget_set_sensitive (gn_netmask_entry, TRUE);
 			gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
 			break;
 
 		case GN_DSL: /* DSL */
-			gtk_widget_hide (gn_staticip_table);
-			gtk_widget_hide (gn_dhcp_table);
 			gtk_widget_show (gn_dsl_table);
 			break;
 
