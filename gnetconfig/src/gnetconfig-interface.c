@@ -46,6 +46,10 @@ GtkWidget *gn_interface_combo;
 GtkWidget *gn_conntype_combo;
 GtkWidget *gn_ipaddress_entry;
 GtkWidget *gn_netmask_entry;
+GtkWidget *gn_dsl_username_entry;
+GtkWidget *gn_dsl_password_entry;
+GtkWidget *gn_dsl_cpassword_entry;
+GtkWidget *gn_dsl_interface;
 GtkWidget *gn_gateway_entry;
 GtkWidget *gn_essid_entry;
 GtkWidget *gn_key_entry;
@@ -119,6 +123,9 @@ gnetconfig_interface_init (void)
 	gn_dhcp_hostname_entry	= glade_xml_get_widget (xml, "fwn_dhcp_hostname");
 	gn_interface_textview 	= glade_xml_get_widget (xml, "fwn_interface_textview");
 	gn_wireless_mode_combo	= glade_xml_get_widget (xml, "fwn_wmode_combo");
+	gn_dsl_username_entry	= glade_xml_get_widget (xml, "fwn_dsl_username");
+	gn_dsl_password_entry	= glade_xml_get_widget (xml, "fwn_dsl_password");
+	gn_dsl_cpassword_entry	= glade_xml_get_widget (xml, "fwn_dsl_cpassword");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -589,7 +596,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	{
 		gtk_widget_hide (gn_wireless_table);
 		/* set the correct connection type */
-		if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
+		if ((!fwnet_is_dhcp(inte)))
 		{
 			/* Static IP Active */
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_STATIC);
@@ -612,8 +619,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			if (strlen(ip))
 				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
 		}
-		else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface))
-				&& (!fwnet_is_wireless_device(inte->name)))
+		else if ((fwnet_is_dhcp(inte)==1) && (!fwnet_is_wireless_device(inte->name)))
 		{	
 			/* DHCP Active */
 			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
@@ -627,10 +633,13 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host);
 
 		}
-		else if (strlen(active_profile->adsl_interface))
+		if (strlen(active_profile->adsl_interface))
 		{
 			/* DSL Active */
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DSL);
+			gtk_entry_set_text (GTK_ENTRY(gn_dsl_username_entry), (active_profile->adsl_username!=NULL)?active_profile->adsl_username : "");
+			gtk_entry_set_text (GTK_ENTRY(gn_dsl_password_entry), (active_profile->adsl_password!=NULL)?active_profile->adsl_password : "");
+			gtk_entry_set_text (GTK_ENTRY(gn_dsl_cpassword_entry), (active_profile->adsl_password!=NULL)?active_profile->adsl_password : "");
 		}
 		if (fwnet_is_wireless_device(inte->name) && (strlen(inte->essid)))
 		{
