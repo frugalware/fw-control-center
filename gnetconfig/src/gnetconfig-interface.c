@@ -725,7 +725,7 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 	gtk_text_buffer_set_text (buffer, "", 0);
 	gtk_text_buffer_get_iter_at_offset (buffer, &t_iter, 0);
 
-	if ((!fwnet_is_dhcp(inte)) && (!strlen(active_profile->adsl_interface)))
+	if (!fwnet_is_dhcp(inte) && strlen(active_profile->adsl_interface))
 	{
 		char	ip[16], netmask[16];
 		GList	*options = NULL;
@@ -733,7 +733,15 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		options = inte->options;
 		if (!options) return;
 		sscanf (options->data, "%s netmask %s", ip, netmask);
-		string = g_strdup_printf ("Connection type: Static IP\n\nIP Address:\t %s\nSubnet Mask:\t %s\n", ip, netmask);
+		string = g_strdup_printf ("Connection type: Static IP");
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		if (strlen(active_profile->adsl_interface))
+			string = g_strdup_printf (" (DSL Connection)\n\n");
+		else
+			string = g_strdup_printf (" \n\n");
+		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+		g_free (string);
+		string = g_strdup_printf ("IP Address:\t %s\nSubnet Mask:\t %s\n", ip, netmask);
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
 		sscanf (inte->gateway, "%*s gw %s", ip);
@@ -741,7 +749,7 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
 	}
-	else if ((fwnet_is_dhcp(inte)==1) && (!strlen(active_profile->adsl_interface)))
+	else if (fwnet_is_dhcp(inte) && (!strlen(active_profile->adsl_interface)))
 	{
 		char host[255];
 
