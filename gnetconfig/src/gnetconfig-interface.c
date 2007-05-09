@@ -596,6 +596,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	if (found == TRUE)
 	{
 		gtk_widget_hide (gn_wireless_table);
+		gtk_widget_hide (gn_dsl_table);
 		/* set the correct connection type */
 		if ((!fwnet_is_dhcp(inte)))
 		{
@@ -638,6 +639,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 		if (strlen(active_profile->adsl_interface))
 		{
 			/* DSL Active */
+			gtk_widget_show (gn_dsl_table);
 			switch (dsl_conn)
 			{
 				case GN_STATIC:
@@ -725,7 +727,7 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 	gtk_text_buffer_set_text (buffer, "", 0);
 	gtk_text_buffer_get_iter_at_offset (buffer, &t_iter, 0);
 
-	if (!fwnet_is_dhcp(inte) && strlen(active_profile->adsl_interface))
+	if (!fwnet_is_dhcp(inte) || (strlen(active_profile->adsl_interface) && !fwnet_is_dhcp(inte)))
 	{
 		char	ip[16], netmask[16];
 		GList	*options = NULL;
