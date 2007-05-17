@@ -30,6 +30,7 @@
 #endif
 
 #include "gnetconfig.h"
+#include "gnetconfig-messages.h"
 #include "gnetconfig-interface.h"
 
 #define GLADE_FILE	"/share/gnetconfig/gnetconfig.glade"
@@ -60,7 +61,7 @@ main (int argc, char *argv[])
 
 	if (!xml)
 	{
-		g_error (_("Failed to initialize interface."));
+		gn_error (_("Failed to initialize interface."), ERROR_CONSOLE);
 		return 1;
 	}
 
