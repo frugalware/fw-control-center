@@ -737,7 +737,9 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		sscanf (options->data, "%s netmask %s", ip, netmask);
 		string = g_strdup_printf ("Connection type: Static IP");
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
-		if (strlen(active_profile->adsl_interface))
+		if (fwnet_is_wireless_device(inte->name))
+			string = g_strdup_printf (" (Wireless Connection)\n\n");
+		else if (strlen(active_profile->adsl_interface))
 			string = g_strdup_printf (" (DSL Connection)\n\n");
 		else
 			string = g_strdup_printf (" \n\n");
