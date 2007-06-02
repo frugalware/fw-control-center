@@ -825,7 +825,6 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 {
 	gchar				*ptr = NULL;
 	gchar				*ifname = NULL;
-	gchar				hostname[256];
 	GList				*interface = NULL;
 	GtkTreeModel		*model = NULL;
 	GtkTreeSelection	*selection = NULL;
@@ -833,7 +832,6 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	gboolean			found = FALSE;
 	fwnet_interface_t*	inte = NULL;
 	gint				ret;
-	gint				i = -1;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
@@ -845,7 +843,6 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	for (interface = active_profile->interfaces;interface != NULL;interface=g_list_next(interface))
 	{
 		inte = interface->data;
-		i++;
 		if (strcmp(ifname, inte->name) == 0)
 		{	
 			found = TRUE;
@@ -862,9 +859,8 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	}
 	else
 	{
-		g_list_delete_link (active_profile->interfaces, interface);
-		sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
-		fwnet_writeconfig (active_profile, hostname);
+		active_profile->interfaces = g_list_delete_link (active_profile->interfaces, interface);
+		fwnet_writeconfig (active_profile, NULL);
 		gn_message ("Interface deleted successfully");
 		gnetconfig_populate_interface_list (active_profile);
 	}
