@@ -335,7 +335,8 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 		{
 			if (!fwutil_system(ptr))
 				gtk_list_store_set (store, &iter, 2, yes_pixbuf, 3, " UP", -1);
-			}
+			else
+				gtk_list_store_set (store, &iter, 2, no_pixbuf, 3, " DOWN", -1);
 		}
 		else
 		{
