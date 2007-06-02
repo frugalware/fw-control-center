@@ -606,7 +606,10 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 	if (!fwutil_system(ptr))
 		gn_error ("Interface is already started.", ERROR_GUI);
 	else
+	{	
 		ret = fwnet_ifup (inte, active_profile);
+		gnetconfig_populate_interface_list (active_profile);
+	}
 	g_free (ptr);
 
 	return;
