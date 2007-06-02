@@ -31,6 +31,7 @@
 #endif
 
 #include "gnetconfig-interface.h"
+#include "gnetconfig-about.h"
 #include "gnetconfig-messages.h"
 #include "gnetconfig-misc.h"
 
@@ -255,6 +256,11 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_hostname_save),
+			NULL);
+	widget = glade_xml_get_widget (xml, "fwn_about");
+	g_signal_connect (G_OBJECT(widget),
+			"activate",
+			G_CALLBACK(gnetconfig_about),
 			NULL);
 
 	/* keybindings */
