@@ -90,6 +90,7 @@ static void cb_gn_conntype_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
 /* new callbacks */
+static void cb_gn_hostname_save (GtkButton *button, gpointer data);
 static void cb_gn_interface_start (GtkButton *button, gpointer data);
 static void cb_gn_interface_stop (GtkButton *button, gpointer data);
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
@@ -249,6 +250,11 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_interface_delete),
+			NULL);
+	widget = glade_xml_get_widget (xml, "fwn_hostname_save");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_hostname_save),
 			NULL);
 
 	/* keybindings */
@@ -1279,6 +1285,17 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	}
 
 	gnetconfig_save_profile (active_profile);
+
+	return;
+}
+
+static void
+cb_gn_hostname_save (GtkButton *button, gpointer data)
+{
+	gchar hostname[256];
+
+	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
+	fwnet_writeconfig (active_profile, hostname);
 
 	return;
 }
