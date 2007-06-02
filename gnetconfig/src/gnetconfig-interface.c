@@ -96,6 +96,7 @@ static void cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
 static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
 static void cb_gn_interface_double_click (GtkTreeView *treeview);
+static void cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event);
 
 void
 gnetconfig_interface_init (void)
@@ -171,6 +172,10 @@ gnetconfig_interface_init (void)
 	g_signal_connect (gn_interface_treeview,
 			"row-activated",
 			G_CALLBACK(cb_gn_interface_double_click),
+			NULL);
+	g_signal_connect (gn_interface_treeview,
+			"button-release-event",
+			G_CALLBACK(cb_gn_interface_right_click),
 			NULL);
 	g_signal_connect (G_OBJECT(gtk_tree_view_get_selection(GTK_TREE_VIEW(gn_interface_treeview))),
 			"changed",
@@ -831,6 +836,51 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 	g_list_foreach (list, (GFunc)gtk_tree_path_free, NULL);
 	g_list_free (list);
 	g_free (iface);
+
+	return;
+}
+
+static void
+cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event)
+{
+	GtkWidget *menu;
+	GtkWidget *menu_item;
+	GtkWidget *image;
+
+	if (event->button != 3)
+		return;
+
+	menu = gtk_menu_new ();
+	
+	menu_item = gtk_image_menu_item_new_with_label (_("Start"));
+	image = gtk_image_new_from_stock ("gtk-sort-ascending", GTK_ICON_SIZE_MENU);
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(menu_item), image);
+	g_signal_connect (G_OBJECT(menu_item), "activate", G_CALLBACK(cb_gn_interface_start), NULL);
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu), menu_item);
+	gtk_widget_show (menu_item);
+	
+	menu_item = gtk_image_menu_item_new_with_label (_("Stop"));
+	image = gtk_image_new_from_stock ("gtk-sort-descending", GTK_ICON_SIZE_MENU);
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(menu_item), image);
+	g_signal_connect (G_OBJECT(menu_item), "activate", G_CALLBACK(cb_gn_interface_start), NULL);
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu), menu_item);
+	gtk_widget_show (menu_item);
+	
+	menu_item = gtk_image_menu_item_new_with_label (_("Edit"));
+	image = gtk_image_new_from_stock ("gtk-edit", GTK_ICON_SIZE_MENU);
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(menu_item), image);
+	g_signal_connect (G_OBJECT(menu_item), "activate", G_CALLBACK(cb_gn_interface_edited), NULL);
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu), menu_item);
+	gtk_widget_show (menu_item);
+
+	gtk_widget_show (menu);
+	gtk_menu_popup (GTK_MENU(menu),
+					NULL,
+					NULL,
+					NULL,
+					NULL,
+					3,
+					gtk_get_current_event_time());
 
 	return;
 }
