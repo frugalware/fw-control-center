@@ -252,6 +252,12 @@ gnetconfig_interface_init (void)
 			G_CALLBACK (cb_gn_dns_listview_keypress),
 			NULL);
 
+	/* the delete-event */
+	g_signal_connect (gn_main_window,
+			"delete-event",
+			G_CALLBACK (gtk_main_quit),
+			NULL);
+
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
 	gtk_widget_show (gn_main_window);
