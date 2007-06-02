@@ -91,6 +91,7 @@ static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 
 /* new callbacks */
 static void cb_gn_interface_start (GtkButton *button, gpointer data);
+static void cb_gn_interface_stop (GtkButton *button, gpointer data);
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
 static void cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data);
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
@@ -237,6 +238,12 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_interface_start),
+			NULL);
+	
+	widget = glade_xml_get_widget (xml, "fwn_if_stop");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_interface_stop),
 			NULL);
 
 	/* keybindings */
@@ -606,8 +613,53 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 	if (!fwutil_system(ptr))
 		gn_error ("Interface is already started.", ERROR_GUI);
 	else
-	{	
+	{
 		ret = fwnet_ifup (inte, active_profile);
+		gnetconfig_populate_interface_list (active_profile);
+	}
+	g_free (ptr);
+
+	return;
+}
+
+static void
+cb_gn_interface_stop (GtkButton *button, gpointer data)
+{
+	gchar				*ptr = NULL;
+	gchar				*ifname = NULL;
+	GList				*interface = NULL;
+	GtkTreeModel		*model = NULL;
+	GtkTreeSelection	*selection = NULL;
+	GtkTreeIter			iter;
+	gboolean			found = FALSE;
+	fwnet_interface_t*	inte = NULL;
+	gint				ret;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
+	if ( FALSE == gtk_tree_selection_get_selected (selection, &model, &iter) )
+		return;
+	gtk_tree_model_get (model, &iter, 1, &ifname, -1);
+
+	/* We use the following code as g_list_find() doesn't seem to work for strings */
+	for (interface = active_profile->interfaces;interface != NULL;interface=g_list_next(interface))
+	{
+		inte = interface->data;
+		if (strcmp(ifname, inte->name) == 0)
+		{	
+			found = TRUE;
+			break;
+		}
+	}
+	if (!found)
+		gn_error ("Unknown error.", ERROR_GUI);
+
+	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
+	if (fwutil_system(ptr))
+		gn_error ("Interface is not running.", ERROR_GUI);
+	else
+	{
+		ret = fwnet_ifdown (inte, active_profile);
 		gnetconfig_populate_interface_list (active_profile);
 	}
 	g_free (ptr);
