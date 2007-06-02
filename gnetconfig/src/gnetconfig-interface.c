@@ -860,6 +860,7 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 		sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
 		fwnet_writeconfig (active_profile, hostname);
 		gn_message ("Interface deleted successfully");
+		gnetconfig_populate_interface_list (active_profile);
 	}
 	g_free (ptr);
 

@@ -61,7 +61,7 @@ gn_message (const char *message_str)
 					GTK_MESSAGE_INFO,
 					GTK_BUTTONS_OK,
 					"%s: %s",
-					_("Information: "),
+					_("Information "),
 					message_str);
 	gtk_window_set_resizable (GTK_WINDOW(message_dlg), FALSE);
 	g_signal_connect (message_dlg, "response", G_CALLBACK (gtk_widget_destroy), message_dlg);
