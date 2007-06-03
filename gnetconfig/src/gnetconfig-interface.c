@@ -113,19 +113,19 @@ gnetconfig_interface_init (void)
 
 	/* setup widgets */
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
-	gn_profile_combo		= glade_xml_get_widget (xml, "fwn_profile_list");
-	gn_conntype_combo		= glade_xml_get_widget (xml, "fwn_conntype_list");
+	gn_profile_combo	= glade_xml_get_widget (xml, "fwn_profile_list");
+	gn_conntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list");
 	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
-	gn_netmask_entry		= glade_xml_get_widget (xml, "fwn_netmask");
-	gn_gateway_entry		= glade_xml_get_widget (xml, "fwn_gateway");
+	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
+	gn_gateway_entry	= glade_xml_get_widget (xml, "fwn_gateway");
 	gn_essid_entry		= glade_xml_get_widget (xml, "fwn_essid_entry");
 	gn_key_entry		= glade_xml_get_widget (xml, "fwn_key_entry");
-	gn_hostname_entry		= glade_xml_get_widget (xml, "fwn_hostname");
+	gn_hostname_entry	= glade_xml_get_widget (xml, "fwn_hostname");
 	gn_dns_listview		= glade_xml_get_widget (xml, "fwn_dns_list");
-	gn_staticip_table		= glade_xml_get_widget (xml, "fwn_staticip_table");
+	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table");
 	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table");
 	gn_dsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table");
-	gn_wireless_table		= glade_xml_get_widget (xml, "fwn_wireless_table");
+	gn_wireless_table	= glade_xml_get_widget (xml, "fwn_wireless_table");
 	gn_dhcp_hostname_entry	= glade_xml_get_widget (xml, "fwn_dhcp_hostname");
 	gn_interface_textview 	= glade_xml_get_widget (xml, "fwn_interface_textview");
 	gn_wireless_mode_combo	= glade_xml_get_widget (xml, "fwn_wmode_combo");
@@ -331,15 +331,15 @@ gnetconfig_populate_profile_list (void)
 static void
 gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 {
-	gint		i, n_ifs = 0;
+	gint			i, n_ifs = 0;
 	fwnet_interface_t	*interface;
-	GtkTreeModel	*model = NULL;
-	GtkListStore	*store = NULL;
-	GtkTreeIter	iter;
-	GdkPixbuf	*pixbuf;
-	GdkPixbuf	*yes_pixbuf;
-	GdkPixbuf	*no_pixbuf;
-	gchar		*ptr = NULL;
+	GtkTreeModel		*model = NULL;
+	GtkListStore		*store = NULL;
+	GtkTreeIter		iter;
+	GdkPixbuf		*pixbuf;
+	GdkPixbuf		*yes_pixbuf;
+	GdkPixbuf		*no_pixbuf;
+	gchar			*ptr = NULL;
 	gboolean		flag = FALSE;
 
 	n_ifs = g_list_length (profile->interfaces);
@@ -606,9 +606,9 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 	gchar			*ifname = NULL;
 	GList			*interface = NULL;
 	GtkTreeModel		*model = NULL;
-	GtkTreeSelection		*selection = NULL;
+	GtkTreeSelection	*selection = NULL;
 	GtkTreeIter		iter;
-	gboolean			found = FALSE;
+	gboolean		found = FALSE;
 	fwnet_interface_t*	inte = NULL;
 	gint			ret;
 
@@ -651,9 +651,9 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 	gchar			*ifname = NULL;
 	GList			*interface = NULL;
 	GtkTreeModel		*model = NULL;
-	GtkTreeSelection		*selection = NULL;
+	GtkTreeSelection	*selection = NULL;
 	GtkTreeIter		iter;
-	gboolean			found = FALSE;
+	gboolean		found = FALSE;
 	fwnet_interface_t*	inte = NULL;
 	gint			ret;
 
@@ -692,19 +692,19 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 static void
 cb_gn_interface_edited (GtkButton *button, gpointer data)
 {
-	GtkTreeModel 	*model = NULL;
+	GtkTreeModel		*model = NULL;
 	GtkTreeSelection	*selection = NULL;
-	GtkTreeIter	iter;
-	gchar		*ifname = NULL;
-	GList		*interface = NULL;
-	GList		*options = NULL;
+	GtkTreeIter		iter;
+	gchar			*ifname = NULL;
+	GList			*interface = NULL;
+	GList			*options = NULL;
 	gboolean		found = FALSE;
 	fwnet_interface_t	*inte = NULL;
-	char		ip[20];
-	char		netmask[20];
-	char		host[256];
-	gchar		*markup = NULL;
-	gint		dsl_conn = -1;
+	char			ip[20];
+	char			netmask[20];
+	char			host[256];
+	gchar			*markup = NULL;
+	gint			dsl_conn = -1;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
@@ -832,9 +832,9 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	gchar			*ifname = NULL;
 	GList			*interface = NULL;
 	GtkTreeModel		*model = NULL;
-	GtkTreeSelection		*selection = NULL;
+	GtkTreeSelection	*selection = NULL;
 	GtkTreeIter		iter;
-	gboolean			found = FALSE;
+	gboolean		found = FALSE;
 	fwnet_interface_t*	inte = NULL;
 	gint			ret;
 
@@ -877,14 +877,14 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 static void
 cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 {
-	GList		*list = NULL;
-	GList		*interface = NULL;
-	GtkTreeModel	*model = NULL;
-	gchar		*iface = NULL;
-	gchar		*string = NULL;
-	GtkTextBuffer	*buffer = NULL;
-	GtkTreeIter	iter;
-	GtkTextIter	t_iter;
+	GList			*list = NULL;
+	GList			*interface = NULL;
+	GtkTreeModel		*model = NULL;
+	gchar			*iface = NULL;
+	gchar			*string = NULL;
+	GtkTextBuffer		*buffer = NULL;
+	GtkTreeIter		iter;
+	GtkTextIter		t_iter;
 	fwnet_interface_t	*inte = NULL;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
