@@ -2,6 +2,8 @@
  *  gnetconfig-misc.c
  *  Author(s): 	Priyank Gosalia <priyankmg@gmail.com>
  *  Copyright (C) 2007 Frugalware Developer Team
+ *  Parts borrowed from net-tools
+ *  These parts are Copyright (C) 1998, 2000 Andi Kleen
  ****************************************************************************/
 
 /*
@@ -19,6 +21,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#include <ctype.h>
 
 #include "gnetconfig-misc.h"
 #include "glib.h"
@@ -138,22 +142,49 @@ gnetconfig_get_wireless_mode_string (int mode)
 	switch (mode)
 	{
 		case GN_AD_HOC:		ret = g_strdup ("ad-hoc");
-							break;
+					break;
 		case GN_MANAGED:	ret = g_strdup ("managed");
-							break;
+					break;
 		case GN_MASTER:		ret = g_strdup ("master");
-							break;
+					break;
 		case GN_MONITOR:	ret = g_strdup ("monitor");
-							break;
+					break;
 		case GN_REPEATER:	ret = g_strdup ("repeater");
-							break;
+					break;
 		case GN_SECONDARY:	ret = g_strdup ("secondary");
-							break;
+					break;
 		case GN_AUTO:		ret = g_strdup ("auto");
-							break;
-		default:			break;
+					break;
+		default:		break;
 	}
 
 	return ret;
 }
 
+char *
+gnetconfig_get_ifname (char *name, char *p)
+{
+    while (isspace(*p))
+	p++;
+    while (*p) {
+	if (isspace(*p))
+	    break;
+	if (*p == ':') {	/* could be an alias */
+	    char *dot = p, *dotname = name;
+	    *name++ = *p++;
+	    while (isdigit(*p))
+		*name++ = *p++;
+	    if (*p != ':') {	/* it wasn't, backup */
+		p = dot;
+		name = dotname;
+	    }
+	    if (*p == '\0')
+		return NULL;
+	    p++;
+	    break;
+	}
+	*name++ = *p++;
+    }
+    *name++ = '\0';
+    return p;
+}
