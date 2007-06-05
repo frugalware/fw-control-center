@@ -34,6 +34,7 @@
 #include "gnetconfig-about.h"
 #include "gnetconfig-messages.h"
 #include "gnetconfig-misc.h"
+#include "gnetconfig-new_interface.h"
 
 #include <libfwutil.h>
 
@@ -94,6 +95,7 @@ static void cb_gn_save_interface_clicked (GtkButton *button, gpointer data);
 static void cb_gn_hostname_save (GtkButton *button, gpointer data);
 static void cb_gn_interface_start (GtkButton *button, gpointer data);
 static void cb_gn_interface_stop (GtkButton *button, gpointer data);
+static void cb_gn_interface_add (GtkButton *button, gpointer data);
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
 static void cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data);
 static void cb_gn_interface_delete (GtkButton *button, gpointer data);
@@ -221,6 +223,11 @@ gnetconfig_interface_init (void)
 			(gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
 
 	/* new interface editor stuff */
+	widget = glade_xml_get_widget (xml, "fwn_if_add");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_interface_add),
+			NULL);
 	widget = glade_xml_get_widget (xml, "fwn_if_edit");
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
@@ -276,6 +283,7 @@ gnetconfig_interface_init (void)
 
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
+	gnetconfig_new_interface_dialog_setup ();
 	gtk_widget_show (gn_main_window);
 
 	/* unref xml object */
@@ -596,6 +604,13 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 		}
 	}
 
+	return;
+}
+
+static void
+cb_gn_interface_add (GtkButton *button, gpointer data)
+{
+	gnetconfig_new_interface_dialog_show ();
 	return;
 }
 
