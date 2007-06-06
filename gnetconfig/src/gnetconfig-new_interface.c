@@ -31,6 +31,8 @@
 #endif
 
 #include "gnetconfig-new_interface.h"
+#include "gnetconfig-interface.h"
+#include "gnetconfig-interface_detect.h"
 #include "gnetconfig-messages.h"
 #include "gnetconfig-misc.h"
 

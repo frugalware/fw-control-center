@@ -441,7 +441,7 @@ gnetconfig_load_profile (const char *name)
 
 	/* read the hostname */
 	gnetconfig_read_hostname(hostname);
-	if (hostname)
+	if (strlen(hostname))
 		gtk_entry_set_text (GTK_ENTRY(gn_hostname_entry), hostname);
 	else
 		gn_error ("Couldn't read hostname.", ERROR_GUI);
@@ -847,7 +847,6 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	GtkTreeIter		iter;
 	gboolean		found = FALSE;
 	fwnet_interface_t*	inte = NULL;
-	gint			ret;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));

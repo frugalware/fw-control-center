@@ -45,7 +45,6 @@ gnetconfig_if_detect_dlg_init (void)
 	GtkWidget 		*button_cancel;
 	GtkButtonBox		*button_box;
 	GtkWidget  		*vbox;
-	GtkWidget		*hbox;
 	GtkWidget		*label;
 	GtkListStore 		*store;
 	GtkCellRenderer	 	*renderer;
@@ -54,7 +53,7 @@ gnetconfig_if_detect_dlg_init (void)
 	if_detect_dlg = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_container_set_border_width (GTK_CONTAINER(if_detect_dlg), 8);
 	gtk_window_set_resizable (GTK_WINDOW(if_detect_dlg), FALSE);
-	gtk_window_set_transient_for (GTK_WINDOW(if_detect_dlg), GTK_WIDGET(dialog));
+	gtk_window_set_transient_for (GTK_WINDOW(if_detect_dlg), GTK_WINDOW(dialog));
 	vbox = gtk_vbox_new (FALSE, 4);
 	if_detect_treeview = gtk_tree_view_new ();
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW(if_detect_treeview), FALSE);
