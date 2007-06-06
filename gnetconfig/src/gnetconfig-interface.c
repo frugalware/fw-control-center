@@ -72,11 +72,9 @@ GtkWidget *gn_wireless_table;
 
 /* utility functions */
 static void gnetconfig_populate_profile_list (void);
-static void gnetconfig_populate_interface_list (fwnet_profile_t *profile);
 static void gnetconfig_load_profile (const char *name);
 static void gnetconfig_populate_dns_list (GList *list);
 static void gnetconfig_setup_new_profile (const char *profile);
-static int gnetconfig_save_profile (fwnet_profile_t *profile);
 
 /* new profile dialog */
 static void gnetconfig_new_profile_dialog_show (void);
@@ -336,7 +334,7 @@ gnetconfig_populate_profile_list (void)
 	return;
 }
 
-static void
+void
 gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 {
 	gint			i, n_ifs = 0;
@@ -451,7 +449,7 @@ gnetconfig_load_profile (const char *name)
 	return;
 }
 
-static int
+int
 gnetconfig_save_profile (fwnet_profile_t *profile)
 {
 	gchar	hostname[256];

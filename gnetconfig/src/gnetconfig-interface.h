@@ -14,4 +14,8 @@
 
 void gnetconfig_interface_init (void);
 
+void gnetconfig_populate_interface_list (fwnet_profile_t *);
+
+int gnetconfig_save_profile (fwnet_profile_t *);
+
 #endif
