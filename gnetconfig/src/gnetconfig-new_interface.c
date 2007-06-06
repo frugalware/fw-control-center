@@ -135,10 +135,6 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 {
 	switch (gtk_combo_box_get_active (combo))
 	{
-		gtk_entry_set_text (GTK_ENTRY(gn_nipaddress_entry), "");
-		gtk_entry_set_text (GTK_ENTRY(gn_nnetmask_entry), "");
-		gtk_entry_set_text (GTK_ENTRY(gn_ngateway_entry), "");
-		
 		case GN_DHCP: /* DHCP */
 			gtk_widget_show (gn_ndhcp_table);
 			gtk_widget_hide (gn_nstaticip_table);
