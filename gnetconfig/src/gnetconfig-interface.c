@@ -1136,11 +1136,11 @@ cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer dat
 static void
 cb_gn_delete_dns_clicked (GtkButton *button, gpointer data)
 {
-	GtkTreeModel	*model = NULL;
-	GtkTreeIter	iter;
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter		iter;
 	GtkTreeSelection	*selection = NULL;
-	gchar		*dns = NULL;
-	GList		*l = NULL;
+	gchar			*dns = NULL;
+	GList			*l = NULL;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_dns_listview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_dns_listview));
@@ -1167,16 +1167,16 @@ cb_gn_delete_dns_clicked (GtkButton *button, gpointer data)
 static void
 cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 {
-	gchar		*ipaddr = NULL;
-	gchar		*netmask = NULL;
-	gchar		*gateway = NULL;
-	gchar		*if_name = NULL;
-	GtkTreeModel	*model = NULL;
-	GtkTreeIter	iter;
-	char		opstring[50];
-	GList		*intf = NULL;
+	gchar			*ipaddr = NULL;
+	gchar			*netmask = NULL;
+	gchar			*gateway = NULL;
+	gchar			*if_name = NULL;
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter		iter;
+	char			opstring[50];
+	GList			*intf = NULL;
 	fwnet_interface_t	*interface = NULL;
-	gint		type = -1;
+	gint			type = -1;
 
 	if_name = gtk_label_get_text (GTK_LABEL(data));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
@@ -1249,7 +1249,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
 		gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
 		essid	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_essid_entry));
-		key		= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
+		key	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
 		mode	= gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_wireless_mode_combo)));
 
 		if (strlen(key))
