@@ -35,6 +35,7 @@
 #include "gnetconfig-misc.h"
 
 extern GladeXML 	*xml;
+extern GtkWidget	*gn_main_window;
 extern fwnet_profile_t	*active_profile;
 
 GtkWidget *dialog;
@@ -100,8 +101,13 @@ gnetconfig_new_interface_dialog_setup (void)
 			G_CALLBACK(cb_gn_nconntype_changed),
 			NULL);
 
+	/* center the dialog on the main window */
+	gtk_window_set_transient_for (GTK_WINDOW(dialog), GTK_WINDOW(gn_main_window));
+	gtk_window_set_position (GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+
 	/* initialize interface detection dialog */
 	gnetconfig_if_detect_dlg_init ();
+
 	return;
 }
 		
