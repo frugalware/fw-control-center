@@ -40,12 +40,17 @@ extern fwnet_profile_t	*active_profile;
 GtkWidget *dialog;
 
 GtkWidget *gn_nconntype_combo;
-GtkWidget *gn_staticip_table;
-GtkWidget *gn_dhcp_table;
-GtkWidget *gn_dsl_table;
+GtkWidget *gn_nstaticip_table;
+GtkWidget *gn_ndhcp_table;
+GtkWidget *gn_ndsl_table;
+GtkWidget *gn_nwireless_table;
+GtkWidget *gn_nif_name_entry;
 GtkWidget *gn_nipaddress_entry;
 GtkWidget *gn_ngateway_entry;
 GtkWidget *gn_nnetmask_entry;
+GtkWidget *gn_nessid_entry;
+GtkWidget *gn_nkey_entry;
+GtkWidget *gn_nwireless_mode_combo;
 GtkWidget *gn_ndhcp_hostname_entry;
 
 static void cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data);
@@ -59,12 +64,15 @@ gnetconfig_new_interface_dialog_setup (void)
 
 	dialog = glade_xml_get_widget (xml, "new_interface_dialog");
 
-	gn_staticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table2");
-	gn_dhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table2");
-	gn_nconntype_combo 	= glade_xml_get_widget (xml, "fwn_conntype_list2");
-	gn_nipaddress_entry 	= glade_xml_get_widget (xml, "fwn_ip2");
-	gn_nnetmask_entry 	= glade_xml_get_widget (xml, "fwn_netmask2");
-	gn_ngateway_entry 	= glade_xml_get_widget (xml, "fwn_gateway2");
+	/* Lookup all widgets */
+	gn_nif_name_entry	= glade_xml_get_widget (xml, "fwn_if_name");
+	gn_nstaticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table2");
+	gn_nwireless_table	= glade_xml_get_widget (xml, "fwn_wireless_table2");
+	gn_ndhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table2");
+	gn_nconntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list2");
+	gn_nipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip2");
+	gn_nnetmask_entry	= glade_xml_get_widget (xml, "fwn_netmask2");
+	gn_ngateway_entry	= glade_xml_get_widget (xml, "fwn_gateway2");
 
 	/* setup signals and callbacks */
 	widget = glade_xml_get_widget (xml, "fwn_new_int_save");
@@ -84,6 +92,8 @@ gnetconfig_new_interface_dialog_setup (void)
 			G_CALLBACK(cb_gn_nconntype_changed),
 			NULL);
 
+	/* initialize interface detection dialog */
+	gnetconfig_if_detect_dlg_init ();
 	return;
 }
 		
@@ -114,14 +124,14 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 		gtk_entry_set_text (GTK_ENTRY(gn_ngateway_entry), "");
 		
 		case GN_DHCP: /* DHCP */
-			gtk_widget_show (gn_dhcp_table);
-			gtk_widget_hide (gn_staticip_table);
-			//gtk_widget_hide (gn_dsl_table);
+			gtk_widget_show (gn_ndhcp_table);
+			gtk_widget_hide (gn_nstaticip_table);
+			//gtk_widget_hide (gn_ndsl_table);
 			break;
 
 		case GN_STATIC: /* Static ip */
-			gtk_widget_show (gn_staticip_table);
-			gtk_widget_hide (gn_dhcp_table);
+			gtk_widget_show (gn_nstaticip_table);
+			gtk_widget_hide (gn_ndhcp_table);
 			gtk_widget_set_sensitive (gn_nipaddress_entry, TRUE);
 			gtk_widget_set_sensitive (gn_nnetmask_entry, TRUE);
 			gtk_widget_set_sensitive (gn_ngateway_entry, TRUE);
@@ -147,6 +157,7 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 static void
 cb_gn_new_int_autodetect_clicked (GtkWidget *widget, gpointer data)
 {
+	gnetconfig_detect_interfaces ();
 	return;
 }
 
