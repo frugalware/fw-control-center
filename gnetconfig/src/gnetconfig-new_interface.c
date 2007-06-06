@@ -116,6 +116,8 @@ gnetconfig_new_interface_dialog_setup (void)
 void
 gnetconfig_new_interface_dialog_show (void)
 {
+	gtk_widget_hide (gn_nwireless_table);
+
 	if (!GTK_WIDGET_VISIBLE(dialog))
 	{
 		gtk_widget_show (dialog);
@@ -133,6 +135,16 @@ gnetconfig_new_interface_dialog_show (void)
 static void
 cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 {
+	gchar *sel_if = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_nif_name_entry));
+	if (fwnet_is_wireless_device(sel_if))
+	{	
+		gn_message (_("Gnetconfig has detected that the selected interface is a wireless device."));
+		gtk_widget_show (gn_nwireless_table);
+	}
+	gtk_entry_set_text (GTK_ENTRY(gn_nipaddress_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_nnetmask_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_ngateway_entry), "");
+
 	switch (gtk_combo_box_get_active (combo))
 	{
 		case GN_DHCP: /* DHCP */
