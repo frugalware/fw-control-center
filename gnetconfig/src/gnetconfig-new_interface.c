@@ -55,6 +55,7 @@ GtkWidget *gn_ndhcp_hostname_entry;
 
 static void cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data);
+static void cb_gn_new_int_close_clicked (GtkWidget *widget, gpointer data);
 static void cb_gn_new_int_autodetect_clicked (GtkWidget *widget, gpointer data);
 
 void
@@ -73,12 +74,19 @@ gnetconfig_new_interface_dialog_setup (void)
 	gn_nipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip2");
 	gn_nnetmask_entry	= glade_xml_get_widget (xml, "fwn_netmask2");
 	gn_ngateway_entry	= glade_xml_get_widget (xml, "fwn_gateway2");
+	gn_ndhcp_hostname_entry = glade_xml_get_widget (xml, "fwn_dhcp_hostname2");
 
 	/* setup signals and callbacks */
 	widget = glade_xml_get_widget (xml, "fwn_new_int_save");
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_new_int_save_clicked),
+			NULL);
+
+	widget = glade_xml_get_widget (xml, "fwn_new_int_close");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_new_int_close_clicked),
 			NULL);
 
 	widget = glade_xml_get_widget (xml, "fwn_if_autodetect");
@@ -138,7 +146,7 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 			break;
 
 		case GN_DSL: /* DSL */
-			//gtk_widget_show (gn_dsl_table);
+			//gtk_widget_show (gn_ndsl_table);
 			break;
 
 		case GN_LO: /* lo */
@@ -151,6 +159,48 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 static void
 cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 {
+	fwnet_interface_t 	*nif;
+	gchar			opts[50];
+
+	nif = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t));
+	if (!nif)
+	{
+		gn_error ("Error allocating memory for new profile.", ERROR_GUI);
+		return;
+	}
+	memset (nif, 0, sizeof(fwnet_interface_t));
+	snprintf (nif->name, IF_NAMESIZE, (char*)gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry)));
+	switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_nconntype_combo)))
+	{
+		case GN_STATIC:
+			snprintf (opts, 49, "%s netmask %s",
+				(char*)gtk_entry_get_text (GTK_ENTRY(gn_nipaddress_entry)),
+				(char*)gtk_entry_get_text (GTK_ENTRY(gn_nnetmask_entry)));
+			nif->options = g_list_append (nif->options, opts);
+			snprintf (nif->gateway, FWNET_GW_MAX_SIZE, "default gw %s",
+				(char*)gtk_entry_get_text (GTK_ENTRY(gn_ngateway_entry)));
+			break;
+		case GN_DHCP:
+			sprintf (opts, "dhcp");
+			nif->options = g_list_append (nif->options, opts);
+			gchar *temp = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_ndhcp_hostname_entry));
+			if (strlen(temp))
+				snprintf (nif->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", temp);
+			else
+				nif->dhcp_opts[0] = '\0';
+			break;
+	}
+	active_profile->interfaces = g_list_append (active_profile->interfaces, nif);
+	gnetconfig_save_profile (active_profile);
+	gnetconfig_populate_interface_list (active_profile);
+
+	return;
+}
+
+static void
+cb_gn_new_int_close_clicked (GtkWidget *widget, gpointer data)
+{
+	gtk_widget_hide (dialog);
 	return;
 }
 
