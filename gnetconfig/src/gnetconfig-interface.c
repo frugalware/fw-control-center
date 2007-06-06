@@ -458,10 +458,8 @@ gnetconfig_save_profile (fwnet_profile_t *profile)
 	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
 
 	buf = g_strdup (profile->name);
-	if(!fwnet_writeconfig (profile, hostname))
-		printf ("profile saved\n");
-	else
-		printf ("profile not saved \n");
+	if(fwnet_writeconfig (profile, hostname))
+		return 1;
 
 	/* the profile data gets corrupted after saving and
 	 * hence needs to be reloaded */
