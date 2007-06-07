@@ -771,9 +771,11 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 				if (strlen(netmask))
 					gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), netmask);
 			}
-			sscanf (inte->gateway, "%*s gw %s", ip);
-			if (strlen(ip))
+			if (strlen(inte->gateway))
+			{
+				sscanf (inte->gateway, "%*s gw %s", ip);
 				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
+			}
 			dsl_conn = GN_STATIC;
 		}
 		else if ((fwnet_is_dhcp(inte)==1) && (!fwnet_is_wireless_device(inte->name)))
@@ -953,7 +955,8 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 			string = g_strdup_printf (" (Wireless Connection)\n\n");
 		}
 		else if (strlen(active_profile->adsl_interface))
-			string = g_strdup_printf (" (DSL Connection)\n\n");
+			if (!strcmp(active_profile->adsl_interface, inte->name))
+				string = g_strdup_printf (" (DSL Connection)\n\n");
 		else
 			string = g_strdup_printf (" \n\n");
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
@@ -961,10 +964,14 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		string = g_strdup_printf ("IP Address:\t %s\nSubnet Mask:\t %s\n", ip, netmask);
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
-		sscanf (inte->gateway, "%*s gw %s", ip);
-		string = g_strdup_printf ("Gateway:\t\t %s\n", ip);
-		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
-		g_free (string);
+		if (strlen(inte->gateway))
+		{
+			ip[0] = '\0';
+			sscanf (inte->gateway, "%*s gw %s", ip);
+			string = g_strdup_printf ("Gateway:\t\t %s\n", ip);
+			gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+			g_free (string);
+		}
 		if (w == 1)
 		{
 			string = g_strdup_printf ("\nWireless connection details:\n");
@@ -1257,7 +1264,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				interface->options->data = g_strdup_printf ("%s netmask %s",
 									ipaddr,
 									netmask);
-			g_print (interface->options->data);
 			sprintf (interface->gateway, "default gw %s", gateway);
 			type = GN_STATIC;
 
