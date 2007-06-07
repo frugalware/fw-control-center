@@ -57,6 +57,12 @@ GtkWidget *gn_nessid_entry;
 GtkWidget *gn_nkey_entry;
 GtkWidget *gn_nwireless_mode_combo;
 GtkWidget *gn_ndhcp_hostname_entry;
+GtkWidget *gn_nif_dsl_check;
+GtkWidget *gn_ndsl_username;
+GtkWidget *gn_ndsl_password;
+GtkWidget *gn_ndsl_cpassword;
+
+static gboolean check_dsl = FALSE;
 
 static void gnetconfig_reset_nif_dialog (void);
 
@@ -64,6 +70,7 @@ static void cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data);
 static void cb_gn_new_int_close_clicked (GtkWidget *widget, gpointer data);
 static void cb_gn_new_int_autodetect_clicked (GtkWidget *widget, gpointer data);
+static void cb_gn_config_dsl_changed (GtkToggleButton *togglebutton, gpointer data);
 
 void
 gnetconfig_new_interface_dialog_setup (void)
@@ -77,6 +84,7 @@ gnetconfig_new_interface_dialog_setup (void)
 	gn_nstaticip_table	= glade_xml_get_widget (xml, "fwn_staticip_table2");
 	gn_nwireless_table	= glade_xml_get_widget (xml, "fwn_wireless_table2");
 	gn_ndhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table2");
+	gn_ndsl_table		= glade_xml_get_widget (xml, "fwn_dsl_table3");
 	gn_nconntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list2");
 	gn_ndhcp_client_combo	= glade_xml_get_widget (xml, "fwn_dhcp_client_combo2");
 	gn_nipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip2");
@@ -86,6 +94,9 @@ gnetconfig_new_interface_dialog_setup (void)
 	gn_nkey_entry		= glade_xml_get_widget (xml, "fwn_key_entry2");
 	gn_nessid_entry		= glade_xml_get_widget (xml, "fwn_essid_entry2");
 	gn_nwmode_combo		= glade_xml_get_widget (xml, "fwn_wmode_combo2");
+	gn_ndsl_username	= glade_xml_get_widget (xml, "fwn_dsl_username3");
+	gn_ndsl_password	= glade_xml_get_widget (xml, "fwn_dsl_password3");
+	gn_ndsl_cpassword	= glade_xml_get_widget (xml, "fwn_dsl_cpassword3");
 
 	/* setup signals and callbacks */
 	widget = glade_xml_get_widget (xml, "fwn_new_int_save");
@@ -106,6 +117,12 @@ gnetconfig_new_interface_dialog_setup (void)
 			G_CALLBACK(cb_gn_new_int_autodetect_clicked),
 			NULL);
 
+	gn_nif_dsl_check = glade_xml_get_widget (xml, "fwn_config_dsl_check");
+	g_signal_connect (G_OBJECT(gn_nif_dsl_check),
+			"toggled",
+			G_CALLBACK(cb_gn_config_dsl_changed),
+			NULL);
+
 	g_signal_connect (G_OBJECT(gn_nconntype_combo),
 			"changed",
 			G_CALLBACK(cb_gn_nconntype_changed),
@@ -117,6 +134,9 @@ gnetconfig_new_interface_dialog_setup (void)
 
 	/* initialize interface detection dialog */
 	gnetconfig_if_detect_dlg_init ();
+
+	/* hide the dsl checkbox for now */
+	gtk_widget_hide (gn_nif_dsl_check);
 
 	return;
 }
@@ -161,6 +181,24 @@ gnetconfig_new_interface_dialog_show (void)
 /* CALLBACKS */
 
 static void
+cb_gn_config_dsl_changed (GtkToggleButton *togglebutton, gpointer data)
+{
+	if (TRUE == gtk_toggle_button_get_active (togglebutton))
+	{
+		check_dsl = TRUE;
+		/* show the dsl config box */
+		gtk_widget_show (gn_ndsl_table);
+	}
+	else
+	{
+		check_dsl = FALSE;
+		gtk_widget_hide (gn_ndsl_table);
+	}
+
+	return;
+}
+
+static void
 cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 {
 	gchar *sel_if = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_nif_name_entry));
@@ -177,7 +215,7 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_show (gn_ndhcp_table);
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_ndhcp_client_combo), 0);
 			gtk_widget_hide (gn_nstaticip_table);
-			//gtk_widget_hide (gn_ndsl_table);
+			gtk_widget_show (gn_nif_dsl_check);
 			break;
 
 		case GN_STATIC: /* Static ip */
@@ -186,6 +224,7 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_set_sensitive (gn_nipaddress_entry, TRUE);
 			gtk_widget_set_sensitive (gn_nnetmask_entry, TRUE);
 			gtk_widget_set_sensitive (gn_ngateway_entry, TRUE);
+			gtk_widget_show (gn_nif_dsl_check);
 			break;
 
 		case GN_DSL: /* DSL */
@@ -249,6 +288,32 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 					*nif->dhcpclient = '\0';
 			}
 			break;
+	}
+	if (check_dsl == TRUE) /* The interface is to be configured for dsl */
+	{
+		gchar *username;
+		gchar *pass;
+		gchar *cpass;
+		gboolean error = FALSE;
+
+		username = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_ndsl_username));
+		pass = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_ndsl_password));
+		cpass = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_ndsl_cpassword));
+
+		if (!strlen(username) || !strlen(pass) || !strlen(cpass))
+		{
+			gn_error (_("Required fields for DSL connection cannot be left blank."), ERROR_GUI);
+			return;
+		}
+		if (strcmp(pass,cpass) != 0)
+		{
+			gn_error (_("PPPoE passwords do not match. Please re-enter."), ERROR_GUI);
+			return;
+		}
+		/* hopefully, everything is ok now and we should save the profile */
+		snprintf (active_profile->adsl_username, PATH_MAX, username);
+		snprintf (active_profile->adsl_password, PATH_MAX, pass);
+		snprintf (active_profile->adsl_interface, PATH_MAX, nif->name);
 	}
 	if (fwnet_is_wireless_device(nif->name))
 	{
