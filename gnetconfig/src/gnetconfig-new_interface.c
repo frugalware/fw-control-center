@@ -181,7 +181,7 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 	nif = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t));
 	if (!nif)
 	{
-		gn_error ("Error allocating memory for new profile.", ERROR_GUI);
+		gn_error ("Error allocating memory for new interface.", ERROR_GUI);
 		return;
 	}
 	memset (nif, 0, sizeof(fwnet_interface_t));
