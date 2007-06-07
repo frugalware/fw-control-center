@@ -185,6 +185,12 @@ cb_gn_config_dsl_changed (GtkToggleButton *togglebutton, gpointer data)
 {
 	if (TRUE == gtk_toggle_button_get_active (togglebutton))
 	{
+		if (strlen(active_profile->adsl_interface))
+		{
+			gn_error (_("There is already an interface configured for DSL connection."), ERROR_GUI);
+			gtk_toggle_button_set_active (togglebutton, FALSE);
+			return;
+		}
 		check_dsl = TRUE;
 		/* show the dsl config box */
 		gtk_widget_show (gn_ndsl_table);
@@ -227,10 +233,6 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_show (gn_nif_dsl_check);
 			break;
 
-		case GN_DSL: /* DSL */
-			//gtk_widget_show (gn_ndsl_table);
-			break;
-
 		case GN_LO: /* lo */
 			break;
 	}
@@ -259,6 +261,7 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 				!strlen((char*)gtk_entry_get_text(GTK_ENTRY(gn_nnetmask_entry))))
 				{
 					gn_error ("Required fields cannot be blank.", ERROR_GUI);
+					g_free (nif);
 					return;
 				}
 			snprintf (opts, 49, "%s netmask %s",
@@ -303,11 +306,13 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 		if (!strlen(username) || !strlen(pass) || !strlen(cpass))
 		{
 			gn_error (_("Required fields for DSL connection cannot be left blank."), ERROR_GUI);
+			g_free (nif);
 			return;
 		}
 		if (strcmp(pass,cpass) != 0)
 		{
 			gn_error (_("PPPoE passwords do not match. Please re-enter."), ERROR_GUI);
+			g_free (nif);
 			return;
 		}
 		/* hopefully, everything is ok now and we should save the profile */
