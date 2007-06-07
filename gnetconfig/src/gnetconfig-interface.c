@@ -137,6 +137,9 @@ gnetconfig_interface_init (void)
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
 	gn_interface_treeview = glade_xml_get_widget (xml, "interface_treeview");
 
+	gtk_window_set_transient_for (GTK_WINDOW(gn_interface_dialog), GTK_WINDOW(gn_main_window));
+	gtk_window_set_position (GTK_WINDOW(gn_interface_dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	column = gtk_tree_view_column_new_with_attributes (_("IF_Icon"),
 							renderer,
@@ -920,6 +923,7 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 	{
 		char	ip[16], netmask[16];
 		GList	*options = NULL;
+		gint	w = 0;
 
 		options = inte->options;
 		if (!options) return;
@@ -927,7 +931,10 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		string = g_strdup_printf ("Connection type: Static IP");
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		if (fwnet_is_wireless_device(inte->name))
+		{
+			w = 1;
 			string = g_strdup_printf (" (Wireless Connection)\n\n");
+		}
 		else if (strlen(active_profile->adsl_interface))
 			string = g_strdup_printf (" (DSL Connection)\n\n");
 		else
@@ -941,6 +948,17 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		string = g_strdup_printf ("Gateway:\t\t %s\n", ip);
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
+		if (w == 1)
+		{
+			string = g_strdup_printf ("\nWireless connection details:\n");
+			gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+			g_free (string);
+			string = g_strdup_printf ("Mode: \t%s\nESSID: \t%s\n",
+						inte->mode,
+						inte->essid);
+			gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+			g_free (string);
+		}
 	}
 	else if (fwnet_is_dhcp(inte) && (!strlen(active_profile->adsl_interface)))
 	{
