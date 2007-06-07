@@ -43,6 +43,7 @@ extern fwnet_profile_t	*active_profile;
 GtkWidget *dialog;
 
 GtkWidget *gn_nconntype_combo;
+GtkWidget *gn_ndhcp_client_combo;
 GtkWidget *gn_nstaticip_table;
 GtkWidget *gn_ndhcp_table;
 GtkWidget *gn_ndsl_table;
@@ -77,6 +78,7 @@ gnetconfig_new_interface_dialog_setup (void)
 	gn_nwireless_table	= glade_xml_get_widget (xml, "fwn_wireless_table2");
 	gn_ndhcp_table		= glade_xml_get_widget (xml, "fwn_dhcp_table2");
 	gn_nconntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list2");
+	gn_ndhcp_client_combo	= glade_xml_get_widget (xml, "fwn_dhcp_client_combo2");
 	gn_nipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip2");
 	gn_nnetmask_entry	= glade_xml_get_widget (xml, "fwn_netmask2");
 	gn_ngateway_entry	= glade_xml_get_widget (xml, "fwn_gateway2");
@@ -124,6 +126,7 @@ gnetconfig_reset_nif_dialog (void)
 {
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_nconntype_combo), -1);
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_nwmode_combo), -1);
+	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_ndhcp_client_combo), -1);
 	gtk_entry_set_text (GTK_ENTRY(gn_nif_name_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_nipaddress_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_nnetmask_entry), "");
@@ -172,6 +175,7 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 	{
 		case GN_DHCP: /* DHCP */
 			gtk_widget_show (gn_ndhcp_table);
+			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_ndhcp_client_combo), 0);
 			gtk_widget_hide (gn_nstaticip_table);
 			//gtk_widget_hide (gn_ndsl_table);
 			break;
@@ -233,6 +237,17 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 				snprintf (nif->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", temp);
 			else
 				*nif->dhcp_opts = '\0';
+			switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_ndhcp_client_combo)))
+			{
+				case GN_DHCPCD:
+					snprintf (nif->dhcpclient, PATH_MAX, "dhcpcd");
+					break;
+				case GN_DHCLIENT:
+					snprintf (nif->dhcpclient, PATH_MAX, "dhclient");
+					break;
+				default:
+					*nif->dhcpclient = '\0';
+			}
 			break;
 	}
 	if (fwnet_is_wireless_device(nif->name))
