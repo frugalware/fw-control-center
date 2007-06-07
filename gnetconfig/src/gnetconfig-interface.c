@@ -1032,10 +1032,17 @@ cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event)
 	gtk_menu_shell_append (GTK_MENU_SHELL(menu), menu_item);
 	gtk_widget_show (menu_item);
 
-	menu_item = gtk_image_menu_item_new_with_label (_("Edit"));
+	menu_item = gtk_image_menu_item_new_with_label (_("Configure"));
 	image = gtk_image_new_from_stock ("gtk-edit", GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(menu_item), image);
 	g_signal_connect (G_OBJECT(menu_item), "activate", G_CALLBACK(cb_gn_interface_edited), NULL);
+	gtk_menu_shell_append (GTK_MENU_SHELL(menu), menu_item);
+	gtk_widget_show (menu_item);
+
+	menu_item = gtk_image_menu_item_new_with_label (_("Delete"));
+	image = gtk_image_new_from_stock ("gtk-delete", GTK_ICON_SIZE_MENU);
+	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(menu_item), image);
+	g_signal_connect (G_OBJECT(menu_item), "activate", G_CALLBACK(cb_gn_interface_delete), NULL);
 	gtk_menu_shell_append (GTK_MENU_SHELL(menu), menu_item);
 	gtk_widget_show (menu_item);
 
