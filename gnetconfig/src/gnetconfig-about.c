@@ -45,13 +45,16 @@ static gchar	*license =
 "MA  02110-1301  USA");
 
 gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>", NULL };
-
 gchar *translators[] = { NULL };
+
+GdkPixbuf *about_pixbuf = NULL;
+extern GtkWidget *gn_main_window;
 
 void
 gnetconfig_about (void)
 {
-	
+	if (!about_pixbuf)
+		about_pixbuf = gtk_widget_render_icon (gn_main_window, GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL);
 	gtk_show_about_dialog (NULL,
                            "name", "Gnetconfig",
                            "version", VERSION,
@@ -62,7 +65,7 @@ gnetconfig_about (void)
 					  "translator-credits", translators,
                            "website", "http://www.frugalware.org/",
                            "website-label", "http://www.frugalware.org/",
-                           "logo", NULL,
+                           "logo", about_pixbuf,
                            "wrap-license", TRUE,
                            NULL);
 	return;
