@@ -1,5 +1,5 @@
-#ifndef __GNETCONFIG_MISC_H
-#define __GNETCONFIG_MISC_H
+#ifndef __GNETCONFIG_MISC_H__
+#define __GNETCONFIG_MISC_H__
 
 #include <string.h>
 #include <stdio.h>
@@ -27,6 +27,12 @@ typedef enum _gn_wireless_type
 	GN_SECONDARY,
 	GN_AUTO
 } GN_WIRELESS_TYPE;
+
+typedef enum _gn_dhcp_client_type
+{
+	GN_DHCPCD = 0,
+	GN_DHCLIENT
+} GN_DHCP_CLIENT_TYPE;
 
 void gnetconfig_read_hostname (char *);
 

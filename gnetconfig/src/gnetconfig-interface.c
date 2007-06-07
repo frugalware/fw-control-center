@@ -46,6 +46,7 @@ GtkWidget *gn_main_window;
 GtkWidget *gn_profile_combo;
 GtkWidget *gn_interface_combo;
 GtkWidget *gn_conntype_combo;
+GtkWidget *gn_dhcp_client_combo;
 GtkWidget *gn_ipaddress_entry;
 GtkWidget *gn_netmask_entry;
 GtkWidget *gn_dsl_username_entry;
@@ -115,6 +116,7 @@ gnetconfig_interface_init (void)
 	gn_main_window		= glade_xml_get_widget (xml, "window1");
 	gn_profile_combo	= glade_xml_get_widget (xml, "fwn_profile_list");
 	gn_conntype_combo	= glade_xml_get_widget (xml, "fwn_conntype_list");
+	gn_dhcp_client_combo	= glade_xml_get_widget (xml, "fwn_dhcp_client_combo");
 	gn_ipaddress_entry	= glade_xml_get_widget (xml, "fwn_ip");
 	gn_netmask_entry	= glade_xml_get_widget (xml, "fwn_netmask");
 	gn_gateway_entry	= glade_xml_get_widget (xml, "fwn_gateway");
@@ -776,8 +778,15 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_widget_set_sensitive (gn_ipaddress_entry, FALSE);
 			gtk_widget_set_sensitive (gn_netmask_entry, FALSE);
 			gtk_widget_set_sensitive (gn_gateway_entry, FALSE);
-			if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
-				gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host);
+			if (!strlen(inte->dhcpclient) || !strcmp(inte->dhcpclient,"dhcpcd"))
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_dhcp_client_combo), GN_DHCPCD);
+			else if (!strcmp(inte->dhcpclient, "dhclient"))
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_dhcp_client_combo), GN_DHCLIENT);
+			if (strlen(inte->dhcp_opts) && (g_strrstr(inte->dhcp_opts, "-h")!=NULL))
+			{
+				if (sscanf (inte->dhcp_opts, "%*s %*s -h %s", host))
+					gtk_entry_set_text (GTK_ENTRY(gn_dhcp_hostname_entry), host);
+			}
 			dsl_conn = GN_DHCP;
 		}
 		if (strlen(active_profile->adsl_interface))
@@ -967,8 +976,11 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		string = g_strdup_printf ("Connection type:\t DHCP\n\n");
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
-		if (!sscanf(inte->dhcp_opts, "%*s %*s -h %s", host) || (strlen(host)))
+		if ((strlen(inte->dhcp_opts)) && (g_strrstr(inte->dhcp_opts, "-h")!=NULL))
+		{
+			if (sscanf(inte->dhcp_opts, "%*s %*s -h %s", host))
 			string = g_strdup_printf ("DHCP Hostname:\t %s\n", host);
+		}
 		else
 			string = g_strdup_printf ("DHCP Hostname:\t (none)\n");
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
@@ -1253,6 +1265,18 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			}
 			else
 				sprintf (interface->options->data, "dhcp");
+
+			switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_dhcp_client_combo)))
+			{
+				case GN_DHCPCD:
+					snprintf (interface->dhcpclient, PATH_MAX, "dhcpcd");
+					break;
+				case GN_DHCLIENT:
+					snprintf (interface->dhcpclient, PATH_MAX, "dhclient");
+					break;
+				default:
+					*interface->dhcpclient = '\0';
+			}
 			type = GN_DHCP;
 
 			break;
@@ -1310,6 +1334,18 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", hn);
 			else
 				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10\n");
+
+			switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_dhcp_client_combo)))
+			{
+				case GN_DHCPCD:
+					snprintf (interface->dhcpclient, PATH_MAX, "dhcpcd");
+					break;
+				case GN_DHCLIENT:
+					snprintf (interface->dhcpclient, PATH_MAX, "dhclient");
+					break;
+				default:
+					*interface->dhcpclient = '\0';
+			}
 		}
 	}
 
