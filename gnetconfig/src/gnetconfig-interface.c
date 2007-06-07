@@ -519,7 +519,7 @@ gnetconfig_new_nameserver_dialog_show (void)
 	static gchar	*message = "Enter the ip address of the nameserver: ";
 
 	dialog = gtk_dialog_new_with_buttons (_("New DNS"),
-                                         NULL,
+                                         GTK_WINDOW(gn_main_window),
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_STOCK_OK,
                                          GTK_RESPONSE_ACCEPT,
