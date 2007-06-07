@@ -1104,10 +1104,6 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			gtk_widget_set_sensitive (gn_gateway_entry, TRUE);
 			break;
 
-		case GN_DSL: /* DSL */
-			gtk_widget_show (gn_dsl_table);
-			break;
-
 		case GN_LO: /* lo */
 			break;
 	}
