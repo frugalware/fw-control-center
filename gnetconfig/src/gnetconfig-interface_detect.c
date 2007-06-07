@@ -210,6 +210,8 @@ cb_gn_if_detect_ok_clicked (GtkWidget *widget, gpointer data)
 	{
 		gtk_entry_set_text (GTK_ENTRY(gn_nif_name_entry), ifname);
 		gtk_widget_hide (if_detect_dlg);
+		if (fwnet_is_wireless_device(ifname))
+			gn_message (_("Gnetconfig has detected that the selected interface is a wireless device."));
 	}	
 	
 	return;

@@ -57,6 +57,8 @@ GtkWidget *gn_nkey_entry;
 GtkWidget *gn_nwireless_mode_combo;
 GtkWidget *gn_ndhcp_hostname_entry;
 
+static void gnetconfig_reset_nif_dialog (void);
+
 static void cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data);
 static void cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data);
 static void cb_gn_new_int_close_clicked (GtkWidget *widget, gpointer data);
@@ -116,7 +118,26 @@ gnetconfig_new_interface_dialog_setup (void)
 
 	return;
 }
-		
+
+static void
+gnetconfig_reset_nif_dialog (void)
+{
+	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_nconntype_combo), -1);
+	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_nwmode_combo), -1);
+	gtk_entry_set_text (GTK_ENTRY(gn_nif_name_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_nipaddress_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_nnetmask_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_ngateway_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_nessid_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_nkey_entry), "");
+	gtk_entry_set_text (GTK_ENTRY(gn_ndhcp_hostname_entry), "");
+	gtk_widget_hide (gn_nwireless_table);
+	gtk_widget_hide (gn_nstaticip_table);
+	gtk_widget_hide (gn_ndhcp_table);
+
+	return;
+}
+
 void
 gnetconfig_new_interface_dialog_show (void)
 {
@@ -141,10 +162,8 @@ cb_gn_nconntype_changed (GtkComboBox *combo, gpointer data)
 {
 	gchar *sel_if = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_nif_name_entry));
 	if (fwnet_is_wireless_device(sel_if))
-	{	
-		gn_message (_("Gnetconfig has detected that the selected interface is a wireless device."));
 		gtk_widget_show (gn_nwireless_table);
-	}
+
 	gtk_entry_set_text (GTK_ENTRY(gn_nipaddress_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_nnetmask_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_ngateway_entry), "");
@@ -250,6 +269,8 @@ static void
 cb_gn_new_int_close_clicked (GtkWidget *widget, gpointer data)
 {
 	gtk_widget_hide (dialog);
+	gnetconfig_reset_nif_dialog ();
+
 	return;
 }
 

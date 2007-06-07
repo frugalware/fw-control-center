@@ -23,6 +23,8 @@
 #define _GNU_SOURCE
 #include "gnetconfig-messages.h"
 
+extern GtkWidget *gn_main_window;
+
 void
 gn_error (const char *error_str, ErrorType type)
 {
@@ -36,7 +38,7 @@ gn_error (const char *error_str, ErrorType type)
 	{
 		GtkWidget *error_dlg;
 
-		error_dlg = gtk_message_dialog_new (NULL,
+		error_dlg = gtk_message_dialog_new (gn_main_window,
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_ERROR,
 						GTK_BUTTONS_OK,
@@ -56,7 +58,7 @@ gn_message (const char *message_str)
 {
 	GtkWidget *message_dlg;
 
-	message_dlg = gtk_message_dialog_new (NULL,
+	message_dlg = gtk_message_dialog_new (gn_main_window,
 					GTK_DIALOG_DESTROY_WITH_PARENT,
 					GTK_MESSAGE_INFO,
 					GTK_BUTTONS_OK,
