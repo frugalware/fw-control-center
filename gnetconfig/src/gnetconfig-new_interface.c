@@ -189,6 +189,12 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 	switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_nconntype_combo)))
 	{
 		case GN_STATIC:
+			if (!strlen((char*)gtk_entry_get_text(GTK_ENTRY(gn_nipaddress_entry))) ||
+				!strlen((char*)gtk_entry_get_text(GTK_ENTRY(gn_nnetmask_entry))))
+				{
+					gn_error ("Required fields cannot be blank.", ERROR_GUI);
+					return;
+				}
 			snprintf (opts, 49, "%s netmask %s",
 				(char*)gtk_entry_get_text (GTK_ENTRY(gn_nipaddress_entry)),
 				(char*)gtk_entry_get_text (GTK_ENTRY(gn_nnetmask_entry)));
