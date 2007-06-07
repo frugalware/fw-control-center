@@ -60,6 +60,7 @@ GtkWidget *gn_hostname_entry;
 GtkWidget *gn_dns_listview;
 GtkWidget *gn_dhcp_hostname_entry;
 GtkWidget *gn_wireless_mode_combo;
+GtkWidget *gn_config_dsl_check;
 
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
@@ -102,6 +103,7 @@ static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
 static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
 static void cb_gn_interface_double_click (GtkTreeView *treeview);
 static void cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event);
+static void cb_gn_config_dsl_check_toggle (GtkToggleButton *togglebutton, gpointer data);
 
 void
 gnetconfig_interface_init (void)
@@ -134,6 +136,7 @@ gnetconfig_interface_init (void)
 	gn_dsl_username_entry	= glade_xml_get_widget (xml, "fwn_dsl_username");
 	gn_dsl_password_entry	= glade_xml_get_widget (xml, "fwn_dsl_password");
 	gn_dsl_cpassword_entry	= glade_xml_get_widget (xml, "fwn_dsl_cpassword");
+	gn_config_dsl_check	= glade_xml_get_widget (xml, "fwn_config_dsl_check2");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -270,6 +273,11 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"activate",
 			G_CALLBACK(gnetconfig_about),
+			NULL);
+
+	g_signal_connect (G_OBJECT(gn_config_dsl_check),
+			"toggled",
+			G_CALLBACK(cb_gn_config_dsl_check_toggle),
 			NULL);
 
 	/* keybindings */
@@ -789,9 +797,10 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			}
 			dsl_conn = GN_DHCP;
 		}
-		if (strlen(active_profile->adsl_interface))
+		if (strlen(active_profile->adsl_interface) && !(strcmp(inte->name, active_profile->adsl_interface)))
 		{
 			/* DSL Active */
+			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_config_dsl_check), TRUE);
 			gtk_widget_show (gn_dsl_table);
 			switch (dsl_conn)
 			{
@@ -808,7 +817,6 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 					gtk_widget_hide (gn_staticip_table);
 					break;
 			}
-			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), GN_DSL);
 			gtk_entry_set_text (GTK_ENTRY(gn_dsl_username_entry), (active_profile->adsl_username!=NULL)?active_profile->adsl_username : "");
 			gtk_entry_set_text (GTK_ENTRY(gn_dsl_password_entry), (active_profile->adsl_password!=NULL)?active_profile->adsl_password : "");
 			gtk_entry_set_text (GTK_ENTRY(gn_dsl_cpassword_entry), (active_profile->adsl_password!=NULL)?active_profile->adsl_password : "");
@@ -1289,6 +1297,31 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			break;
 		}
 	}
+	if (TRUE == gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gn_config_dsl_check))) /* The interface is to be configured for dsl */
+	{
+		gchar *username;
+		gchar *pass;
+		gchar *cpass;
+
+		username = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_dsl_username_entry));
+		pass = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_dsl_password_entry));
+		cpass = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_dsl_cpassword_entry));
+
+		if (!strlen(username) || !strlen(pass) || !strlen(cpass))
+		{
+			gn_error (_("Required fields for DSL connection cannot be left blank."), ERROR_GUI);
+			return;
+		}
+		if (strcmp(pass,cpass) != 0)
+		{
+			gn_error (_("PPPoE passwords do not match. Please re-enter."), ERROR_GUI);
+			return;
+		}
+		/* hopefully, everything is ok now and we should save the profile */
+		snprintf (active_profile->adsl_username, PATH_MAX, username);
+		snprintf (active_profile->adsl_password, PATH_MAX, pass);
+		snprintf (active_profile->adsl_interface, PATH_MAX, gtk_label_get_text(GTK_LABEL(data)));
+	}
 	if ( fwnet_is_wireless_device(interface->name) || strlen(interface->essid) || strlen(interface->key) )
 	{
 		char *key, *essid;
@@ -1357,6 +1390,21 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	}
 
 	gnetconfig_save_profile (active_profile);
+
+	return;
+}
+
+static void
+cb_gn_config_dsl_check_toggle (GtkToggleButton *togglebutton, gpointer data)
+{
+	if (TRUE == gtk_toggle_button_get_active(togglebutton))
+	{
+		gtk_widget_show (gn_dsl_table);
+	}
+	else
+	{
+		gtk_widget_hide (gn_dsl_table);
+	}
 
 	return;
 }
