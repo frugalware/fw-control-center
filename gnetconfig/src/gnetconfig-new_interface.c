@@ -51,6 +51,7 @@ GtkWidget *gn_nif_name_entry;
 GtkWidget *gn_nipaddress_entry;
 GtkWidget *gn_ngateway_entry;
 GtkWidget *gn_nnetmask_entry;
+GtkWidget *gn_nwmode_combo;
 GtkWidget *gn_nessid_entry;
 GtkWidget *gn_nkey_entry;
 GtkWidget *gn_nwireless_mode_combo;
@@ -78,6 +79,9 @@ gnetconfig_new_interface_dialog_setup (void)
 	gn_nnetmask_entry	= glade_xml_get_widget (xml, "fwn_netmask2");
 	gn_ngateway_entry	= glade_xml_get_widget (xml, "fwn_gateway2");
 	gn_ndhcp_hostname_entry = glade_xml_get_widget (xml, "fwn_dhcp_hostname2");
+	gn_nkey_entry		= glade_xml_get_widget (xml, "fwn_key_entry2");
+	gn_nessid_entry		= glade_xml_get_widget (xml, "fwn_essid_entry2");
+	gn_nwmode_combo		= glade_xml_get_widget (xml, "fwn_wmode_combo2");
 
 	/* setup signals and callbacks */
 	widget = glade_xml_get_widget (xml, "fwn_new_int_save");
@@ -209,8 +213,31 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 			if (strlen(temp))
 				snprintf (nif->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", temp);
 			else
-				nif->dhcp_opts[0] = '\0';
+				*nif->dhcp_opts = '\0';
 			break;
+	}
+	if (fwnet_is_wireless_device(nif->name))
+	{
+		char *key, *essid, *mode;
+		mode = gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_nwmode_combo)));
+		key = (char*)gtk_entry_get_text (GTK_ENTRY(gn_nkey_entry));
+		essid = (char*)gtk_entry_get_text (GTK_ENTRY(gn_nessid_entry));
+
+		if (strlen(key))
+			snprintf (nif->key, FWNET_ENCODING_TOKEN_MAX, key);
+		else
+			*nif->key = '\0';
+
+		if (strlen(essid))
+			snprintf (nif->essid, FWNET_ESSID_MAX_SIZE, essid);
+		else
+			*nif->essid = '\0';
+
+		if (strlen(mode))
+		{
+			snprintf (nif->mode, FWNET_MODE_MAX_SIZE, mode);
+			g_free (mode);
+		}
 	}
 	active_profile->interfaces = g_list_append (active_profile->interfaces, nif);
 	gnetconfig_save_profile (active_profile);
