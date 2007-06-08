@@ -66,7 +66,7 @@ gnetconfig_about (void)
                            "website", "http://www.frugalware.org/",
                            "website-label", "http://www.frugalware.org/",
                            "logo", about_pixbuf,
-                           "wrap-license", TRUE,
+						   "wrap-license", TRUE,
                            NULL);
 	return;
 }

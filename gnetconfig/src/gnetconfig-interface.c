@@ -61,6 +61,7 @@ GtkWidget *gn_dns_listview;
 GtkWidget *gn_dhcp_hostname_entry;
 GtkWidget *gn_wireless_mode_combo;
 GtkWidget *gn_config_dsl_check;
+GtkWidget *gn_statusbar;
 
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
@@ -77,6 +78,7 @@ static void gnetconfig_populate_profile_list (void);
 static void gnetconfig_load_profile (const char *name);
 static void gnetconfig_populate_dns_list (GList *list);
 static void gnetconfig_setup_new_profile (const char *profile);
+static void gnetconfig_update_status (const gchar *msg);
 
 /* new profile dialog */
 static void gnetconfig_new_profile_dialog_show (void);
@@ -137,6 +139,7 @@ gnetconfig_interface_init (void)
 	gn_dsl_password_entry	= glade_xml_get_widget (xml, "fwn_dsl_password");
 	gn_dsl_cpassword_entry	= glade_xml_get_widget (xml, "fwn_dsl_cpassword");
 	gn_config_dsl_check	= glade_xml_get_widget (xml, "fwn_config_dsl_check2");
+	gn_statusbar		= glade_xml_get_widget (xml, "fwn_statusbar");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -337,6 +340,9 @@ gnetconfig_populate_profile_list (void)
 			{
 				index++;
 				gtk_list_store_set (gn_profile_store, &iter, 0, pixbuf, -1);
+				gchar *msg = g_strdup_printf ("%s %s", _("Active network profile:"), fn);
+				gnetconfig_update_status (msg);
+				g_free (msg);
 			}
 		}
 		file = g_dir_read_name (dir);
@@ -583,6 +589,19 @@ gnetconfig_setup_new_profile (const char *profile)
 	gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
 	gtk_list_store_clear (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gn_dns_listview))));
+
+	return;
+}
+
+static void
+gnetconfig_update_status (const gchar *msg)
+{
+	static guint ci = 0;
+
+	if (ci)
+		gtk_statusbar_pop (GTK_STATUSBAR(gn_statusbar), ci);
+	ci = gtk_statusbar_get_context_id (GTK_STATUSBAR(gn_statusbar), "-");
+	ci = gtk_statusbar_push (GTK_STATUSBAR(gn_statusbar), ci, msg);
 
 	return;
 }
@@ -955,10 +974,14 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 			string = g_strdup_printf (" (Wireless Connection)\n\n");
 		}
 		else if (strlen(active_profile->adsl_interface))
+		{	
 			if (!strcmp(active_profile->adsl_interface, inte->name))
 				string = g_strdup_printf (" (DSL Connection)\n\n");
+		}
 		else
+		{
 			string = g_strdup_printf (" \n\n");
+		}
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		g_free (string);
 		string = g_strdup_printf ("IP Address:\t %s\nSubnet Mask:\t %s\n", ip, netmask);
