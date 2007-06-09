@@ -66,20 +66,14 @@ fwnet_profile_t *
 gnetconfig_new_profile (const char *name)
 {
 	fwnet_profile_t		*profile = NULL;
-	fwnet_interface_t	*interface = NULL;
 
-	/* following code is taken from netconfig */
+	/* following code is borrowed from netconfig */
 	profile = (fwnet_profile_t*) malloc(sizeof(fwnet_profile_t));
-	if (profile == NULL)
-		return NULL;
-	memset (profile, 0, sizeof(fwnet_profile_t));
-	interface = (fwnet_interface_t*) malloc(sizeof(fwnet_interface_t));
-	if (interface == NULL)
-		return NULL;
-	memset (interface, 0, sizeof(fwnet_interface_t));
-	interface->options = NULL;
-	profile->interfaces = g_list_append (profile->interfaces, interface);
-	sprintf (profile->name, name);
+	if (profile)
+	{
+		memset (profile, 0, sizeof(fwnet_profile_t));
+		sprintf (profile->name, name);
+	}
 
 	return profile;
 }
