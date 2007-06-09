@@ -1,5 +1,5 @@
 /***************************************************************************
- *  gnetconfig-profile.c
+ *  gnetconfig-new_profile.c
  *  Author(s): 	Priyank Gosalia <priyankmg@gmail.com>
  *  Copyright (C) 2007 Frugalware Developer Team
  ****************************************************************************/

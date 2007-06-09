@@ -34,6 +34,7 @@
 #include "gnetconfig-about.h"
 #include "gnetconfig-messages.h"
 #include "gnetconfig-misc.h"
+#include "gnetconfig-new_profile.h"
 #include "gnetconfig-new_interface.h"
 
 #include <libfwutil.h>
