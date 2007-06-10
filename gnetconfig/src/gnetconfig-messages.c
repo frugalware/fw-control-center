@@ -70,3 +70,23 @@ gn_message (const char *message_str)
 	return;
 }
 
+gint
+gn_question (const char *message_str)
+{
+	GtkWidget 	*dialog;
+	gint 		ret;
+
+	dialog = gtk_message_dialog_new (GTK_WINDOW(gn_main_window),
+					GTK_DIALOG_DESTROY_WITH_PARENT,
+					GTK_MESSAGE_QUESTION,
+					GTK_BUTTONS_YES_NO,
+					"%s",
+					message_str);
+	gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE), 
+	ret = gtk_dialog_run (GTK_DIALOG(dialog));
+	gtk_widget_destroy (dialog);
+
+	return ret;
+}
+
+

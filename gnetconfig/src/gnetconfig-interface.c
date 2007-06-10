@@ -575,13 +575,7 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 	gtk_tree_model_get (model, &iter, 1, &profile, -1);
 	if (strcmp(profile, fwnet_lastprofile()))
 	{
-		GtkWidget *ask = gtk_message_dialog_new (GTK_WINDOW(gn_main_window),
-							GTK_DIALOG_DESTROY_WITH_PARENT,
-							GTK_MESSAGE_QUESTION,
-							GTK_BUTTONS_YES_NO,
-							"%s",
-							_("Are you sure you want to delete this profile ?"));
-		switch ( gtk_dialog_run(GTK_DIALOG(ask)) )
+		switch ( gn_question (_("Are you sure you want to delete this profile ?")) )
 		{
 			case GTK_RESPONSE_YES:
 				path = g_strdup_printf ("/etc/sysconfig/network/%s", profile);
@@ -598,7 +592,6 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 			case GTK_RESPONSE_DELETE_EVENT:
 					break;
 		}
-		gtk_widget_destroy (ask);
 	}
 	else
 	{
@@ -863,6 +856,9 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	GtkTreeIter		iter;
 	gboolean		found = FALSE;
 	fwnet_interface_t*	inte = NULL;
+
+	if (gn_question (_("Are you sure you want to delete this interface ?")) == GTK_RESPONSE_NO)
+		return;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
