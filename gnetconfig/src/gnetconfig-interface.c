@@ -78,7 +78,6 @@ GtkWidget *gn_wireless_table;
 static void gnetconfig_populate_profile_list (void);
 static void gnetconfig_load_profile (const char *name);
 static void gnetconfig_populate_dns_list (GList *list);
-static void gnetconfig_setup_new_profile (const char *profile);
 static void gnetconfig_update_status (const gchar *msg);
 
 /* new nameserver dialog */
@@ -99,6 +98,7 @@ static void cb_gn_interface_edited (GtkButton *button, gpointer data);
 static void cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data);
 static void cb_gn_interface_delete (GtkButton *button, gpointer data);
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
+static void cb_gn_delete_profile_clicked (GtkButton *button, gpointer data);
 static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
 static void cb_gn_interface_double_click (GtkTreeView *treeview);
 static void cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event);
@@ -241,6 +241,11 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_delete_dns_clicked),
+			NULL);
+	widget = glade_xml_get_widget (xml, "fwn_delete_profile");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_delete_profile_clicked),
 			NULL);
 	widget = glade_xml_get_widget (xml, "fwn_if_start");
 	g_signal_connect (G_OBJECT(widget),
@@ -558,6 +563,53 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 }
 
 static void
+cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
+{
+	GtkTreeModel	*model = NULL;
+	GtkTreeIter	iter;
+	gchar		*path = NULL;
+	gchar		*profile = NULL;
+
+	gtk_combo_box_get_active_iter (GTK_COMBO_BOX(gn_profile_combo), &iter);
+	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
+	gtk_tree_model_get (model, &iter, 1, &profile, -1);
+	if (strcmp(profile, fwnet_lastprofile()))
+	{
+		GtkWidget *ask = gtk_message_dialog_new (GTK_WINDOW(gn_main_window),
+							GTK_DIALOG_DESTROY_WITH_PARENT,
+							GTK_MESSAGE_QUESTION,
+							GTK_BUTTONS_YES_NO,
+							"%s",
+							_("Are you sure you want to delete this profile ?"));
+		switch ( gtk_dialog_run(GTK_DIALOG(ask)) )
+		{
+			case GTK_RESPONSE_YES:
+				path = g_strdup_printf ("/etc/sysconfig/network/%s", profile);
+				gint ret = g_remove (path);
+				if (ret == -1)
+					gn_error (_("The was an error deleting the profile."), ERROR_GUI);
+				else
+					gn_message (_("Profile delete successfully"));
+				g_free (path);
+				gnetconfig_populate_profile_list ();
+				break;
+
+			case GTK_RESPONSE_NO:
+			case GTK_RESPONSE_DELETE_EVENT:
+					break;
+		}
+		gtk_widget_destroy (ask);
+	}
+	else
+	{
+		gn_error ("You cannot delete an active network profile.", ERROR_GUI);
+		g_free (profile);
+	}
+
+	return;
+}
+
+static void
 cb_gn_interface_add (GtkButton *button, gpointer data)
 {
 	gnetconfig_new_interface_dialog_show ();
@@ -831,8 +883,8 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	if (!found)
 		gn_error ("Unknown error.", ERROR_GUI);
 
-	gtk_combo_box_get_active_iter (gn_profile_combo, &iter);
-	model = gtk_combo_box_get_model (gn_profile_combo);
+	gtk_combo_box_get_active_iter (GTK_COMBO_BOX(gn_profile_combo), &iter);
+	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
 	gtk_tree_model_get (model, &iter, 1, &profile, -1);
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if ((strcmp(active_profile->name, profile)) && !fwutil_system(ptr))
@@ -1145,7 +1197,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	fwnet_interface_t	*interface = NULL;
 	gint			type = -1;
 
-	if_name = gtk_label_get_text (GTK_LABEL(data));
+	if_name = (gchar*)gtk_label_get_text (GTK_LABEL(data));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
 	{
 		interface = intf->data;
