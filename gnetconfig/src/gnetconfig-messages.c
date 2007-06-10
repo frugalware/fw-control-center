@@ -42,8 +42,7 @@ gn_error (const char *error_str, ErrorType type)
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_ERROR,
 						GTK_BUTTONS_OK,
-						"%s: %s",
-						_("ERROR"),
+						"%s",
 						error_str);
 		gtk_window_set_resizable (GTK_WINDOW(error_dlg), FALSE);
 		g_signal_connect (error_dlg, "response", G_CALLBACK (gtk_widget_destroy), error_dlg);
@@ -62,8 +61,7 @@ gn_message (const char *message_str)
 					GTK_DIALOG_DESTROY_WITH_PARENT,
 					GTK_MESSAGE_INFO,
 					GTK_BUTTONS_OK,
-					"%s: %s",
-					_("Information "),
+					"%s",
 					message_str);
 	gtk_window_set_resizable (GTK_WINDOW(message_dlg), FALSE);
 	g_signal_connect (message_dlg, "response", G_CALLBACK (gtk_widget_destroy), message_dlg);

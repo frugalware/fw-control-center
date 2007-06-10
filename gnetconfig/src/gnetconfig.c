@@ -55,7 +55,7 @@ main (int argc, char *argv[])
 						GTK_DIALOG_DESTROY_WITH_PARENT,
 						GTK_MESSAGE_ERROR,
 						GTK_BUTTONS_CLOSE,
-						s_("Gnetconfig should be run as root."));
+						_("Gnetconfig should be run as root."));
 		gtk_dialog_run (GTK_DIALOG(dlg));
 		gtk_widget_destroy (dlg);
 		return 1;
