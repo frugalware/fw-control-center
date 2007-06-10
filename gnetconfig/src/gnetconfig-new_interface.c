@@ -297,7 +297,6 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 		gchar *username;
 		gchar *pass;
 		gchar *cpass;
-		gboolean error = FALSE;
 
 		username = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_ndsl_username));
 		pass = (gchar*)gtk_entry_get_text (GTK_ENTRY(gn_ndsl_password));

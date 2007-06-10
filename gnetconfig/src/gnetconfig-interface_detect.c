@@ -43,7 +43,7 @@ gnetconfig_if_detect_dlg_init (void)
 {
 	GtkWidget 		*button_save;
 	GtkWidget 		*button_cancel;
-	GtkButtonBox		*button_box;
+	GtkWidget		*button_box;
 	GtkWidget  		*vbox;
 	GtkWidget		*label;
 	GtkListStore 		*store;
