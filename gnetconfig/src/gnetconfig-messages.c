@@ -45,9 +45,8 @@ gn_error (const char *error_str, ErrorType type)
 						"%s",
 						error_str);
 		gtk_window_set_resizable (GTK_WINDOW(error_dlg), FALSE);
-		g_signal_connect (error_dlg, "response", G_CALLBACK (gtk_widget_destroy), error_dlg);
-
-		gtk_widget_show_all (error_dlg);
+		gtk_dialog_run (GTK_DIALOG(error_dlg));
+		gtk_widget_destroy (error_dlg);
 	}
 	return;
 }
@@ -64,8 +63,8 @@ gn_message (const char *message_str)
 					"%s",
 					message_str);
 	gtk_window_set_resizable (GTK_WINDOW(message_dlg), FALSE);
-	g_signal_connect (message_dlg, "response", G_CALLBACK (gtk_widget_destroy), message_dlg);
-	gtk_widget_show_all (message_dlg);
+	gtk_dialog_run (GTK_DIALOG(message_dlg));
+	gtk_widget_destroy (message_dlg);
 
 	return;
 }
