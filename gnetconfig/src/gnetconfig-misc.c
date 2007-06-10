@@ -73,6 +73,9 @@ gnetconfig_new_profile (const char *name)
 	{
 		memset (profile, 0, sizeof(fwnet_profile_t));
 		sprintf (profile->name, name);
+		char *path = g_strdup_printf ("/etc/sysconfig/network/%s", name);
+		FILE *fp = fopen (path, "w");
+		fclose (fp);
 	}
 
 	return profile;

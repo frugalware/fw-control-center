@@ -81,10 +81,6 @@ static void gnetconfig_populate_dns_list (GList *list);
 static void gnetconfig_setup_new_profile (const char *profile);
 static void gnetconfig_update_status (const gchar *msg);
 
-/* new profile dialog */
-static void gnetconfig_new_profile_dialog_show (void);
-static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
-
 /* new nameserver dialog */
 static void gnetconfig_new_nameserver_dialog_show (void);
 static void cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
@@ -218,13 +214,6 @@ gnetconfig_interface_init (void)
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW(gn_dns_listview), -1, "IP Address", renderer, "text", 0, NULL);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_dns_listview), model);
 
-	/* setup new profile dialog */
-	widget = glade_xml_get_widget (xml, "fwn_menu_newprofile");
-	g_signal_connect (G_OBJECT(widget),
-			"activate",
-			G_CALLBACK(gnetconfig_new_profile_dialog_show),
-			NULL);
-
 	/* other stuff */
 	widget = glade_xml_get_widget (xml, "fwn_interface_save");
 	g_signal_connect (G_OBJECT(widget),
@@ -298,6 +287,7 @@ gnetconfig_interface_init (void)
 
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
+	gnetconfig_new_profile_dialog_init ();
 	gnetconfig_new_interface_dialog_setup ();
 	gtk_widget_show (gn_main_window);
 
@@ -491,41 +481,6 @@ gnetconfig_save_profile (fwnet_profile_t *profile)
 }
 
 static void
-gnetconfig_new_profile_dialog_show (void)
-{
-	GtkWidget 	*dialog;
-	GtkWidget 	*label;
-	GtkWidget 	*entry;
-	static gchar	*message = "Enter a name for the new profile: ";
-
-	dialog = gtk_dialog_new_with_buttons (_("New Profile"),
-                                         NULL,
-                                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                                         GTK_STOCK_OK,
-                                         GTK_RESPONSE_ACCEPT,
-                                         GTK_STOCK_CANCEL,
-                                         GTK_RESPONSE_REJECT,
-                                         NULL);
-	gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
-	label = gtk_label_new (message);
-	entry = gtk_entry_new ();
-
-	g_signal_connect_swapped (dialog,
-                             "response",
-                             G_CALLBACK (cb_gn_new_profile_dialog_response),
-                             dialog);
-	gtk_misc_set_padding (GTK_MISC(label), 5, 5);
-	gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER((GTK_DIALOG(dialog))->vbox), 10);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), entry);
-
-	gtk_widget_show_all (dialog);
-
-	return;
-}
-
-static void
 gnetconfig_new_nameserver_dialog_show (void)
 {
 	GtkWidget 	*dialog;
@@ -556,40 +511,6 @@ gnetconfig_new_nameserver_dialog_show (void)
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), entry);
 
 	gtk_widget_show_all (dialog);
-
-	return;
-}
-
-static void
-gnetconfig_setup_new_profile (const char *profile)
-{
-	fwnet_profile_t	*new_profile = NULL;
-	GtkListStore	*profile_list = NULL;
-	GtkTreeModel	*profile_model = NULL;
-	GtkTreeIter	iter;
-	gint		n;
-
-	if ((new_profile = gnetconfig_new_profile (profile)) == NULL)
-	{
-		gn_error ("Error creating profile.", ERROR_GUI);
-		return;
-	}
-
-	/* set as active profile */
-	active_profile = new_profile;
-	profile_model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
-	profile_list = GTK_LIST_STORE (profile_model);
-	gtk_list_store_append (profile_list, &iter);
-	gtk_list_store_set (profile_list, &iter, 1, profile, -1);
-	n = gtk_tree_model_iter_n_children (profile_model, NULL);
-	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_profile_combo), n-1);
-
-	/* Reset all entries */
-	gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
-	gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), "");
-	gtk_entry_set_text (GTK_ENTRY(gn_netmask_entry), "");
-	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_conntype_combo), 1);
-	gtk_list_store_clear (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gn_dns_listview))));
 
 	return;
 }
@@ -1132,35 +1053,6 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 			break;
 	}
 
-	return;
-}
-
-static void
-cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
-{
-	if (arg1 == GTK_RESPONSE_ACCEPT)
-	{
-		GList		*wlist = NULL;
-		gchar		*filename = NULL;
-		const gchar	*pname;
-
-		wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
-		wlist = g_list_next (wlist);
-		pname = gtk_entry_get_text (GTK_ENTRY(wlist->data));
-
-		/* check if profile already exists */
-		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
-		if (g_file_test(filename, G_FILE_TEST_EXISTS))
-			gn_error ("profile already exists", ERROR_GUI);
-
-		// further processing
-		gnetconfig_setup_new_profile (pname);
-
-		g_free (filename);
-		g_list_free (wlist);
-	}
-
-	gtk_widget_destroy (GTK_WIDGET(dlg));
 	return;
 }
 

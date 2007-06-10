@@ -7,6 +7,12 @@
 #include <unistd.h>
 #include <locale.h>
 #include <gtk/gtk.h>
+#include <glade/glade.h>
 #include <libfwnetconfig.h>
+
+#include "gnetconfig-misc.h"
+#include "gnetconfig-messages.h"
+
+void gnetconfig_new_profile_dialog_init ();
 
 #endif
