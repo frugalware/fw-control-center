@@ -55,7 +55,7 @@ gnetconfig_about (void)
 {
 	if (!about_pixbuf)
 		about_pixbuf = gtk_widget_render_icon (gn_main_window, GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL);
-	gtk_show_about_dialog (gn_main_window,
+	gtk_show_about_dialog (GTK_WINDOW(gn_main_window),
                            "name", "Gnetconfig",
                            "version", VERSION,
                            "copyright", _("\xC2\xA9 2007 Frugalware Developer Team (GPL)"),

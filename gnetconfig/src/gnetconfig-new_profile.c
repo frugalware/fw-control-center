@@ -29,6 +29,8 @@ extern GtkWidget	*gn_profile_combo;
 extern GtkWidget	*gn_dns_listview;
 
 static void gnetconfig_new_profile_dialog_show (void);
+static int gnetconfig_setup_new_profile (const char *profile);
+
 static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
 
 void
@@ -54,7 +56,7 @@ gnetconfig_new_profile_dialog_show (void)
 	static gchar	*message = "Enter a name for the new profile: ";
 
 	dialog = gtk_dialog_new_with_buttons (_("New Profile"),
-                                         gn_main_window,
+                                         GTK_WINDOW(gn_main_window),
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_STOCK_OK,
                                          GTK_RESPONSE_ACCEPT,
@@ -80,10 +82,9 @@ gnetconfig_new_profile_dialog_show (void)
 	return;
 }
 
-int
+static int
 gnetconfig_setup_new_profile (const char *profile)
 {
-	FILE		*fp = NULL;
 	fwnet_profile_t	*new_profile = NULL;
 	GtkListStore	*profile_list = NULL;
 	GtkTreeModel	*profile_model = NULL;
@@ -108,7 +109,7 @@ gnetconfig_setup_new_profile (const char *profile)
 	/* Reset all entries */
 	gtk_list_store_clear (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gn_dns_listview))));
 
-	return;
+	return 0;
 }
 
 /* CALLBACKS */
@@ -131,11 +132,17 @@ cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
 		if (g_file_test(filename, G_FILE_TEST_EXISTS))
 		{	
 			gn_error ("profile already exists", ERROR_GUI);
+			g_free (filename);
 			return;
 		}
 
-		// further processing
-		gnetconfig_setup_new_profile (pname);
+		/* further processing */
+		if (gnetconfig_setup_new_profile (pname))
+		{
+			gn_error ("Error setting up new profile", ERROR_GUI);
+			g_free (filename);
+			return;
+		}
 
 		g_free (filename);
 		g_list_free (wlist);
