@@ -804,6 +804,7 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 {
 	gchar			*ptr = NULL;
 	gchar			*ifname = NULL;
+	gchar			*profile = NULL;
 	GList			*interface = NULL;
 	GtkTreeModel		*model = NULL;
 	GtkTreeSelection	*selection = NULL;
@@ -830,8 +831,11 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	if (!found)
 		gn_error ("Unknown error.", ERROR_GUI);
 
+	gtk_combo_box_get_active_iter (gn_profile_combo, &iter);
+	model = gtk_combo_box_get_model (gn_profile_combo);
+	gtk_tree_model_get (model, &iter, 1, &profile, -1);
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
-	if (!fwutil_system(ptr))
+	if ((strcmp(active_profile->name, profile)) && !fwutil_system(ptr))
 	{
 		gn_error ("The selected interface is running. Please stop it first.", ERROR_GUI);
 	}
