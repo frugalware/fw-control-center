@@ -48,10 +48,16 @@ main (int argc, char *argv[])
 
 	gtk_init (&argc, &argv);
 
-	/* FIX ME */	
 	if ( geteuid() != 0 )
 	{
-		g_error (_("Gnetconfig should be run as root."));
+		GtkWidget *dlg;
+		dlg = gtk_message_dialog_new (NULL,
+						GTK_DIALOG_DESTROY_WITH_PARENT,
+						GTK_MESSAGE_ERROR,
+						GTK_BUTTONS_CLOSE,
+						s_("Gnetconfig should be run as root."));
+		gtk_dialog_run (GTK_DIALOG(dlg));
+		gtk_widget_destroy (dlg);
 		return 1;
 	}
 
