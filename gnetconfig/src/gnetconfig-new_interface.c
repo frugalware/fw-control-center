@@ -336,10 +336,13 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 		else
 			*nif->essid = '\0';
 
-		if (strlen(mode))
+		if (mode != NULL)
 		{
-			snprintf (nif->mode, FWNET_MODE_MAX_SIZE, mode);
-			g_free (mode);
+			if (strlen(mode))
+			{
+				snprintf (nif->mode, FWNET_MODE_MAX_SIZE, mode);
+				g_free (mode);
+			}
 		}
 	}
 	active_profile->interfaces = g_list_append (active_profile->interfaces, nif);
