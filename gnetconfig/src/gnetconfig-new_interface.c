@@ -268,8 +268,10 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 				(char*)gtk_entry_get_text (GTK_ENTRY(gn_nipaddress_entry)),
 				(char*)gtk_entry_get_text (GTK_ENTRY(gn_nnetmask_entry)));
 			nif->options = g_list_append (nif->options, opts);
-			snprintf (nif->gateway, FWNET_GW_MAX_SIZE, "default gw %s",
-				(char*)gtk_entry_get_text (GTK_ENTRY(gn_ngateway_entry)));
+			if ((gtk_entry_get_text(GTK_ENTRY(gn_ngateway_entry)))!=NULL &&
+			strlen(gtk_entry_get_text(GTK_ENTRY(gn_ngateway_entry))))
+				snprintf (nif->gateway, FWNET_GW_MAX_SIZE, "default gw %s",
+					(char*)gtk_entry_get_text (GTK_ENTRY(gn_ngateway_entry)));
 			break;
 		case GN_DHCP:
 			sprintf (opts, "dhcp");
