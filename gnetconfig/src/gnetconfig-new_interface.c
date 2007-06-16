@@ -252,6 +252,12 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 		gn_error ("Error allocating memory for new interface.", ERROR_GUI);
 		return;
 	}
+	if (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_nconntype_combo)) == -1)
+	{
+		gn_error ("No connection type selected. Please select a connection type first.", ERROR_GUI);
+		g_free (nif);
+		return;
+	}
 	memset (nif, 0, sizeof(fwnet_interface_t));
 	snprintf (nif->name, IF_NAMESIZE, (char*)gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry)));
 	switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_nconntype_combo)))
