@@ -342,6 +342,7 @@ gnetconfig_populate_profile_list (void)
 				gnetconfig_update_status (msg);
 				g_free (msg);
 			}
+			g_free (fn);
 		}
 		file = g_dir_read_name (dir);
 	}
