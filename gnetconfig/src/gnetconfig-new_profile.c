@@ -61,7 +61,7 @@ gnetconfig_new_profile_dialog_show (void)
 		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
 		if (g_file_test(filename, G_FILE_TEST_EXISTS))
 		{	
-			gn_error ("A profile with this name already exists. Please provide a unique profile name.", ERROR_GUI);
+			gn_error (_("A profile with this name already exists. Please provide a unique profile name."), ERROR_GUI);
 			g_free (filename);
 			goto up;
 			return;
