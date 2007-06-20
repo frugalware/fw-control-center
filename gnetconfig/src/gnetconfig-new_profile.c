@@ -31,8 +31,6 @@ extern GtkWidget	*gn_dns_listview;
 static void gnetconfig_new_profile_dialog_show (void);
 static int gnetconfig_setup_new_profile (const char *profile);
 
-static void cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
-
 void
 gnetconfig_new_profile_dialog_init ()
 {
@@ -50,34 +48,35 @@ gnetconfig_new_profile_dialog_init ()
 static void
 gnetconfig_new_profile_dialog_show (void)
 {
-	GtkWidget 	*dialog;
-	GtkWidget 	*label;
-	GtkWidget 	*entry;
-	static gchar	*message = "Enter a name for the new profile: ";
+	gint	res;
+	char	*pname = NULL;
+	gchar	*filename = NULL;
 
-	dialog = gtk_dialog_new_with_buttons (_("New Profile"),
-                                         GTK_WINDOW(gn_main_window),
-                                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                                         GTK_STOCK_OK,
-                                         GTK_RESPONSE_ACCEPT,
-                                         GTK_STOCK_CANCEL,
-                                         GTK_RESPONSE_REJECT,
-                                         NULL);
-	gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
-	label = gtk_label_new (message);
-	entry = gtk_entry_new ();
+	up: pname = gn_input (_("New Profile"),
+				_("Enter a name for the new profile"),
+				&res);
+	if (res == GTK_RESPONSE_ACCEPT)
+	{
+		/* check if profile already exists */
+		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
+		if (g_file_test(filename, G_FILE_TEST_EXISTS))
+		{	
+			gn_error ("A profile with this name already exists. Please provide a unique profile name.", ERROR_GUI);
+			g_free (filename);
+			goto up;
+			return;
+		}
 
-	g_signal_connect_swapped (dialog,
-                             "response",
-                             G_CALLBACK (cb_gn_new_profile_dialog_response),
-                             dialog);
-	gtk_misc_set_padding (GTK_MISC(label), 5, 5);
-	gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER((GTK_DIALOG(dialog))->vbox), 10);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), entry);
-
-	gtk_widget_show_all (dialog);
+		/* further processing */
+		if (gnetconfig_setup_new_profile (pname))
+		{
+			gn_error ("Error setting up new profile", ERROR_GUI);
+			g_free (filename);
+			return;
+		}
+		g_free (pname);
+		g_free (filename);
+	}
 
 	return;
 }
@@ -96,8 +95,28 @@ gnetconfig_setup_new_profile (const char *profile)
 		gn_error ("Error creating profile.", ERROR_GUI);
 		return 1;
 	}
+	if (gn_question(_("Do you want to give a description to the new profile?")) == GTK_RESPONSE_YES)
+	{
+		char *ret = NULL;
+		gint res;
 
+		up: ret = gn_input (_("New Profile"), _("Enter a description for this profile:"), &res);
+		if (res != GTK_RESPONSE_ACCEPT)
+			goto down;
+		if (ret!=NULL && strlen(ret))
+		{
+			snprintf (new_profile->desc, PATH_MAX, ret);
+			fwnet_writeconfig (new_profile, NULL);
+			g_free (ret);
+		}
+		else
+		{
+			gn_error (_("Please enter a valid description for the new profile or click the Cancel button to contiune without entering a description."), ERROR_GUI);
+			goto up;
+		}
+	}
 	/* set as active profile */
+	down:
 	active_profile = new_profile;
 	profile_model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
 	profile_list = GTK_LIST_STORE (profile_model);
@@ -110,44 +129,4 @@ gnetconfig_setup_new_profile (const char *profile)
 	gtk_list_store_clear (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gn_dns_listview))));
 
 	return 0;
-}
-
-/* CALLBACKS */
-
-static void
-cb_gn_new_profile_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
-{
-	if (arg1 == GTK_RESPONSE_ACCEPT)
-	{
-		GList		*wlist = NULL;
-		gchar		*filename = NULL;
-		const gchar	*pname;
-
-		wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
-		wlist = g_list_next (wlist);
-		pname = gtk_entry_get_text (GTK_ENTRY(wlist->data));
-
-		/* check if profile already exists */
-		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
-		if (g_file_test(filename, G_FILE_TEST_EXISTS))
-		{	
-			gn_error ("profile already exists", ERROR_GUI);
-			g_free (filename);
-			return;
-		}
-
-		/* further processing */
-		if (gnetconfig_setup_new_profile (pname))
-		{
-			gn_error ("Error setting up new profile", ERROR_GUI);
-			g_free (filename);
-			return;
-		}
-
-		g_free (filename);
-		g_list_free (wlist);
-	}
-
-	gtk_widget_destroy (GTK_WIDGET(dlg));
-	return;
 }

@@ -88,4 +88,38 @@ gn_question (const char *message_str)
 	return ret;
 }
 
+char *
+gn_input (const char *title, const char *message, int *res)
+{
+	GtkWidget	*dialog;
+	GtkWidget	*entry;
+	GtkWidget	*label;
+	char		*ret = NULL;
+
+	ret = NULL;
+
+	dialog = gtk_dialog_new_with_buttons (title,
+						GTK_WINDOW(gn_main_window),
+						GTK_DIALOG_DESTROY_WITH_PARENT,
+						GTK_STOCK_OK,
+                                         	GTK_RESPONSE_ACCEPT,
+                                         	GTK_STOCK_CANCEL,
+                                         	GTK_RESPONSE_REJECT,
+                                         	NULL);
+	gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
+	label = gtk_label_new (message);
+	entry = gtk_entry_new ();
+
+	gtk_misc_set_padding (GTK_MISC(label), 5, 5);
+	gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER((GTK_DIALOG(dialog))->vbox), 10);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), entry);
+	gtk_widget_show_all (GTK_WIDGET(dialog));
+	*res = gtk_dialog_run (GTK_DIALOG(dialog));
+	ret = (char*)g_strdup(gtk_entry_get_text (GTK_ENTRY(entry)));
+	gtk_widget_destroy (GTK_WIDGET(dialog));
+
+	return ret;
+}
 

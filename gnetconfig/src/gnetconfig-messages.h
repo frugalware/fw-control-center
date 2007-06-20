@@ -23,4 +23,6 @@ void gn_message (const char *);
 
 gint gn_question (const char *);
 
+char * gn_input (const char *, const char *, int *);
+
 #endif
