@@ -459,7 +459,7 @@ gnetconfig_load_profile (const char *name)
 	if (strlen(hostname))
 		gtk_entry_set_text (GTK_ENTRY(gn_hostname_entry), hostname);
 	else
-		gn_error ("Couldn't read hostname.", ERROR_GUI);
+		gn_error (_("Couldn't read hostname."));
 
 	return;
 }
@@ -581,7 +581,7 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 				path = g_strdup_printf ("/etc/sysconfig/network/%s", profile);
 				gint ret = g_remove (path);
 				if (ret == -1)
-					gn_error (_("The was an error deleting the profile."), ERROR_GUI);
+					gn_error (_("The was an error deleting the profile."));
 				else
 					gn_message (_("Profile delete successfully"));
 				g_free (path);
@@ -595,7 +595,7 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 	}
 	else
 	{
-		gn_error ("You cannot delete an active network profile.", ERROR_GUI);
+		gn_error ("You cannot delete an active network profile.");
 		g_free (profile);
 	}
 
@@ -639,11 +639,11 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 		}
 	}
 	if (!found)
-		gn_error ("Unknown error.", ERROR_GUI);
+		gn_error ("Unknown error.");
 
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if (!fwutil_system(ptr))
-		gn_error ("Interface is already started.", ERROR_GUI);
+		gn_error ("Interface is already started.");
 	else
 	{
 		ret = fwnet_ifup (inte, active_profile);
@@ -684,11 +684,11 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 		}
 	}
 	if (!found)
-		gn_error ("Unknown error.", ERROR_GUI);
+		gn_error ("Unknown error.");
 
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if (fwutil_system(ptr))
-		gn_error ("Interface is not running.", ERROR_GUI);
+		gn_error ("Interface is not running.");
 	else
 	{
 		ret = fwnet_ifdown (inte, active_profile);
@@ -839,7 +839,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 		gtk_widget_show (GTK_WIDGET(gn_interface_dialog));
 	}
 	else
-		gn_error ("No network interface found.", ERROR_GUI);
+		gn_error ("No network interface found.");
 
 	return;
 }
@@ -877,7 +877,7 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 		}
 	}
 	if (!found)
-		gn_error ("Unknown error.", ERROR_GUI);
+		gn_error ("Unknown error.");
 
 	gtk_combo_box_get_active_iter (GTK_COMBO_BOX(gn_profile_combo), &iter);
 	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
@@ -885,7 +885,7 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if ((strcmp(active_profile->name, profile)) && !fwutil_system(ptr))
 	{
-		gn_error ("The selected interface is running. Please stop it first.", ERROR_GUI);
+		gn_error ("The selected interface is running. Please stop it first.");
 	}
 	else
 	{
@@ -1120,7 +1120,7 @@ cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog
 		/* check if the entry is blank */
 		if (!strlen(ip))
 		{	
-			gn_error ("Enter a valid ip address", ERROR_GUI);
+			gn_error ("Enter a valid ip address");
 			g_list_free (wlist);
 			return;
 		}
@@ -1279,12 +1279,12 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 
 		if (!strlen(username) || !strlen(pass) || !strlen(cpass))
 		{
-			gn_error (_("Required fields for DSL connection cannot be left blank."), ERROR_GUI);
+			gn_error (_("Required fields for DSL connection cannot be left blank."));
 			return;
 		}
 		if (strcmp(pass,cpass) != 0)
 		{
-			gn_error (_("PPPoE passwords do not match. Please re-enter."), ERROR_GUI);
+			gn_error (_("PPPoE passwords do not match. Please re-enter."));
 			return;
 		}
 		/* hopefully, everything is ok now and we should save the profile */

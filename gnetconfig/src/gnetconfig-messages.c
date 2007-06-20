@@ -26,28 +26,23 @@
 extern GtkWidget *gn_main_window;
 
 void
-gn_error (const char *error_str, ErrorType type)
+gn_error (const char *error_str)
 {
+	GtkWidget *error_dlg = NULL;
+
 	if (!strlen(error_str))
 		return;
-	if (type == ERROR_CONSOLE)
-	{
-		fprintf (stderr, "\n\033[1;31m%s ==>\033[0;1m %s\033[1;0m\n", _("ERROR"), error_str);
-	}
-	else if (type == ERROR_GUI)
-	{
-		GtkWidget *error_dlg;
 
-		error_dlg = gtk_message_dialog_new (GTK_WINDOW(gn_main_window),
-						GTK_DIALOG_DESTROY_WITH_PARENT,
-						GTK_MESSAGE_ERROR,
-						GTK_BUTTONS_OK,
-						"%s",
-						error_str);
-		gtk_window_set_resizable (GTK_WINDOW(error_dlg), FALSE);
-		gtk_dialog_run (GTK_DIALOG(error_dlg));
-		gtk_widget_destroy (error_dlg);
-	}
+	error_dlg = gtk_message_dialog_new (GTK_WINDOW(gn_main_window),
+					GTK_DIALOG_DESTROY_WITH_PARENT,
+					GTK_MESSAGE_ERROR,
+					GTK_BUTTONS_OK,
+					"%s",
+					error_str);
+	gtk_window_set_resizable (GTK_WINDOW(error_dlg), FALSE);
+	gtk_dialog_run (GTK_DIALOG(error_dlg));
+	gtk_widget_destroy (error_dlg);
+
 	return;
 }
 

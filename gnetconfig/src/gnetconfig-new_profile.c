@@ -61,7 +61,7 @@ gnetconfig_new_profile_dialog_show (void)
 		filename = g_strdup_printf ("/etc/sysconfig/network/%s", pname);
 		if (g_file_test(filename, G_FILE_TEST_EXISTS))
 		{	
-			gn_error (_("A profile with this name already exists. Please provide a unique profile name."), ERROR_GUI);
+			gn_error (_("A profile with this name already exists. Please provide a unique profile name."));
 			g_free (filename);
 			goto up;
 			return;
@@ -70,7 +70,7 @@ gnetconfig_new_profile_dialog_show (void)
 		/* further processing */
 		if (gnetconfig_setup_new_profile (pname))
 		{
-			gn_error ("Error setting up new profile", ERROR_GUI);
+			gn_error ("Error setting up new profile");
 			g_free (filename);
 			return;
 		}
@@ -92,7 +92,7 @@ gnetconfig_setup_new_profile (const char *profile)
 
 	if ((new_profile = gnetconfig_new_profile (profile)) == NULL)
 	{
-		gn_error ("Error creating profile.", ERROR_GUI);
+		gn_error ("Error creating profile.");
 		return 1;
 	}
 	if (gn_question(_("Do you want to give a description to the new profile?")) == GTK_RESPONSE_YES)
@@ -111,7 +111,7 @@ gnetconfig_setup_new_profile (const char *profile)
 		}
 		else
 		{
-			gn_error (_("Please enter a valid description for the new profile or click the Cancel button to contiune without entering a description."), ERROR_GUI);
+			gn_error (_("Please enter a valid description for the new profile or click the Cancel button to contiune without entering a description."));
 			goto up;
 		}
 	}

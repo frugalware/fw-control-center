@@ -50,7 +50,7 @@ main (int argc, char *argv[])
 
 	if ( geteuid() != 0 )
 	{
-		gn_error (_("Gnetconfig should be run as root."), ERROR_GUI);
+		gn_error (_("Gnetconfig should be run as root."));
 		return 1;
 	}
 
@@ -60,7 +60,7 @@ main (int argc, char *argv[])
 
 	if (!xml)
 	{
-		gn_error (_("Failed to initialize interface."), ERROR_CONSOLE);
+		g_error (_("Failed to initialize interface."));
 		return 1;
 	}
 

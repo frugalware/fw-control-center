@@ -128,7 +128,7 @@ gnetconfig_detect_interfaces (void)
 	fh = fopen ("/proc/net/dev", "r");
 	if (fh == NULL)
 	{	
-		gn_error ("Error opening /proc/net/dev", ERROR_CONSOLE);
+		gn_error (_("Error opening /proc/net/dev"));
 		return 1;
 	}
 	n_if = g_list_length (active_profile->interfaces);
@@ -203,7 +203,7 @@ cb_gn_if_detect_ok_clicked (GtkWidget *widget, gpointer data)
 	gtk_tree_model_get (model, &iter, 1, &ifname, 3, &status, -1);
 	if (status == TRUE)
 	{
-		gn_error ("The selected interface is already configured. Please select another interface", ERROR_GUI);
+		gn_error ("The selected interface is already configured. Please select another interface");
 		return;
 	}
 	else

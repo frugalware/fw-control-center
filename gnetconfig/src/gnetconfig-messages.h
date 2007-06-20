@@ -11,13 +11,7 @@
 
 #define _(string) gettext (string)
 
-typedef enum _errortype
-{
-	ERROR_CONSOLE = 1, 	/* Display error on the console */
-	ERROR_GUI		/* Display error on gui */
-} ErrorType;
-
-void gn_error (const char *, ErrorType);
+void gn_error (const char *);
 
 void gn_message (const char *);
 
