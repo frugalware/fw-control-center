@@ -36,6 +36,7 @@
 #include "gnetconfig-misc.h"
 #include "gnetconfig-new_profile.h"
 #include "gnetconfig-new_interface.h"
+#include "gnetconfig-interface_opts.h"
 
 #include <libfwutil.h>
 
@@ -293,6 +294,7 @@ gnetconfig_interface_init (void)
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
 	gnetconfig_new_profile_dialog_init ();
+	gnetconfig_interface_opts_init ();
 	gnetconfig_new_interface_dialog_setup ();
 	gtk_widget_show (gn_main_window);
 
@@ -427,7 +429,7 @@ gnetconfig_populate_dns_list (GList *list)
 		list = g_list_next (list);
 	}
 
-	gtk_widget_show (gn_dns_listview);
+//	gtk_widget_show (gn_dns_listview);
 
 	return;
 }
@@ -737,6 +739,10 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 	{
 		gtk_widget_hide (gn_wireless_table);
 		gtk_widget_hide (gn_dsl_table);
+
+		/* populate the opts list */
+		gnetconfig_populate_opts (inte);
+
 		/* set the correct connection type */
 		if ((!fwnet_is_dhcp(inte)))
 		{
