@@ -204,8 +204,8 @@ static fwnet_interface_t *
 gnetconfig_get_active_interface (void)
 {
 	fwnet_interface_t	*inf = NULL;
-	GList				*iflist = NULL;
-	gchar				*name = NULL;
+	GList			*iflist = NULL;
+	gchar			*name = NULL;
 
 	name = (gchar*)gtk_label_get_text (GTK_LABEL(gn_iflabel));
 	for (iflist = active_profile->interfaces; iflist != NULL; iflist = g_list_next(iflist))
@@ -224,15 +224,15 @@ static void
 cb_gn_preup_add (GtkButton *button, gpointer data)
 {
 	fwnet_interface_t	*ift;
-	char				*command;
-	gint				res;
+	char			*command;
+	gint			res;
 
-	ift	= gnetconfig_get_active_interface ();
+	ift = gnetconfig_get_active_interface ();
 	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
 	if (res == GTK_RESPONSE_ACCEPT)
 	{
 		if (!command || !strlen(command))
-		{	
+		{
 			gn_error ("Required field cannot be blank. Please provide a valid command name.");
 			goto up;
 		}
@@ -248,6 +248,32 @@ cb_gn_preup_add (GtkButton *button, gpointer data)
 static void
 cb_gn_preup_remove (GtkButton *button, gpointer data)
 {
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter		iter;
+	GtkTreeSelection	*selection = NULL;
+	GList			*list = NULL;
+	char			*command = NULL;
+	fwnet_interface_t	*inf = NULL;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_preup_treeview));
+	if (FALSE == gtk_tree_selection_get_selected(selection, &model, &iter))
+		return;
+
+	gtk_tree_model_get (model, &iter, 1, &command, -1);
+	inf = gnetconfig_get_active_interface();
+	for (list = inf->pre_ups; list != NULL; list = list->next)
+	{
+		if (list->data && !strcmp((char*)list->data, command))
+		{
+			inf->pre_ups = g_list_delete_link (inf->pre_ups, list);
+			break;
+		}
+	}
+	
+	gnetconfig_save_profile (active_profile);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	
 	return;
 }
 
@@ -255,8 +281,8 @@ static void
 cb_gn_predown_add (GtkButton *button, gpointer data)
 {
 	fwnet_interface_t	*ift;
-	char				*command;
-	gint				res;
+	char			*command;
+	gint			res;
 
 	ift	= gnetconfig_get_active_interface ();
 	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
@@ -279,6 +305,32 @@ cb_gn_predown_add (GtkButton *button, gpointer data)
 static void
 cb_gn_predown_remove (GtkButton *button, gpointer data)
 {
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter		iter;
+	GtkTreeSelection	*selection = NULL;
+	GList			*list = NULL;
+	char			*command = NULL;
+	fwnet_interface_t	*inf = NULL;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_preup_treeview));
+	if (FALSE == gtk_tree_selection_get_selected(selection, &model, &iter))
+		return;
+
+	gtk_tree_model_get (model, &iter, 1, &command, -1);
+	inf = gnetconfig_get_active_interface();
+	for (list = inf->pre_downs; list != NULL; list = list->next)
+	{
+		if (list->data && !strcmp((char*)list->data, command))
+		{
+			inf->pre_downs = g_list_delete_link (inf->pre_downs, list);
+			break;
+		}
+	}
+	
+	gnetconfig_save_profile (active_profile);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	
 	return;
 }
 
@@ -286,8 +338,8 @@ static void
 cb_gn_postup_add (GtkButton *button, gpointer data)
 {
 	fwnet_interface_t	*ift;
-	char				*command;
-	gint				res;
+	char			*command;
+	gint			res;
 
 	ift	= gnetconfig_get_active_interface ();
 	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
@@ -310,6 +362,32 @@ cb_gn_postup_add (GtkButton *button, gpointer data)
 static void
 cb_gn_postup_remove (GtkButton *button, gpointer data)
 {
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter		iter;
+	GtkTreeSelection	*selection = NULL;
+	GList			*list = NULL;
+	char			*command = NULL;
+	fwnet_interface_t	*inf = NULL;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_preup_treeview));
+	if (FALSE == gtk_tree_selection_get_selected(selection, &model, &iter))
+		return;
+
+	gtk_tree_model_get (model, &iter, 1, &command, -1);
+	inf = gnetconfig_get_active_interface();
+	for (list = inf->post_ups; list != NULL; list = list->next)
+	{
+		if (list->data && !strcmp((char*)list->data, command))
+		{
+			inf->post_ups = g_list_delete_link (inf->post_ups, list);
+			break;
+		}
+	}
+	
+	gnetconfig_save_profile (active_profile);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	
 	return;
 }
 
@@ -317,8 +395,8 @@ static void
 cb_gn_postdown_add (GtkButton *button, gpointer data)
 {
 	fwnet_interface_t	*ift;
-	char				*command;
-	gint				res;
+	char			*command;
+	gint			res;
 
 	ift	= gnetconfig_get_active_interface ();
 	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
@@ -341,6 +419,32 @@ cb_gn_postdown_add (GtkButton *button, gpointer data)
 static void
 cb_gn_postdown_remove (GtkButton *button, gpointer data)
 {
+	GtkTreeModel		*model = NULL;
+	GtkTreeIter		iter;
+	GtkTreeSelection	*selection = NULL;
+	GList			*list = NULL;
+	char			*command = NULL;
+	fwnet_interface_t	*inf = NULL;
+
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_preup_treeview));
+	if (FALSE == gtk_tree_selection_get_selected(selection, &model, &iter))
+		return;
+
+	gtk_tree_model_get (model, &iter, 1, &command, -1);
+	inf = gnetconfig_get_active_interface();
+	for (list = inf->post_downs; list != NULL; list = list->next)
+	{
+		if (list->data && !strcmp((char*)list->data, command))
+		{
+			inf->post_downs = g_list_delete_link (inf->post_downs, list);
+			break;
+		}
+	}
+	
+	gnetconfig_save_profile (active_profile);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	
 	return;
 }
 
