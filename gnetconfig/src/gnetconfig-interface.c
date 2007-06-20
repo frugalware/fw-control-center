@@ -64,6 +64,7 @@ GtkWidget *gn_dhcp_hostname_entry;
 GtkWidget *gn_wireless_mode_combo;
 GtkWidget *gn_config_dsl_check;
 GtkWidget *gn_statusbar;
+GtkWidget *gn_iflabel;
 
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
@@ -138,6 +139,7 @@ gnetconfig_interface_init (void)
 	gn_dsl_cpassword_entry	= glade_xml_get_widget (xml, "fwn_dsl_cpassword");
 	gn_config_dsl_check	= glade_xml_get_widget (xml, "fwn_config_dsl_check2");
 	gn_statusbar		= glade_xml_get_widget (xml, "fwn_statusbar");
+	gn_iflabel		= glade_xml_get_widget(xml, "fwn_interface_label");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -741,6 +743,11 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 		gtk_widget_hide (gn_wireless_table);
 		gtk_widget_hide (gn_dsl_table);
 
+		/* set the interface name label */
+		markup = g_markup_printf_escaped ("<span size=\"medium\"><b>%s</b></span>", inte->name);
+		gtk_label_set_markup (GTK_LABEL(data), markup);
+		g_free (markup);
+
 		/* populate the opts list */
 		gnetconfig_populate_opts (inte);
 
@@ -839,10 +846,6 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 				gtk_entry_set_text (GTK_ENTRY(gn_gateway_entry), ip);
 		}
 
-		/* set the interface name label */
-		markup = g_markup_printf_escaped ("<span size=\"medium\"><b>%s</b></span>", inte->name);
-		gtk_label_set_markup (GTK_LABEL(data), markup);
-		g_free (markup);
 		gtk_widget_show (GTK_WIDGET(gn_interface_dialog));
 	}
 	else

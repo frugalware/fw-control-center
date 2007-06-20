@@ -37,11 +37,14 @@
 
 extern fwnet_profile_t	*active_profile;
 extern GladeXML			*xml;
+extern GtkWidget		*gn_iflabel;
 
 GtkWidget *gn_preup_treeview;
 GtkWidget *gn_predown_treeview;
 GtkWidget *gn_postup_treeview;
 GtkWidget *gn_postdown_treeview;
+
+static fwnet_interface_t *gnetconfig_get_active_interface (void);
 
 static void cb_gn_preup_add (GtkButton *button, gpointer data);
 static void cb_gn_preup_remove (GtkButton *button, gpointer data);
@@ -197,11 +200,48 @@ gnetconfig_populate_opts (fwnet_interface_t *inte)
 	return;
 }
 
+static fwnet_interface_t *
+gnetconfig_get_active_interface (void)
+{
+	fwnet_interface_t	*inf = NULL;
+	GList				*iflist = NULL;
+	gchar				*name = NULL;
+
+	name = (gchar*)gtk_label_get_text (GTK_LABEL(gn_iflabel));
+	for (iflist = active_profile->interfaces; iflist != NULL; iflist = g_list_next(iflist))
+	{
+		inf = iflist->data;
+		if (strcmp(name, inf->name) == 0)
+			break;
+	}
+
+	return inf;
+}
+
 /* CALLBACKS */
 
 static void
 cb_gn_preup_add (GtkButton *button, gpointer data)
 {
+	fwnet_interface_t	*ift;
+	char				*command;
+	gint				res;
+
+	ift	= gnetconfig_get_active_interface ();
+	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
+	if (res == GTK_RESPONSE_ACCEPT)
+	{
+		if (!command || !strlen(command))
+		{	
+			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+			goto up;
+		}
+		ift->pre_ups = g_list_append (ift->pre_ups, (gpointer)strdup(command));
+		gnetconfig_save_profile (active_profile);
+		gnetconfig_populate_opts (ift);
+		g_free (command);
+	}
+
 	return;
 }
 
@@ -214,6 +254,25 @@ cb_gn_preup_remove (GtkButton *button, gpointer data)
 static void
 cb_gn_predown_add (GtkButton *button, gpointer data)
 {
+	fwnet_interface_t	*ift;
+	char				*command;
+	gint				res;
+
+	ift	= gnetconfig_get_active_interface ();
+	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
+	if (res == GTK_RESPONSE_ACCEPT)
+	{
+		if (!command || !strlen(command))
+		{	
+			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+			goto up;
+		}
+		ift->pre_downs = g_list_append (ift->pre_downs, (gpointer)strdup(command));
+		gnetconfig_save_profile (active_profile);
+		gnetconfig_populate_opts (ift);
+		g_free (command);
+	}
+
 	return;
 }
 
@@ -226,6 +285,25 @@ cb_gn_predown_remove (GtkButton *button, gpointer data)
 static void
 cb_gn_postup_add (GtkButton *button, gpointer data)
 {
+	fwnet_interface_t	*ift;
+	char				*command;
+	gint				res;
+
+	ift	= gnetconfig_get_active_interface ();
+	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
+	if (res == GTK_RESPONSE_ACCEPT)
+	{
+		if (!command || !strlen(command))
+		{	
+			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+			goto up;
+		}
+		ift->post_ups = g_list_append (ift->post_ups, (gpointer)strdup(command));
+		gnetconfig_save_profile (active_profile);
+		gnetconfig_populate_opts (ift);
+		g_free (command);
+	}
+
 	return;
 }
 
@@ -238,6 +316,25 @@ cb_gn_postup_remove (GtkButton *button, gpointer data)
 static void
 cb_gn_postdown_add (GtkButton *button, gpointer data)
 {
+	fwnet_interface_t	*ift;
+	char				*command;
+	gint				res;
+
+	ift	= gnetconfig_get_active_interface ();
+	up:command = gn_input ("Gnetconfig", _("Enter the name of the command:"), &res);
+	if (res == GTK_RESPONSE_ACCEPT)
+	{
+		if (!command || !strlen(command))
+		{	
+			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+			goto up;
+		}
+		ift->post_downs = g_list_append (ift->post_downs, (gpointer)strdup(command));
+		gnetconfig_save_profile (active_profile);
+		gnetconfig_populate_opts (ift);
+		g_free (command);
+	}
+
 	return;
 }
 
