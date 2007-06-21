@@ -1258,7 +1258,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		/* hopefully, everything is ok now and we should save the profile */
 		snprintf (active_profile->adsl_username, PATH_MAX, username);
 		snprintf (active_profile->adsl_password, PATH_MAX, pass);
-		snprintf (active_profile->adsl_interface, PATH_MAX, gtk_label_get_text(GTK_LABEL(data)));
+		snprintf (active_profile->adsl_interface, PATH_MAX, gtk_label_get_text(GTK_LABEL(gn_iflabel)));
 	}
 	if ( fwnet_is_wireless_device(interface->name) || strlen(interface->essid) || strlen(interface->key) )
 	{
