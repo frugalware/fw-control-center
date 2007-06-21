@@ -84,7 +84,6 @@ static void gnetconfig_update_status (const gchar *msg);
 
 /* new nameserver dialog */
 static void gnetconfig_new_nameserver_dialog_show (void);
-static void cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog);
 
 /* callbacks */
 static void cb_gn_profile_changed (GtkComboBox *combo, gpointer data);
@@ -493,34 +492,22 @@ gnetconfig_save_profile (fwnet_profile_t *profile)
 static void
 gnetconfig_new_nameserver_dialog_show (void)
 {
-	GtkWidget 	*dialog;
-	GtkWidget 	*label;
-	GtkWidget 	*entry;
-	static gchar	*message = "Enter the ip address of the nameserver: ";
+	char	*ip = NULL;
+	gint	res;
 
-	dialog = gtk_dialog_new_with_buttons (_("New DNS"),
-                                         GTK_WINDOW(gn_main_window),
-                                         GTK_DIALOG_DESTROY_WITH_PARENT,
-                                         GTK_STOCK_OK,
-                                         GTK_RESPONSE_ACCEPT,
-                                         GTK_STOCK_CANCEL,
-                                         GTK_RESPONSE_REJECT,
-                                         NULL);
-	gtk_window_set_resizable (GTK_WINDOW(dialog), FALSE);
-	label = gtk_label_new (message);
-	entry = gtk_entry_new ();
-
-	g_signal_connect_swapped (dialog,
-                             "response",
-                             G_CALLBACK (cb_gn_new_nameserver_dialog_response),
-                             dialog);
-	gtk_misc_set_padding (GTK_MISC(label), 5, 5);
-	gtk_dialog_set_has_separator (GTK_DIALOG(dialog), FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER((GTK_DIALOG(dialog))->vbox), 10);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), label);
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG(dialog)->vbox), entry);
-
-	gtk_widget_show_all (dialog);
+	up:ip = gn_input (_("New DNS"), _("Enter the ip address of the nameserver:"), &res);
+	if (res == GTK_RESPONSE_ACCEPT)
+	{
+		if (ip == NULL || !strlen(ip))
+		{
+			gn_error ("Required field cannot be left blank.");
+			goto up;
+		}
+		active_profile->dnses = g_list_append (active_profile->dnses, (gpointer)g_strdup(ip));
+		gnetconfig_save_profile (active_profile);
+		gnetconfig_populate_dns_list (active_profile->dnses);
+		g_free (ip);
+	}
 
 	return;
 }
@@ -1114,35 +1101,6 @@ cb_gn_conntype_changed (GtkComboBox *combo, gpointer data)
 		case GN_LO: /* lo */
 			break;
 	}
-
-	return;
-}
-
-static void
-cb_gn_new_nameserver_dialog_response (GtkDialog *dlg, gint arg1, gpointer dialog)
-{
-	if (arg1 == GTK_RESPONSE_ACCEPT)
-	{
-		GList *wlist = gtk_container_get_children (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox));
-		wlist = g_list_next (wlist);
-		const gchar *ip = gtk_entry_get_text (GTK_ENTRY(wlist->data));
-
-		/* check if the entry is blank */
-		if (!strlen(ip))
-		{	
-			gn_error ("Enter a valid ip address");
-			g_list_free (wlist);
-			return;
-		}
-
-		/* further processing */
-		active_profile->dnses = g_list_append (active_profile->dnses, (gpointer)g_strdup(ip));
-		gnetconfig_save_profile (active_profile);
-		gnetconfig_populate_dns_list (active_profile->dnses);
-		g_list_free (wlist);
-	}
-
-	gtk_widget_destroy (GTK_WIDGET(dlg));
 
 	return;
 }
