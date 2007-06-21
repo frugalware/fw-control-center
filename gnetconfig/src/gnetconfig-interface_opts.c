@@ -272,7 +272,7 @@ cb_gn_preup_remove (GtkButton *button, gpointer data)
 	}
 	
 	gnetconfig_save_profile (active_profile);
-	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface());
 	
 	return;
 }
@@ -312,8 +312,8 @@ cb_gn_predown_remove (GtkButton *button, gpointer data)
 	char			*command = NULL;
 	fwnet_interface_t	*inf = NULL;
 
-	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
-	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_preup_treeview));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_predown_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_predown_treeview));
 	if (FALSE == gtk_tree_selection_get_selected(selection, &model, &iter))
 		return;
 
@@ -329,7 +329,7 @@ cb_gn_predown_remove (GtkButton *button, gpointer data)
 	}
 	
 	gnetconfig_save_profile (active_profile);
-	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface());
 	
 	return;
 }
@@ -369,8 +369,8 @@ cb_gn_postup_remove (GtkButton *button, gpointer data)
 	char			*command = NULL;
 	fwnet_interface_t	*inf = NULL;
 
-	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
-	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_preup_treeview));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_postup_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_postup_treeview));
 	if (FALSE == gtk_tree_selection_get_selected(selection, &model, &iter))
 		return;
 
@@ -386,7 +386,7 @@ cb_gn_postup_remove (GtkButton *button, gpointer data)
 	}
 	
 	gnetconfig_save_profile (active_profile);
-	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface());
 	
 	return;
 }
@@ -426,8 +426,8 @@ cb_gn_postdown_remove (GtkButton *button, gpointer data)
 	char			*command = NULL;
 	fwnet_interface_t	*inf = NULL;
 
-	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
-	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_preup_treeview));
+	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_postdown_treeview));
+	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_postdown_treeview));
 	if (FALSE == gtk_tree_selection_get_selected(selection, &model, &iter))
 		return;
 
@@ -443,7 +443,7 @@ cb_gn_postdown_remove (GtkButton *button, gpointer data)
 	}
 	
 	gnetconfig_save_profile (active_profile);
-	gnetconfig_populate_opts (gnetconfig_get_active_interface()->name);
+	gnetconfig_populate_opts (gnetconfig_get_active_interface());
 	
 	return;
 }
