@@ -27,6 +27,7 @@ extern GladeXML 	*xml;
 extern GtkWidget	*gn_main_window;
 extern GtkWidget	*gn_profile_combo;
 extern GtkWidget	*gn_dns_listview;
+extern GtkWidget	*gn_hostname_entry;
 
 static void gnetconfig_new_profile_dialog_show (void);
 static int gnetconfig_setup_new_profile (const char *profile);
@@ -127,6 +128,9 @@ gnetconfig_setup_new_profile (const char *profile)
 
 	/* Reset all entries */
 	gtk_list_store_clear (GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(gn_dns_listview))));
+
+	/* set default hostname */
+	gtk_entry_set_text (GTK_ENTRY(gn_hostname_entry), "frugalware.example.net");
 
 	return 0;
 }

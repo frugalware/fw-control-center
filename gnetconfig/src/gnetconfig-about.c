@@ -21,12 +21,14 @@
  */
 
 #define _GNU_SOURCE
-#define VERSION "0.1"
+
+#ifdef HAVE_CONFIG_H
+#	include "config.h"
+#endif
 
 #include <gtk/gtk.h>
 #include "gnetconfig.h"
 #include "gnetconfig-about.h"
-
 
 static gchar	*license = 
 ("This program is free software; you can redistribute it and/or "
@@ -56,7 +58,7 @@ gnetconfig_about (void)
 	if (!about_pixbuf)
 		about_pixbuf = gtk_widget_render_icon (gn_main_window, GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL);
 	gtk_show_about_dialog (GTK_WINDOW(gn_main_window),
-                           "name", "Gnetconfig",
+                           "name", PACKAGE,
                            "version", VERSION,
                            "copyright", _("\xC2\xA9 2007 Frugalware Developer Team (GPL)"),
                            "comments", _("A graphical network configuration tool for Frugalware Linux."),

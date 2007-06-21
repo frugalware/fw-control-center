@@ -471,13 +471,10 @@ gnetconfig_load_profile (const char *name)
 int
 gnetconfig_save_profile (fwnet_profile_t *profile)
 {
-	gchar	hostname[256];
 	gchar	*buf = NULL;
 
-	sprintf (hostname, "%s", (char*)gtk_entry_get_text(GTK_ENTRY(gn_hostname_entry)));
-
 	buf = g_strdup (profile->name);
-	if(fwnet_writeconfig (profile, hostname))
+	if(fwnet_writeconfig (profile, NULL))
 		return 1;
 
 	/* the profile data gets corrupted after saving and
