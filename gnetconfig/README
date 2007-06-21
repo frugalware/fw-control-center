@@ -1,0 +1,28 @@
+Gnetconfig 0.1
+
+Gnetconfig is a graphical network configuration tool for Frugalware
+Linux. Gnetconfig uses the libfwnetconfig library to perform network
+configuration tasks.
+
+Requirements
+=============
+* gtk+2-2.10.0 or higher
+* frugalwareutils-0.7.2 or higher
+
+Usage
+=====
+Gnetconfig requires super user privileges. The recommended way is to run
+it using sudo or gksu.
+
+* To run it using sudo, type:
+$ sudo gnetconfig
+
+* To run it using gksu (install it with pacman -S gksu), type:
+$ gksu gnetconfig
+
+Reporting bugs
+===============
+If you encounter a bug in Gnetconfig, report it at
+http://bugs.frugalware.org/ with a detailed description of the problem
+and how to reproduce it.
+
