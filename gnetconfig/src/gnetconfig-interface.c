@@ -138,7 +138,7 @@ gnetconfig_interface_init (void)
 	gn_dsl_cpassword_entry	= glade_xml_get_widget (xml, "fwn_dsl_cpassword");
 	gn_config_dsl_check	= glade_xml_get_widget (xml, "fwn_config_dsl_check2");
 	gn_statusbar		= glade_xml_get_widget (xml, "fwn_statusbar");
-	gn_iflabel		= glade_xml_get_widget(xml, "fwn_interface_label");
+	gn_iflabel		= glade_xml_get_widget (xml, "fwn_interface_label");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -299,7 +299,7 @@ gnetconfig_interface_init (void)
 	gnetconfig_new_interface_dialog_setup ();
 	gtk_widget_show (gn_main_window);
 
-	/* unref xml object */
+	/* unref the libglade object */
 	g_object_unref (xml);
 
 	return;

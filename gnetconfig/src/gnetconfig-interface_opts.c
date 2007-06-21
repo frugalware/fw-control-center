@@ -56,6 +56,11 @@ static void cb_gn_postup_remove (GtkButton *button, gpointer data);
 static void cb_gn_postdown_add (GtkButton *button, gpointer data);
 static void cb_gn_postdown_remove (GtkButton *button, gpointer data);
 
+static void cb_gn_preup_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
+static void cb_gn_predown_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
+static void cb_gn_postup_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
+static void cb_gn_postdown_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
+
 void
 gnetconfig_interface_opts_init (void)
 {
@@ -124,6 +129,24 @@ gnetconfig_interface_opts_init (void)
 	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_postdown_add), NULL);
 	widget = glade_xml_get_widget (xml, "postdown_remove");
 	g_signal_connect (G_OBJECT(widget), "clicked", G_CALLBACK(cb_gn_postdown_remove), NULL);
+
+	/* Keypress events */
+	g_signal_connect (G_OBJECT(gn_preup_treeview),
+					"key_release_event",
+					G_CALLBACK(cb_gn_preup_treeview_keypress),
+					NULL);
+	g_signal_connect (G_OBJECT(gn_predown_treeview),
+					"key_release_event",
+					G_CALLBACK(cb_gn_predown_treeview_keypress),
+					NULL);
+	g_signal_connect (G_OBJECT(gn_postup_treeview),
+					"key_release_event",
+					G_CALLBACK(cb_gn_postup_treeview_keypress),
+					NULL);
+	g_signal_connect (G_OBJECT(gn_postdown_treeview),
+					"key_release_event",
+					G_CALLBACK(cb_gn_postdown_treeview_keypress),
+					NULL);
 
 	return;
 }
@@ -448,4 +471,46 @@ cb_gn_postdown_remove (GtkButton *button, gpointer data)
 	
 	return;
 }
+
+static void
+cb_gn_preup_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+	if (event->keyval != GDK_Delete)
+		return;
+
+	cb_gn_preup_remove (NULL, NULL);
+	return;
+}
+
+static void
+cb_gn_predown_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+	if (event->keyval != GDK_Delete)
+		return;
+
+	cb_gn_predown_remove (NULL, NULL);
+	return;
+}
+
+static void
+cb_gn_postup_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+	if (event->keyval != GDK_Delete)
+		return;
+
+	cb_gn_postup_remove (NULL, NULL);
+	return;
+
+}
+
+static void
+cb_gn_postdown_treeview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+	if (event->keyval != GDK_Delete)
+		return;
+
+	cb_gn_postdown_remove (NULL, NULL);
+	return;
+}
+
 
