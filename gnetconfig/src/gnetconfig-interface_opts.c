@@ -37,6 +37,7 @@
 
 extern fwnet_profile_t	*active_profile;
 extern GladeXML			*xml;
+extern GtkWidget		*gn_main_window;
 extern GtkWidget		*gn_iflabel;
 
 GtkWidget *gn_preup_treeview;
@@ -143,7 +144,7 @@ gnetconfig_populate_opts (fwnet_interface_t *inte)
 	if (!inte)
 		return;
 
-	pixbuf = gtk_widget_render_icon (gn_preup_treeview, GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU, NULL);
+	pixbuf = gtk_widget_render_icon (gn_main_window, GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU, NULL);
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_preup_treeview));
 	store = GTK_LIST_STORE (model);
 	gtk_list_store_clear (store);
