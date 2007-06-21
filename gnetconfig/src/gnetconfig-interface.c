@@ -222,7 +222,7 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_save_interface_clicked),
-			(gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
+			NULL);
 
 	/* new interface editor stuff */
 	widget = glade_xml_get_widget (xml, "fwn_if_add");
@@ -234,7 +234,7 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_interface_edited),
-			(gpointer)glade_xml_get_widget(xml, "fwn_interface_label"));
+			NULL);
 	widget = glade_xml_get_widget (xml, "fwn_dns_save");
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
@@ -745,7 +745,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 
 		/* set the interface name label */
 		markup = g_markup_printf_escaped ("<span size=\"medium\"><b>%s</b></span>", inte->name);
-		gtk_label_set_markup (GTK_LABEL(data), markup);
+		gtk_label_set_markup (GTK_LABEL(gn_iflabel), markup);
 		g_free (markup);
 
 		/* populate the opts list */
@@ -1203,7 +1203,7 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	fwnet_interface_t	*interface = NULL;
 	gint			type = -1;
 
-	if_name = (gchar*)gtk_label_get_text (GTK_LABEL(data));
+	if_name = (gchar*)gtk_label_get_text (GTK_LABEL(gn_iflabel));
 	for (intf = active_profile->interfaces; intf != NULL; intf = g_list_next(intf))
 	{
 		interface = intf->data;
