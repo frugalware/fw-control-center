@@ -63,6 +63,7 @@ GtkWidget *gn_wireless_mode_combo;
 GtkWidget *gn_config_dsl_check;
 GtkWidget *gn_statusbar;
 GtkWidget *gn_iflabel;
+GtkWidget *gn_profile_desc;
 
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
@@ -98,6 +99,7 @@ static void cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data
 static void cb_gn_interface_delete (GtkButton *button, gpointer data);
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
 static void cb_gn_delete_profile_clicked (GtkButton *button, gpointer data);
+static void cb_gn_profile_desc_save_clicked (GtkButton *button, gpointer data);
 static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, gpointer data);
 static void cb_gn_interface_double_click (GtkTreeView *treeview);
 static void cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event);
@@ -137,6 +139,7 @@ gnetconfig_interface_init (void)
 	gn_config_dsl_check	= glade_xml_get_widget (xml, "fwn_config_dsl_check2");
 	gn_statusbar		= glade_xml_get_widget (xml, "fwn_statusbar");
 	gn_iflabel		= glade_xml_get_widget (xml, "fwn_interface_label");
+	gn_profile_desc = glade_xml_get_widget (xml, "fwn_profile_desc");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -271,6 +274,11 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"activate",
 			G_CALLBACK(gnetconfig_about),
+			NULL);
+	widget = glade_xml_get_widget (xml, "fwn_profile_desc_save");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_profile_desc_save_clicked),
 			NULL);
 
 	g_signal_connect (G_OBJECT(gn_config_dsl_check),
@@ -456,8 +464,14 @@ gnetconfig_load_profile (const char *name)
 	/* populate the dns list */
 	gnetconfig_populate_dns_list (profile->dnses);
 
+	/* read the profile desc */
+	if (strlen(active_profile->desc))
+		gtk_entry_set_text (GTK_ENTRY(gn_profile_desc), active_profile->desc);
+	else
+		gtk_entry_set_text (GTK_ENTRY(gn_profile_desc), "");
+
 	/* read the hostname */
-	gnetconfig_read_hostname(hostname);
+	gnetconfig_read_hostname (hostname);
 	if (strlen(hostname))
 		gtk_entry_set_text (GTK_ENTRY(gn_hostname_entry), hostname);
 	else
@@ -585,6 +599,21 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 		gn_error ("You cannot delete an active network profile.");
 		g_free (profile);
 	}
+
+	return;
+}
+
+static void
+cb_gn_profile_desc_save_clicked (GtkButton *button, gpointer data)
+{
+	char *desc = NULL;
+
+	desc = (char*) gtk_entry_get_text (GTK_ENTRY(gn_profile_desc));
+	if (desc == NULL)
+		*active_profile->desc = '\0';
+	else
+		snprintf (active_profile->desc, PATH_MAX, desc);
+	gnetconfig_save_profile (active_profile);
 
 	return;
 }
