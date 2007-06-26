@@ -19,3 +19,8 @@ if [ "$1" == "--dist" ]; then
         #mv ../gnetconfig-$ver.tar.gz.asc ../..
         exit 0
 fi
+
+if [ "$1" == "--darcs" ]; then
+		rm -rf autom4te.cache
+fi
+
