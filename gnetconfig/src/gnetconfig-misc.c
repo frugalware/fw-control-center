@@ -1,12 +1,10 @@
-/***************************************************************************
- *  gnetconfig-misc.c
- *  Author(s): 	Priyank Gosalia <priyankmg@gmail.com>
- *  Copyright (C) 2007 Frugalware Developer Team
- *  Parts borrowed from net-tools
- *  These parts are Copyright (C) 1998, 2000 Andi Kleen
- ****************************************************************************/
-
 /*
+ *  gnetconfig-misc.c for gnetconfig
+ *
+ *  Copyright (C) 2007 by Priyank Gosalia <priyankmg@gmail.com>
+ *  Parts borrowed from net-tools.
+ *  The parts are Copyright (C) 1998, 2000 by Andi Kleen
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
