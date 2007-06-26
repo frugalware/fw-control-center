@@ -285,17 +285,10 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 				snprintf (nif->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", temp);
 			else
 				*nif->dhcp_opts = '\0';
-			switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_ndhcp_client_combo)))
-			{
-				case GN_DHCPCD:
-					snprintf (nif->dhcpclient, PATH_MAX, "dhcpcd");
-					break;
-				case GN_DHCLIENT:
-					snprintf (nif->dhcpclient, PATH_MAX, "dhclient");
-					break;
-				default:
-					*nif->dhcpclient = '\0';
-			}
+			if (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_ndhcp_client_combo)) == GN_DHCPCD)
+				snprintf (nif->dhcpclient, PATH_MAX, "dhcpcd");
+			else
+				snprintf (nif->dhcpclient, PATH_MAX, "dhclient");
 			break;
 	}
 	if (check_dsl == TRUE) /* The interface is to be configured for dsl */
