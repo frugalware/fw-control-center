@@ -38,7 +38,7 @@ extern GladeXML 	*xml;
 extern GtkWidget	*gn_main_window;
 extern fwnet_profile_t	*active_profile;
 
-GtkWidget *dialog;
+GtkWidget *gn_if_add_dialog;
 
 GtkWidget *gn_nconntype_combo;
 GtkWidget *gn_ndhcp_client_combo;
@@ -75,7 +75,7 @@ gnetconfig_new_interface_dialog_setup (void)
 {
 	GtkWidget *widget;
 
-	dialog = glade_xml_get_widget (xml, "new_interface_dialog");
+	gn_if_add_dialog = glade_xml_get_widget (xml, "new_interface_dialog");
 
 	/* Lookup all widgets */
 	gn_nif_name_entry	= glade_xml_get_widget (xml, "fwn_if_name");
@@ -126,9 +126,14 @@ gnetconfig_new_interface_dialog_setup (void)
 			G_CALLBACK(cb_gn_nconntype_changed),
 			NULL);
 
+	g_signal_connect (G_OBJECT(gn_if_add_dialog),
+			"delete-event",
+			G_CALLBACK(gtk_widget_hide),
+			NULL);
+
 	/* center the dialog on the main window */
-	gtk_window_set_transient_for (GTK_WINDOW(dialog), GTK_WINDOW(gn_main_window));
-	gtk_window_set_position (GTK_WINDOW(dialog), GTK_WIN_POS_CENTER_ON_PARENT);
+	gtk_window_set_transient_for (GTK_WINDOW(gn_if_add_dialog), GTK_WINDOW(gn_main_window));
+	gtk_window_set_position (GTK_WINDOW(gn_if_add_dialog), GTK_WIN_POS_CENTER_ON_PARENT);
 
 	/* initialize interface detection dialog */
 	gnetconfig_if_detect_dlg_init ();
@@ -164,14 +169,14 @@ gnetconfig_new_interface_dialog_show (void)
 {
 	gtk_widget_hide (gn_nwireless_table);
 
-	if (!GTK_WIDGET_VISIBLE(dialog))
+	if (!GTK_WIDGET_VISIBLE(gn_if_add_dialog))
 	{
-		gtk_widget_show (dialog);
-		gtk_window_present (GTK_WINDOW(dialog));
+		gtk_widget_show (gn_if_add_dialog);
+		gtk_window_present (GTK_WINDOW(gn_if_add_dialog));
 	}
 	else
 	{
-		gtk_window_present (GTK_WINDOW(dialog));
+		gtk_window_present (GTK_WINDOW(gn_if_add_dialog));
 	}
 	return;
 }
@@ -354,7 +359,7 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 static void
 cb_gn_new_int_close_clicked (GtkWidget *widget, gpointer data)
 {
-	gtk_widget_hide (dialog);
+	gtk_widget_hide (gn_if_add_dialog);
 	gnetconfig_reset_nif_dialog ();
 
 	return;
