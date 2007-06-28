@@ -679,7 +679,7 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if (!fwutil_system(ptr))
-		gn_error ("Interface is already started.");
+		gn_error (_("Interface is already started."));
 	else
 	{
 		ret = fwnet_ifup (inte, active_profile);

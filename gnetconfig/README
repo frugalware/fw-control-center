@@ -7,10 +7,10 @@ configuration tasks.
 Requirements
 =============
 * gtk+2-2.10.0 or higher
-* frugalwareutils-0.7.2 or higher
+* frugalwareutils-0.7.3 or higher
 
 Usage
-=====
+======
 Gnetconfig requires super user privileges. The recommended way is to run
 it using sudo or gksu.
 

@@ -57,18 +57,18 @@ gnetconfig_about (void)
 	if (!about_pixbuf)
 		about_pixbuf = gtk_widget_render_icon (gn_main_window, GTK_STOCK_NETWORK, GTK_ICON_SIZE_DIALOG, NULL);
 	gtk_show_about_dialog (GTK_WINDOW(gn_main_window),
-                           "name", PACKAGE,
-                           "version", VERSION,
-                           "copyright", _("(C) 2007 Frugalware Developer Team (GPL)"),
-                           "comments", _("A graphical network configuration tool for Frugalware Linux."),
-                           "license", license,
-                           "authors", authors,
-					  "translator-credits", translators,
-                           "website", "http://www.frugalware.org/",
-                           "website-label", "http://www.frugalware.org/",
-                           "logo", about_pixbuf,
-						   "wrap-license", TRUE,
-                           NULL);
+				"name", PACKAGE,
+				"version", VERSION,
+				"copyright", _("(C) 2007 Frugalware Developer Team (GPL)"),
+				"comments", _("A graphical network configuration tool for Frugalware Linux."),
+				"license", license,
+				"authors", authors,
+				"translator-credits", translators,
+				"website", "http://www.frugalware.org/",
+				"website-label", "http://www.frugalware.org/",
+				"logo", about_pixbuf,
+				"wrap-license", TRUE,
+				NULL);
 	return;
 }
 
