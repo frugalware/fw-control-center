@@ -22,3 +22,5 @@ rm -rf intltool-extract
 rm -rf intltool-merge
 rm -rf intltool-update
 rm -rf po/stamp-it
+rm -rf intltool*.in
+rm -rf po/Makefile.in.in
