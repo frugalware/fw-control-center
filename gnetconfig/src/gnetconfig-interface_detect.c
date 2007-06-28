@@ -207,7 +207,7 @@ cb_gn_if_detect_ok_clicked (GtkWidget *widget, gpointer data)
 	gtk_tree_model_get (model, &iter, 1, &ifname, 3, &status, -1);
 	if (status == TRUE)
 	{
-		gn_error ("The selected interface is already configured. Please select another interface");
+		gn_error (_("The selected interface is already configured. Please select another interface"));
 		return;
 	}
 	else

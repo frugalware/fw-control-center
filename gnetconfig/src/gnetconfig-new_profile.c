@@ -69,7 +69,7 @@ gnetconfig_new_profile_dialog_show (void)
 		/* further processing */
 		if (gnetconfig_setup_new_profile (pname))
 		{
-			gn_error ("Error setting up new profile");
+			gn_error (_("Error setting up new profile"));
 			g_free (filename);
 			return;
 		}
@@ -91,7 +91,7 @@ gnetconfig_setup_new_profile (const char *profile)
 
 	if ((new_profile = gnetconfig_new_profile (profile)) == NULL)
 	{
-		gn_error ("Error creating profile.");
+		gn_error (_("Error creating profile."));
 		return 1;
 	}
 	if (gn_question(_("Do you want to give a description to the new profile?")) == GTK_RESPONSE_YES)

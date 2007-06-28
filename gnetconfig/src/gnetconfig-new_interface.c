@@ -253,18 +253,18 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 
 	if (gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry))==NULL || !strlen(gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry))))
 	{
-		gn_error ("Interface name cannot be blank.");
+		gn_error (_("Interface name cannot be blank."));
 		return;
 	}
 	nif = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t));
 	if (!nif)
 	{
-		gn_error ("Error allocating memory for new interface.");
+		gn_error (_("Error allocating memory for new interface."));
 		return;
 	}
 	if (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_nconntype_combo)) == -1)
 	{
-		gn_error ("No connection type selected. Please select a connection type first.");
+		gn_error (_("No connection type selected. Please select a connection type first."));
 		g_free (nif);
 		return;
 	}
@@ -276,7 +276,7 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 			if (!strlen((char*)gtk_entry_get_text(GTK_ENTRY(gn_nipaddress_entry))) ||
 				!strlen((char*)gtk_entry_get_text(GTK_ENTRY(gn_nnetmask_entry))))
 				{
-					gn_error ("Required fields cannot be blank.");
+					gn_error (_("Required fields cannot be blank."));
 					g_free (nif);
 					return;
 				}
