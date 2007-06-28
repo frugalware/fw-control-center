@@ -44,7 +44,8 @@ static gchar	*license =
 "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, "
 "MA  02110-1301  USA");
 
-gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>", NULL };
+gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>",
+     "Christian Hamar alias krix <krics@linuxforum.hu>", NULL };
 gchar *translators[] = { NULL };
 
 GdkPixbuf *about_pixbuf = NULL;
