@@ -592,7 +592,7 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 				path = g_strdup_printf ("/etc/sysconfig/network/%s", profile);
 				gint ret = g_remove (path);
 				if (ret == -1)
-					gn_error (_("The was an error deleting the profile."));
+					gn_error (_("There was an error deleting the profile."));
 				else
 					gn_message (_("Profile deleted successfully"));
 				g_free (path);
