@@ -146,8 +146,9 @@ gnetconfig_interface_init (void)
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
 	gn_interface_treeview = glade_xml_get_widget (xml, "interface_treeview");
 
-	/* Set the title for our app :P */
+	/* Set the title for some stuff */
 	gtk_window_set_title(GTK_WINDOW(gn_main_window), PACKAGE_STRING);
+	gtk_window_set_title(GTK_WINDOW(gn_interface_dialog), _("Configure interface"));
 
 	gtk_window_set_transient_for (GTK_WINDOW(gn_interface_dialog), GTK_WINDOW(gn_main_window));
 	gtk_window_set_position (GTK_WINDOW(gn_interface_dialog), GTK_WIN_POS_CENTER_ON_PARENT);

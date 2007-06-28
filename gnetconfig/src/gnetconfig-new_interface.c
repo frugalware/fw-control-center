@@ -96,6 +96,8 @@ gnetconfig_new_interface_dialog_setup (void)
 	gn_ndsl_password	= glade_xml_get_widget (xml, "fwn_dsl_password3");
 	gn_ndsl_cpassword	= glade_xml_get_widget (xml, "fwn_dsl_cpassword3");
 
+	gtk_window_set_title(GTK_WINDOW(gn_if_add_dialog), _("Add new interface"));
+
 	/* setup signals and callbacks */
 	widget = glade_xml_get_widget (xml, "fwn_new_int_save");
 	g_signal_connect (G_OBJECT(widget),
