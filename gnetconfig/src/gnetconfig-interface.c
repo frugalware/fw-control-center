@@ -22,6 +22,7 @@
 #include <locale.h>
 #include <gtk/gtk.h>
 #include <glade/glade.h>
+#include <glib/gstdio.h>
 #include <gdk/gdkkeysyms.h>
 
 #ifdef HAVE_CONFIG_H
