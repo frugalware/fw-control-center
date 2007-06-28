@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+cd `dirname $0`
+
 if [ "$1" == "--pot-only" ]; then
 	cd po/
 	mv Makevars Makevars.tmp
