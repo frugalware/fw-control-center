@@ -154,7 +154,7 @@ gnetconfig_interface_init (void)
 	gtk_window_set_position (GTK_WINDOW(gn_interface_dialog), GTK_WIN_POS_CENTER_ON_PARENT);
 
 	renderer = gtk_cell_renderer_pixbuf_new ();
-	column = gtk_tree_view_column_new_with_attributes (_("IF_Icon"),
+	column = gtk_tree_view_column_new_with_attributes ("IF_Icon",
 							renderer,
 							"pixbuf", 0,
 							NULL);
@@ -162,7 +162,7 @@ gnetconfig_interface_init (void)
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 
 	renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes (_("IF_Name"),
+	column = gtk_tree_view_column_new_with_attributes ("IF_Name",
 							renderer,
 							"text", 1,
 							NULL);
@@ -172,7 +172,7 @@ gnetconfig_interface_init (void)
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 
 	renderer = gtk_cell_renderer_pixbuf_new ();
-	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusIcon"),
+	column = gtk_tree_view_column_new_with_attributes ("IF_StatusIcon",
 							renderer,
 							"pixbuf", 2,
 							NULL);
@@ -180,7 +180,7 @@ gnetconfig_interface_init (void)
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 
 	renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes (_("IF_StatusText"),
+	column = gtk_tree_view_column_new_with_attributes ("IF_StatusText",
 							renderer,
 							"text", 3,
 							NULL);
