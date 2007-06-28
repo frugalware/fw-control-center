@@ -934,7 +934,7 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
 	gtk_tree_model_get (model, &iter, 1, &profile, -1);
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
-	if ((strcmp(active_profile->name, profile)) && !fwutil_system(ptr))
+	if (!(strcmp(active_profile->name, profile)) && !fwutil_system(ptr))
 	{
 		gn_error (_("The selected interface is running. Please stop it first."));
 	}
