@@ -302,6 +302,11 @@ gnetconfig_interface_init (void)
 			G_CALLBACK (gtk_main_quit),
 			NULL);
 
+	g_signal_connect (gn_interface_dialog,
+			"delete-event",
+			G_CALLBACK (gtk_widget_hide),
+			NULL);
+
 	/* Load main stuff */
 	gnetconfig_populate_profile_list ();
 	gnetconfig_new_profile_dialog_init ();
