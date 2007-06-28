@@ -251,6 +251,11 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 	fwnet_interface_t 	*nif;
 	gchar			opts[50];
 
+	if (gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry))==NULL || !strlen(gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry))))
+	{
+		gn_error ("Interface name cannot be blank.");
+		return;
+	}
 	nif = (fwnet_interface_t*)malloc(sizeof(fwnet_interface_t));
 	if (!nif)
 	{
