@@ -11,10 +11,9 @@ if [ "$1" == "--dist" ]; then
         exit 0
 fi
 
-
-cat /usr/share/aclocal/intltool.m4 >> aclocal.m4
-intltoolize -c -f
 cat /usr/share/aclocal/libtool.m4 >> aclocal.m4
+
+intltoolize -c -f --automake
 libtoolize -f -c
 aclocal --force
 autoheader -f
