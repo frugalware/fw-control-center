@@ -1,14 +1,14 @@
 #!/bin/sh -e
 
-generate_pot() {
+if [ "$1" == "--pot-only" ]; then
 	cd po/
 	mv Makevars Makevars.tmp
 	cp /usr/bin/intltool-extract ./
 	intltool-update --pot --gettext-package=gnetconfig
 	rm intltool-extract
 	mv Makevars.tmp Makevars
-	cd - > /dev/null
-}
+	exit 0
+fi
 
 if [ "$1" == "--dist" ]; then
 	ver=`grep AC_INIT configure.ac|sed 's/.*, \([0-9\.]*\), .*/\1/'`
@@ -24,7 +24,6 @@ fi
 cat /usr/share/aclocal/libtool.m4 >> aclocal.m4
 
 intltoolize -c -f --automake
-generate_pot
 libtoolize -f -c
 aclocal --force
 autoheader -f
