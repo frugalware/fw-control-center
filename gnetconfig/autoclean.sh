@@ -24,3 +24,6 @@ rm -rf intltool-update
 rm -rf po/stamp-it
 rm -rf intltool*.in
 rm -rf po/Makefile.in.in
+rm -rf po/Makefile.in
+rm -rf po/Makefile
+rm -rf po/POTFILES
