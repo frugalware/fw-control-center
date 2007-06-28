@@ -654,7 +654,7 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 	gtk_tree_model_get (model, &iter, 1, &profile, -1); 
 	if (strcmp(profile,fwnet_lastprofile())!=0)
 	{
-		gn_error ("This interface cannot be activated. It belongs to an inactive profile.");
+		gn_error (_("This interface cannot be activated. It belongs to an inactive profile."));
 		return;
 	}
 
@@ -675,7 +675,7 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 		}
 	}
 	if (!found)
-		gn_error ("Unknown error.");
+		gn_error (_("Unknown error."));
 
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if (!fwutil_system(ptr))
@@ -709,7 +709,7 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 	gtk_tree_model_get (model, &iter, 1, &profile, -1); 
 	if (strcmp(profile,fwnet_lastprofile())!=0)
 	{
-		gn_error ("This interface cannot be de-activated. It belongs to an inactive profile.");
+		gn_error (_("This interface cannot be de-activated. It belongs to an inactive profile."));
 		return;
 	}
 
@@ -730,11 +730,11 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 		}
 	}
 	if (!found)
-		gn_error ("Unknown error.");
+		gn_error (_("Unknown error."));
 
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if (fwutil_system(ptr))
-		gn_error ("Interface is not running.");
+		gn_error (_("Interface is not running."));
 	else
 	{
 		ret = fwnet_ifdown (inte, active_profile);
@@ -890,7 +890,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 		gtk_widget_show (GTK_WIDGET(gn_interface_dialog));
 	}
 	else
-		gn_error ("No network interface found.");
+		gn_error (_("No network interface found."));
 
 	return;
 }
@@ -928,7 +928,7 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 		}
 	}
 	if (!found)
-		gn_error ("Unknown error.");
+		gn_error (_("Unknown error."));
 
 	gtk_combo_box_get_active_iter (GTK_COMBO_BOX(gn_profile_combo), &iter);
 	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
@@ -936,13 +936,13 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if ((strcmp(active_profile->name, profile)) && !fwutil_system(ptr))
 	{
-		gn_error ("The selected interface is running. Please stop it first.");
+		gn_error (_("The selected interface is running. Please stop it first."));
 	}
 	else
 	{
 		active_profile->interfaces = g_list_delete_link (active_profile->interfaces, interface);
 		fwnet_writeconfig (active_profile, NULL);
-		gn_message ("Interface deleted successfully");
+		gn_message (_("Interface deleted successfully"));
 		gnetconfig_populate_interface_list (active_profile);
 	}
 	g_free (ptr);
@@ -991,12 +991,12 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		options = inte->options;
 		if (!options) return;
 		sscanf (options->data, "%s netmask %s", ip, netmask);
-		string = g_strdup_printf ("Connection type: Static IP");
+		string = g_strdup_printf (_("Connection type: Static IP"));
 		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 		if (fwnet_is_wireless_device(inte->name))
 		{
 			w = 1;
-			string = g_strdup_printf (" (Wireless Connection)\n\n");
+			string = g_strdup_printf (_(" (Wireless Connection)\n\n"));
 		}
 		else if (strlen(active_profile->adsl_interface))
 		{	
@@ -1022,7 +1022,7 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		}
 		if (w == 1)
 		{
-			string = g_strdup_printf ("\nWireless connection details:\n");
+			string = g_strdup_printf (_("\nWireless connection details:\n"));
 			gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
 			g_free (string);
 			string = g_strdup_printf ("Mode: \t%s\nESSID: \t%s\n",
