@@ -7,3 +7,5 @@ EXTRA_DIST = $(share_DATA)
 
 update-po:
 	make -C po/ update-po
+
+all: update-po

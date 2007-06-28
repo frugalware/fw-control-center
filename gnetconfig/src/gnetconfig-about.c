@@ -59,7 +59,7 @@ gnetconfig_about (void)
 	gtk_show_about_dialog (GTK_WINDOW(gn_main_window),
                            "name", PACKAGE,
                            "version", VERSION,
-                           "copyright", _("\xC2\xA9 2007 Frugalware Developer Team (GPL)"),
+                           "copyright", _("(C) 2007 Frugalware Developer Team (GPL)"),
                            "comments", _("A graphical network configuration tool for Frugalware Linux."),
                            "license", license,
                            "authors", authors,

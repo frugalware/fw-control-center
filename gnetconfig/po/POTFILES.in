@@ -1,2 +1,10 @@
+src/gnetconfig-about.c
+src/gnetconfig-interface.c
+src/gnetconfig-interface_detect.c
+src/gnetconfig-interface_opts.c
+src/gnetconfig-messages.c
+src/gnetconfig-misc.c
+src/gnetconfig-new_interface.c
+src/gnetconfig-new_profile.c
 src/gnetconfig.c
 glade/gnetconfig.glade
