@@ -1,14 +1,40 @@
 #!/bin/sh -e
 
-cd `dirname $0`
-
-if [ "$1" == "--pot-only" ]; then
+gen_pot()
+{
 	cd po/
 	mv Makevars Makevars.tmp
 	cp /usr/bin/intltool-extract ./
 	intltool-update --pot --gettext-package=gnetconfig
 	rm intltool-extract
 	mv Makevars.tmp Makevars
+	cd - >/dev/null
+}
+
+import_pootle()
+{
+	po_dir=~/darcs/translations/po
+	if [ -d $po_dir ]; then
+		: > po/LINGUAS
+		for i in $(/bin/ls $po_dir/fwcontrolcenter)
+		do
+			[ -e $po_dir/fwcontrolcenter/$i/gnetconfig.po ] || continue
+			cp $po_dir/fwcontrolcenter/$i/gnetconfig.po po/$i.po
+			if msgfmt -c --statistics -o po/$i.gmo po/$i.po; then
+				echo $i >> po/LINGUAS
+			else
+				echo "WARNING: po/$i.po will break your build!"
+			fi
+		done
+	else
+		echo "WARNING: no po files will be used"
+	fi
+}
+
+cd `dirname $0`
+
+if [ "$1" == "--pot-only" ]; then
+	gen_pot
 	exit 0
 fi
 
@@ -26,6 +52,8 @@ fi
 cat /usr/share/aclocal/libtool.m4 >> aclocal.m4
 
 intltoolize -c -f --automake
+import_pootle
+gen_pot
 libtoolize -f -c
 aclocal --force
 autoheader -f
