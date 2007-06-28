@@ -694,6 +694,7 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 {
 	gchar			*ptr = NULL;
 	gchar			*ifname = NULL;
+	gchar			*profile = NULL;
 	GList			*interface = NULL;
 	GtkTreeModel		*model = NULL;
 	GtkTreeSelection	*selection = NULL;
@@ -701,6 +702,15 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 	gboolean		found = FALSE;
 	fwnet_interface_t*	inte = NULL;
 	gint			ret;
+
+	gtk_combo_box_get_active_iter (GTK_COMBO_BOX(gn_profile_combo), &iter);
+	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
+	gtk_tree_model_get (model, &iter, 1, &profile, -1); 
+	if (strcmp(profile,fwnet_lastprofile())!=0)
+	{
+		gn_error ("This interface cannot be de-activated. It belongs to an inactive profile.");
+		return;
+	}
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
