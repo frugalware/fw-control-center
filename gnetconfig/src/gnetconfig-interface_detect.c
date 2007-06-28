@@ -50,6 +50,7 @@ gnetconfig_if_detect_dlg_init (void)
 
 	if_detect_dlg = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_container_set_border_width (GTK_CONTAINER(if_detect_dlg), 8);
+	gtk_window_set_title (GTK_WINDOW(if_detect_dlg), _("Detected interfaces:"));
 	gtk_window_set_resizable (GTK_WINDOW(if_detect_dlg), FALSE);
 	gtk_window_set_transient_for (GTK_WINDOW(if_detect_dlg), GTK_WINDOW(gn_if_add_dialog));
 	vbox = gtk_vbox_new (FALSE, 4);
@@ -103,6 +104,11 @@ gnetconfig_if_detect_dlg_init (void)
 	g_signal_connect (G_OBJECT(button_cancel),
 			"clicked",
 			G_CALLBACK(cb_gn_if_detect_cancel_clicked),
+			NULL);
+
+	g_signal_connect (G_OBJECT(if_detect_dlg),
+			"delete-event",
+			G_CALLBACK(gtk_widget_hide),
 			NULL);
 
 	return;
