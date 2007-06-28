@@ -336,7 +336,7 @@ gnetconfig_populate_profile_list (void)
 
 	if (!(dir = g_dir_open ("/etc/sysconfig/network", 0, &error)))
 	{
-		g_error ("Error parsing profile directory.");
+		g_error (_("Error parsing profile directory."));
 		return;
 	}
 	file = g_dir_read_name (dir);
@@ -519,7 +519,7 @@ gnetconfig_new_nameserver_dialog_show (void)
 	{
 		if (ip == NULL || !strlen(ip))
 		{
-			gn_error ("Required field cannot be left blank.");
+			gn_error (_("Required field cannot be left blank."));
 			goto up;
 		}
 		active_profile->dnses = g_list_append (active_profile->dnses, (gpointer)g_strdup(ip));
@@ -594,7 +594,7 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 				if (ret == -1)
 					gn_error (_("The was an error deleting the profile."));
 				else
-					gn_message (_("Profile delete successfully"));
+					gn_message (_("Profile deleted successfully"));
 				g_free (path);
 				gnetconfig_populate_profile_list ();
 				break;
@@ -606,7 +606,7 @@ cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 	}
 	else
 	{
-		gn_error ("You cannot delete an active network profile.");
+		gn_error (_("You cannot delete an active network profile."));
 		g_free (profile);
 	}
 
