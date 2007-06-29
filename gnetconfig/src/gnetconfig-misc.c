@@ -25,8 +25,6 @@
 #include "gnetconfig-misc.h"
 #include "glib.h"
 
-#define _GNU_SOURCE
-
 void
 gnetconfig_read_hostname (char *hostname)
 {
