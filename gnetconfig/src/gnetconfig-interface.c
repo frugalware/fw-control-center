@@ -38,6 +38,9 @@
 
 #include <libfwutil.h>
 
+#define IFACE_UP "/share/pixmaps/network-up.png"
+#define IFACE_DN "/share/pixmaps/network-down.png"
+
 extern GladeXML *xml;
 
 fwnet_profile_t *active_profile;
@@ -376,9 +379,10 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	GtkTreeModel		*model = NULL;
 	GtkListStore		*store = NULL;
 	GtkTreeIter		iter;
-	GdkPixbuf		*pixbuf;
 	GdkPixbuf		*yes_pixbuf;
 	GdkPixbuf		*no_pixbuf;
+	GdkPixbuf		*up_pixbuf;
+	GdkPixbuf		*dn_pixbuf;
 	gchar			*ptr = NULL;
 	gboolean		flag = FALSE;
 
@@ -386,9 +390,12 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	store = GTK_LIST_STORE (model);
 	gtk_list_store_clear (store);
-	pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
-					GTK_STOCK_NETWORK,
-					GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
+	ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_UP);
+	up_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 24, 24, NULL);
+	g_free (ptr);
+	ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_DN);
+	dn_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 24, 24, NULL);
+	g_free (ptr);
 	yes_pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
 					GTK_STOCK_YES,
 					GTK_ICON_SIZE_MENU, NULL);
@@ -403,22 +410,23 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	{
 		interface = g_list_nth_data (profile->interfaces, i);
 		gtk_list_store_append (store, &iter);
-		gtk_list_store_set (store, &iter, 0, pixbuf, 1, interface->name, -1);
+		gtk_list_store_set (store, &iter, 1, interface->name, -1);
 		ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", interface->name);
 		if (flag == TRUE)
 		{
 			if (!fwutil_system(ptr))
-				gtk_list_store_set (store, &iter, 2, yes_pixbuf, 3, " UP", -1);
+				gtk_list_store_set (store, &iter, 0, up_pixbuf, 2, yes_pixbuf, 3, " UP", -1);
 			else
-				gtk_list_store_set (store, &iter, 2, no_pixbuf, 3, " DOWN", -1);
+				gtk_list_store_set (store, &iter, 0, dn_pixbuf, 2, no_pixbuf, 3, " DOWN", -1);
 		}
 		else
 		{
-			gtk_list_store_set (store, &iter, 2, no_pixbuf, 3, " DOWN", -1);
+			gtk_list_store_set (store, &iter, 0, dn_pixbuf, 2, no_pixbuf, 3, " DOWN", -1);
 		}
 		g_free (ptr);
 	}
-	g_object_unref (pixbuf);
+	g_object_unref (up_pixbuf);
+	g_object_unref (dn_pixbuf);
 	g_object_unref (yes_pixbuf);
 	g_object_unref (no_pixbuf);
 
