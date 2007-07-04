@@ -42,9 +42,11 @@ static gchar	*license =
 "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, "
 "MA  02110-1301  USA");
 
-gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>",
-     "Christian Hamar alias krix <krics@linuxforum.hu>", NULL };
-gchar *translators[] = { NULL };
+static gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>",
+     			"Christian Hamar alias krix <krics@linuxforum.hu>", NULL };
+static gchar *translators[] = { NULL };
+static gchar *artists[] = { "gnetconfig uses icons from the GNOME and Tango projects.",
+			NULL };
 
 GdkPixbuf *about_pixbuf = NULL;
 extern GtkWidget *gn_main_window;
@@ -61,6 +63,7 @@ gnetconfig_about (void)
 				"comments", _("A graphical network configuration tool for Frugalware Linux."),
 				"license", license,
 				"authors", authors,
+				"artists", artists,
 				"translator-credits", translators,
 				"website", "http://www.frugalware.org/",
 				"website-label", "http://www.frugalware.org/",
