@@ -38,6 +38,8 @@
 
 #include <libfwutil.h>
 
+#define IFACE_WIRED "/share/pixmaps/gnetconfig-wired.png"
+#define IFACE_WIRELESS "/share/pixmaps/gnetconfig-wireless.png"
 #define IFACE_UP "/share/pixmaps/network-up.png"
 #define IFACE_DN "/share/pixmaps/network-down.png"
 
@@ -379,10 +381,10 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	GtkTreeModel		*model = NULL;
 	GtkListStore		*store = NULL;
 	GtkTreeIter		iter;
-	GdkPixbuf		*yes_pixbuf;
-	GdkPixbuf		*no_pixbuf;
 	GdkPixbuf		*up_pixbuf;
 	GdkPixbuf		*dn_pixbuf;
+	GdkPixbuf		*wired_pixbuf;
+	GdkPixbuf		*wireless_pixbuf;
 	gchar			*ptr = NULL;
 	gboolean		flag = FALSE;
 
@@ -391,17 +393,17 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	store = GTK_LIST_STORE (model);
 	gtk_list_store_clear (store);
 	ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_UP);
-	up_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 24, 24, NULL);
+	up_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 26, 26, NULL);
 	g_free (ptr);
 	ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_DN);
-	dn_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 24, 24, NULL);
+	dn_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 26, 26, NULL);
 	g_free (ptr);
-	yes_pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
-					GTK_STOCK_YES,
-					GTK_ICON_SIZE_MENU, NULL);
-	no_pixbuf = gtk_widget_render_icon (GTK_WIDGET(gn_interface_treeview),
-					GTK_STOCK_NO,
-					GTK_ICON_SIZE_MENU, NULL);
+	ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_WIRED);
+	wired_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 26, 26, NULL);
+	g_free (ptr);
+	ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_WIRELESS);
+	wireless_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 26, 26, NULL);
+	g_free (ptr);
 
 	if ((strcmp(profile->name, fwnet_lastprofile())) == 0)
 		flag = TRUE;
@@ -411,24 +413,29 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 		interface = g_list_nth_data (profile->interfaces, i);
 		gtk_list_store_append (store, &iter);
 		gtk_list_store_set (store, &iter, 1, interface->name, -1);
+		if (!fwnet_is_wireless_device(interface->name))
+			gtk_list_store_set (store, &iter, 0, wired_pixbuf, -1);
+		else
+			gtk_list_store_set (store, &iter, 0, wireless_pixbuf, -1);
+
 		ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", interface->name);
 		if (flag == TRUE)
 		{
 			if (!fwutil_system(ptr))
-				gtk_list_store_set (store, &iter, 0, up_pixbuf, 2, yes_pixbuf, 3, " UP", -1);
+				gtk_list_store_set (store, &iter, 2, up_pixbuf, 3, " UP", -1);
 			else
-				gtk_list_store_set (store, &iter, 0, dn_pixbuf, 2, no_pixbuf, 3, " DOWN", -1);
+				gtk_list_store_set (store, &iter, 2, dn_pixbuf, 3, " DOWN", -1);
 		}
 		else
 		{
-			gtk_list_store_set (store, &iter, 0, dn_pixbuf, 2, no_pixbuf, 3, " DOWN", -1);
+			gtk_list_store_set (store, &iter, 2, dn_pixbuf, 3, " DOWN", -1);
 		}
 		g_free (ptr);
 	}
 	g_object_unref (up_pixbuf);
 	g_object_unref (dn_pixbuf);
-	g_object_unref (yes_pixbuf);
-	g_object_unref (no_pixbuf);
+	g_object_unref (wired_pixbuf);
+	g_object_unref (wireless_pixbuf);
 
 	return;
 }
