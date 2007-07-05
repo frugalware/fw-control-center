@@ -144,16 +144,15 @@ gnetconfig_interface_init (void)
 	gn_config_dsl_check	= glade_xml_get_widget (xml, "fwn_config_dsl_check2");
 	gn_statusbar		= glade_xml_get_widget (xml, "fwn_statusbar");
 	gn_iflabel		= glade_xml_get_widget (xml, "fwn_interface_label");
-	gn_profile_desc = glade_xml_get_widget (xml, "fwn_profile_desc");
+	gn_profile_desc		= glade_xml_get_widget (xml, "fwn_profile_desc");
 
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
 	gn_interface_treeview = glade_xml_get_widget (xml, "interface_treeview");
 
 	/* Set the title for some stuff */
-	gtk_window_set_title(GTK_WINDOW(gn_main_window), PACKAGE_STRING);
-	gtk_window_set_title(GTK_WINDOW(gn_interface_dialog), _("Configure interface"));
-
+	gtk_window_set_title (GTK_WINDOW(gn_main_window), PACKAGE_STRING);
+	gtk_window_set_title (GTK_WINDOW(gn_interface_dialog), _("Configure interface"));
 	gtk_window_set_transient_for (GTK_WINDOW(gn_interface_dialog), GTK_WINDOW(gn_main_window));
 	gtk_window_set_position (GTK_WINDOW(gn_interface_dialog), GTK_WIN_POS_CENTER_ON_PARENT);
 
@@ -171,14 +170,24 @@ gnetconfig_interface_init (void)
 							"text", 1,
 							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
-	gtk_tree_view_column_set_min_width (column, 120);
+	gtk_tree_view_column_set_min_width (column, 50);
+	g_object_set (G_OBJECT(column), "spacing", 5, NULL);
+	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
+	
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("IF_Desc",
+							renderer,
+							"text", 2,
+							NULL);
+	gtk_tree_view_column_set_resizable (column, FALSE);
+	gtk_tree_view_column_set_min_width (column, 150);
 	g_object_set (G_OBJECT(column), "expand", TRUE, "spacing", 4, NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	column = gtk_tree_view_column_new_with_attributes ("IF_StatusIcon",
 							renderer,
-							"pixbuf", 2,
+							"pixbuf", 3,
 							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
@@ -186,12 +195,17 @@ gnetconfig_interface_init (void)
 	renderer = gtk_cell_renderer_text_new ();
 	column = gtk_tree_view_column_new_with_attributes ("IF_StatusText",
 							renderer,
-							"text", 3,
+							"text", 4,
 							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW(gn_interface_treeview), column);
 
-	store = gtk_list_store_new (4, GDK_TYPE_PIXBUF, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
+	store = gtk_list_store_new (5,
+				GDK_TYPE_PIXBUF,	/* connection tye pixbuf */
+				G_TYPE_STRING, 		/* interface name */
+				G_TYPE_STRING,		/* connection type */
+				GDK_TYPE_PIXBUF,	/* status pixbuf */
+				G_TYPE_STRING);		/* status text */
 	gtk_tree_view_set_model (GTK_TREE_VIEW(gn_interface_treeview), GTK_TREE_MODEL(store));
 	g_signal_connect (gn_interface_treeview,
 			"row-activated",
@@ -418,17 +432,28 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 		else
 			gtk_list_store_set (store, &iter, 0, wireless_pixbuf, -1);
 
+		/* set description of the interface */
+		if (fwnet_is_wireless_device(interface->name))
+			if (fwnet_is_dhcp(interface))
+				gtk_list_store_set (store, &iter, 2, _("Wireless Connection / DHCP"), -1);
+			else
+				gtk_list_store_set (store, &iter, 2, _("Wireless Connection / Static IP"), -1);
+		else if (fwnet_is_dhcp(interface))
+			gtk_list_store_set (store, &iter, 2, _("Wired Connection / DHCP"), -1);
+		else
+			gtk_list_store_set (store, &iter, 2, _("Wired Connection / Static IP"), -1);
+
 		ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", interface->name);
 		if (flag == TRUE)
 		{
 			if (!fwutil_system(ptr))
-				gtk_list_store_set (store, &iter, 2, up_pixbuf, 3, " UP", -1);
+				gtk_list_store_set (store, &iter, 3, up_pixbuf, 4, " UP", -1);
 			else
-				gtk_list_store_set (store, &iter, 2, dn_pixbuf, 3, " DOWN", -1);
+				gtk_list_store_set (store, &iter, 3, dn_pixbuf, 4, " DOWN", -1);
 		}
 		else
 		{
-			gtk_list_store_set (store, &iter, 2, dn_pixbuf, 3, " DOWN", -1);
+			gtk_list_store_set (store, &iter, 3, dn_pixbuf, 4, " DOWN", -1);
 		}
 		g_free (ptr);
 	}
