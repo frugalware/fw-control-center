@@ -6,8 +6,8 @@ configuration tasks.
 
 Requirements
 =============
-* gtk+2-2.10.0 or higher
-* frugalwareutils-0.7.3 or higher
+* gtk+2 >= 2.10.0
+* frugalwareutils >= 0.7.3
 * gksu-2.0.0
 
 Usage
