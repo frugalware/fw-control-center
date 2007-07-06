@@ -110,7 +110,7 @@ gnetconfig_setup_new_profile (const char *profile)
 		}
 		else
 		{
-			gn_error (_("Please enter a valid description for the new profile or click the Cancel button to contiune without entering a description."));
+			gn_error (_("Please enter a valid description for the new profile or click the Cancel button to continue without entering a description."));
 			goto up;
 		}
 	}
