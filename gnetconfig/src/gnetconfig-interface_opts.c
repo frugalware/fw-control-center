@@ -129,21 +129,21 @@ gnetconfig_interface_opts_init (void)
 
 	/* Keypress events */
 	g_signal_connect (G_OBJECT(gn_preup_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_preup_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_preup_treeview_keypress),
+			NULL);
 	g_signal_connect (G_OBJECT(gn_predown_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_predown_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_predown_treeview_keypress),
+			NULL);
 	g_signal_connect (G_OBJECT(gn_postup_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_postup_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_postup_treeview_keypress),
+			NULL);
 	g_signal_connect (G_OBJECT(gn_postdown_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_postdown_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_postdown_treeview_keypress),
+			NULL);
 
 	return;
 }
@@ -367,7 +367,7 @@ cb_gn_postup_add (GtkButton *button, gpointer data)
 	if (res == GTK_RESPONSE_ACCEPT)
 	{
 		if (!command || !strlen(command))
-		{	
+		{
 			gn_error (_("Required field cannot be blank. Please provide a valid command name."));
 			goto up;
 		}
@@ -424,7 +424,7 @@ cb_gn_postdown_add (GtkButton *button, gpointer data)
 	if (res == GTK_RESPONSE_ACCEPT)
 	{
 		if (!command || !strlen(command))
-		{	
+		{
 			gn_error (_("Required field cannot be blank. Please provide a valid command name."));
 			goto up;
 		}
