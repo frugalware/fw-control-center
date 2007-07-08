@@ -248,7 +248,9 @@ static void
 cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 {
 	fwnet_interface_t 	*nif;
+	GList			*ifs;
 	gchar			opts[50];
+	gchar			*name = NULL;
 
 	if (gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry))==NULL || !strlen(gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry))))
 	{
@@ -267,8 +269,20 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 		g_free (nif);
 		return;
 	}
+	/* check if an interface with this name already exists */
+	name = (char*)gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry));
+	for (ifs = active_profile->interfaces; ifs != NULL; ifs = g_list_next(ifs))
+	{
+		fwnet_interface_t *temp = ifs->data;
+		if (!strcmp(temp->name,name))
+		{
+			gn_error (_("An interface with the specified name already exists, please provide a different name."));
+			return;
+		}
+	}
+
 	memset (nif, 0, sizeof(fwnet_interface_t));
-	snprintf (nif->name, IF_NAMESIZE, (char*)gtk_entry_get_text(GTK_ENTRY(gn_nif_name_entry)));
+	snprintf (nif->name, IF_NAMESIZE, name);
 	switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_nconntype_combo)))
 	{
 		case GN_STATIC:
