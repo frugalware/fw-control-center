@@ -13,7 +13,7 @@ gen_pot()
 
 import_pootle()
 {
-	po_dir=~/darcs/translations/po
+	po_dir=~/git/translations/po
 	if [ -d $po_dir ]; then
 		: > po/LINGUAS
 		for i in $(/bin/ls $po_dir/fwcontrolcenter)
