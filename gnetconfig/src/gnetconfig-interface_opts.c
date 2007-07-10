@@ -33,9 +33,9 @@
 #include "gnetconfig-misc.h"
 
 extern fwnet_profile_t	*active_profile;
-extern GladeXML			*xml;
-extern GtkWidget		*gn_main_window;
-extern GtkWidget		*gn_iflabel;
+extern GladeXML		*xml;
+extern GtkWidget	*gn_main_window;
+extern GtkWidget	*gn_iflabel;
 
 GtkWidget *gn_preup_treeview;
 GtkWidget *gn_predown_treeview;
@@ -61,7 +61,7 @@ static void cb_gn_postdown_treeview_keypress (GtkWidget *widget, GdkEventKey *ev
 void
 gnetconfig_interface_opts_init (void)
 {
-	GtkWidget			*widget = NULL;
+	GtkWidget		*widget = NULL;
 	GtkListStore		*store_1 = NULL;
 	GtkListStore		*store_2 = NULL;
 	GtkListStore		*store_3 = NULL;
@@ -129,21 +129,21 @@ gnetconfig_interface_opts_init (void)
 
 	/* Keypress events */
 	g_signal_connect (G_OBJECT(gn_preup_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_preup_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_preup_treeview_keypress),
+			NULL);
 	g_signal_connect (G_OBJECT(gn_predown_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_predown_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_predown_treeview_keypress),
+			NULL);
 	g_signal_connect (G_OBJECT(gn_postup_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_postup_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_postup_treeview_keypress),
+			NULL);
 	g_signal_connect (G_OBJECT(gn_postdown_treeview),
-					"key_release_event",
-					G_CALLBACK(cb_gn_postdown_treeview_keypress),
-					NULL);
+			"key_release_event",
+			G_CALLBACK(cb_gn_postdown_treeview_keypress),
+			NULL);
 
 	return;
 }
@@ -153,13 +153,13 @@ gnetconfig_populate_opts (fwnet_interface_t *inte)
 {
 	GtkTreeModel	*model = NULL;
 	GtkListStore	*store = NULL;
-	GtkTreeIter		iter1;
-	GtkTreeIter		iter2;
-	GtkTreeIter		iter3;
-	GtkTreeIter		iter4;
-	GList			*olist = NULL;
-	gchar			*str = NULL;
-	GdkPixbuf		*pixbuf = NULL;
+	GtkTreeIter	iter1;
+	GtkTreeIter	iter2;
+	GtkTreeIter	iter3;
+	GtkTreeIter	iter4;
+	GList		*olist = NULL;
+	gchar		*str = NULL;
+	GdkPixbuf	*pixbuf = NULL;
 
 	if (!inte)
 		return;
@@ -254,7 +254,7 @@ cb_gn_preup_add (GtkButton *button, gpointer data)
 	{
 		if (!command || !strlen(command))
 		{
-			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+			gn_error (_("Required field cannot be blank. Please provide a valid command name."));
 			goto up;
 		}
 		ift->pre_ups = g_list_append (ift->pre_ups, (gpointer)strdup(command));
@@ -311,7 +311,7 @@ cb_gn_predown_add (GtkButton *button, gpointer data)
 	{
 		if (!command || !strlen(command))
 		{	
-			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+			gn_error (_("Required field cannot be blank. Please provide a valid command name."));
 			goto up;
 		}
 		ift->pre_downs = g_list_append (ift->pre_downs, (gpointer)strdup(command));
@@ -367,8 +367,8 @@ cb_gn_postup_add (GtkButton *button, gpointer data)
 	if (res == GTK_RESPONSE_ACCEPT)
 	{
 		if (!command || !strlen(command))
-		{	
-			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+		{
+			gn_error (_("Required field cannot be blank. Please provide a valid command name."));
 			goto up;
 		}
 		ift->post_ups = g_list_append (ift->post_ups, (gpointer)strdup(command));
@@ -424,8 +424,8 @@ cb_gn_postdown_add (GtkButton *button, gpointer data)
 	if (res == GTK_RESPONSE_ACCEPT)
 	{
 		if (!command || !strlen(command))
-		{	
-			gn_error ("Required field cannot be blank. Please provide a valid command name.");
+		{
+			gn_error (_("Required field cannot be blank. Please provide a valid command name."));
 			goto up;
 		}
 		ift->post_downs = g_list_append (ift->post_downs, (gpointer)strdup(command));
