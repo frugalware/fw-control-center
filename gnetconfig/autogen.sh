@@ -40,12 +40,16 @@ fi
 
 if [ "$1" == "--dist" ]; then
 	ver=`grep AC_INIT configure.ac|sed 's/.*, \([0-9\.]*\), .*/\1/'`
-	darcs changes >../_darcs/pristine/ChangeLog
-	darcs dist -d gnetconfig-$ver
-	rm ../_darcs/pristine/ChangeLog
+	git-archive --format=tar --prefix=gnetconfig-$ver/ HEAD | tar xf -
+	git log --no-merges |git name-rev --tags --stdin > gnetconfig-$ver/ChangeLog
+	cd gnetconfig-$ver
+	./autogen.sh --git
+	cd ..
+	tar czf gnetconfig-$ver.tar.gz gnetconfig-$ver
+	rm -rf gnetconfig-$ver
 	gpg --comment "See http://ftp.frugalware.org/pub/README.GPG for info" \
-		-ba -u 20F55619 ../gnetconfig-$ver.tar.gz
-	#mv ../gnetconfig-$ver.tar.gz.asc ../..
+		-ba -u 20F55619 gnetconfig-$ver.tar.gz
+	#mv gnetconfig-$ver.tar.gz.asc ../..
 	exit 0
 fi
 
@@ -62,7 +66,7 @@ cp -f $(dirname $(which automake))/../share/automake/mkinstalldirs ./
 cp -f $(dirname $(which automake))/../share/gettext/config.rpath ./
 automake -a -c --gnu --foreign
 
-if [ "$1" == "--darcs" ]; then
+if [ "$1" == "--git" ]; then
 	rm -rf autom4te.cache
 fi
 
