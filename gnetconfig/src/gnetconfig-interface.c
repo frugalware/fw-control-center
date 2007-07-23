@@ -646,6 +646,7 @@ cb_gn_activate_profile_clicked (GtkButton *button, gpointer data)
 					{
 						fwnet_interface_t *ift = g_list_nth_data (oldprofile->interfaces, i);
 							fwnet_ifdown (ift, oldprofile);
+						gnetconfig_profile_free (oldprofile);
 					}
 				}
 				/* load the new profile */
@@ -659,6 +660,7 @@ cb_gn_activate_profile_clicked (GtkButton *button, gpointer data)
 				gn_message (_("Profile activated successfully"));
 				g_free (path);
 				gnetconfig_populate_profile_list ();
+				goto cleanup;
 				break;
 
 			case GTK_RESPONSE_NO:
@@ -667,10 +669,10 @@ cb_gn_activate_profile_clicked (GtkButton *button, gpointer data)
 		}
 	}
 	else
-	{
 		gn_error (_("The profile is already activated."));
-		g_free (profile);
-	}
+
+	cleanup:g_free (profile);
+		return;
 }
 		
 static void
