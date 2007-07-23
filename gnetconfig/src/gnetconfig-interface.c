@@ -655,8 +655,7 @@ cb_gn_activate_profile_clicked (GtkButton *button, gpointer data)
 						fwnet_ifup (ift, active_profile);
 				}
 				fwnet_setdns (active_profile);
-				int x = fwnet_setlastprofile (profile);
-				g_print ("NUMBER: %d\n", x);
+				fwnet_setlastprofile (profile);
 				gn_message (_("Profile activated successfully"));
 				g_free (path);
 				gnetconfig_populate_profile_list ();
