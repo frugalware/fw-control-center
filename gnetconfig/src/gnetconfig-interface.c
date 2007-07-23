@@ -102,6 +102,7 @@ static void cb_gn_interface_add (GtkButton *button, gpointer data);
 static void cb_gn_interface_edited (GtkButton *button, gpointer data);
 static void cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data);
 static void cb_gn_interface_delete (GtkButton *button, gpointer data);
+static void cb_gn_activate_profile_clicked (GtkButton *button, gpointer data);
 static void cb_gn_delete_dns_clicked (GtkButton *button, gpointer data);
 static void cb_gn_delete_profile_clicked (GtkButton *button, gpointer data);
 static void cb_gn_profile_desc_save_clicked (GtkButton *button, gpointer data);
@@ -272,6 +273,11 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(widget),
 			"clicked",
 			G_CALLBACK(cb_gn_delete_profile_clicked),
+			NULL);
+	widget = glade_xml_get_widget (xml, "fwn_activate_profile");
+	g_signal_connect (G_OBJECT(widget),
+			"clicked",
+			G_CALLBACK(cb_gn_activate_profile_clicked),
 			NULL);
 	widget = glade_xml_get_widget (xml, "fwn_if_start");
 	g_signal_connect (G_OBJECT(widget),
@@ -612,6 +618,62 @@ cb_gn_profile_changed (GtkComboBox *combo, gpointer data)
 	return;
 }
 
+static void
+cb_gn_activate_profile_clicked (GtkButton *button, gpointer data)
+{
+	GtkTreeModel	*model = NULL;
+	GtkTreeIter	iter;
+	gchar		*path = NULL;
+	gchar		*profile = NULL;
+	gint		i;
+
+	gtk_combo_box_get_active_iter (GTK_COMBO_BOX(gn_profile_combo), &iter);
+	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
+	gtk_tree_model_get (model, &iter, 1, &profile, -1);
+	if (strcmp(profile, fwnet_lastprofile()))
+	{
+		switch ( gn_question (_("Are you sure you want to activate this profile ?")) )
+		{
+			case GTK_RESPONSE_YES:
+				path = g_strdup_printf ("/etc/sysconfig/network/%s", profile);
+				/* unload the old profile */
+				fwnet_profile_t *oldprofile = fwnet_parseprofile (fwnet_lastprofile());
+				while (gtk_events_pending())
+					gtk_main_iteration ();
+				if (oldprofile != NULL)
+				{
+					for (i=0;i<g_list_length(oldprofile->interfaces);i++)
+					{
+						fwnet_interface_t *ift = g_list_nth_data (oldprofile->interfaces, i);
+							fwnet_ifdown (ift, oldprofile);
+					}
+				}
+				/* load the new profile */
+				for (i=0;i<g_list_length(active_profile->interfaces);i++)
+				{
+					fwnet_interface_t *ift = g_list_nth_data (active_profile->interfaces, i);
+						fwnet_ifup (ift, active_profile);
+				}
+				fwnet_setdns (active_profile);
+				int x = fwnet_setlastprofile (profile);
+				g_print ("NUMBER: %d\n", x);
+				gn_message (_("Profile activated successfully"));
+				g_free (path);
+				gnetconfig_populate_profile_list ();
+				break;
+
+			case GTK_RESPONSE_NO:
+			case GTK_RESPONSE_DELETE_EVENT:
+				break;
+		}
+	}
+	else
+	{
+		gn_error (_("The profile is already activated."));
+		g_free (profile);
+	}
+}
+		
 static void
 cb_gn_delete_profile_clicked (GtkButton *button, gpointer data)
 {
