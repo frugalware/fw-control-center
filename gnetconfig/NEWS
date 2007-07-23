@@ -1,3 +1,19 @@
 VERSION			DESCRIPTION
----------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------
+0.1.1			- Many small bugfixes
+			- New default icons
+			- Added gnetconfig.desktop for GNOME/XFCE
+			- Translations related fixes in autogen.sh
+			- Updated autogen.sh for git and fixed other bugs (vmiklos)
+			- Fixed improper window size (krix)
+			- pot generation and other translation related fixes (krix)
+			- Many fixups in various dialogs (krix)
+			- BUGFIX: Don't allow blank interface name when saving a new interface
+			- BUGFIX: Don't allow active interfaces to be deleted
+			- BUGFIX: Don't allow interfaces of inactive profiles to be activated/deactivated
+			- Use interface specific icons (depending on connection type)
+			- Use better icons to indicate status of interface
+			- Do not allow adding of duplicate interfaces
+			- Interface list now also shows type of connection
+			- Added support for switching profiles
 0.1			- Initial Import
