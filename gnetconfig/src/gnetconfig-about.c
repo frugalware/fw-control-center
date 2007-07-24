@@ -42,10 +42,13 @@ static gchar	*license =
 "Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, "
 "MA  02110-1301  USA");
 
-static gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>",
+static const gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>",
      			"Christian Hamar alias krix <krics@linuxforum.hu>", NULL };
-static gchar *translators[] = { NULL };
-static gchar *artists[] = { "gnetconfig uses icons from the GNOME and Tango projects.",
+static const gchar translators[] = \
+			"Finn <detto_o@freenet.de> (de)\n"
+			"Michel Hermier <michel.hermier@gmail.com> (fr)\n"
+			"Vajna Miklos <vmiklos@frugalware.org> (hu)";
+static const gchar *artists[] = { "gnetconfig uses icons from the GNOME and Tango projects.",
 			NULL };
 
 GdkPixbuf *about_pixbuf = NULL;
