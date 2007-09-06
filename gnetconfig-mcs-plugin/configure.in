@@ -1,0 +1,77 @@
+dnl Copyright (c) 2006 Jean-François Wauthy <pollux@xfce.org>
+dnl
+
+dnl ***************************
+dnl *** Version information ***
+dnl ***************************
+m4_define([gnetconfig_mcs_plugin_version_major], [0])
+m4_define([gnetconfig_mcs_plugin_version_minor], [1])
+m4_define([gnetconfig_mcs_plugin_version_micro], [0])
+m4_define([gnetconfig_mcs_plugin_version_nano], [])
+m4_define([gnetconfig_mcs_plugin_version_tag], [])
+m4_define([gnetconfig_mcs_plugin_version], [gnetconfig_mcs_plugin_version_major().gnetconfig_mcs_plugin_version_minor().gnetconfig_mcs_plugin_version_micro()ifelse(gnetconfig_mcs_plugin_version_nano(), [], [], [.gnetconfig_mcs_plugin_version_nano()])ifelse(gnetconfig_mcs_plugin_version_tag(), [svn], [gnetconfig_mcs_plugin_version_tag()-gnetconfig_mcs_plugin_version_build()], [gnetconfig_mcs_plugin_version_tag()])])
+
+
+dnl # DO NOT MODIFY ANYTHING BELOW THIS LINE, UNLESS YOU KNOW WHAT
+dnl # YOU ARE DOING.
+
+
+dnl *******************************************
+dnl *** Debugging support for SVN snapshots ***
+dnl *******************************************
+m4_define([gnetconfig_mcs_plugin_debug_default], [ifelse(gnetconfig_mcs_plugin_version_tag(), [svn], [yes], [minimum])])
+
+dnl ***************************
+dnl *** Initialize autoconf ***
+dnl ***************************
+AC_COPYRIGHT([Copyright (c) 2007 Priyank Gosalia <priyankmg@gmail.com>])
+AC_INIT([gnetconfig-mcs-plugin], [gnetconfig_mcs_plugin_version], [priyankmg@gmail.com])
+AC_PREREQ([2.50])
+AC_REVISION([$Id: configure.in.in 2292 2007-01-01 16:46:03Z pollux $])
+AC_PROG_MAKE_SET()
+
+dnl ***************************
+dnl *** Initialize automake ***
+dnl ***************************
+AM_INIT_AUTOMAKE([AC_PACKAGE_TARNAME()], [AC_PACKAGE_VERSION()])
+AM_CONFIG_HEADER([config.h])
+AM_MAINTAINER_MODE()
+
+dnl ********************************
+dnl *** Check for basic programs ***
+dnl ********************************
+AC_PROG_CC()
+AC_PROG_INSTALL()
+AC_PROG_INTLTOOL([0.31], [no-xml])
+AC_PROG_LIBTOOL()
+
+dnl ***************************************
+dnl *** Check for standard header files ***
+dnl ***************************************
+AC_HEADER_STDC()
+
+dnl ******************************
+dnl *** Check for i18n support ***
+dnl ******************************
+XDT_I18N()
+
+dnl ***********************************
+dnl *** Check for required packages ***
+dnl ***********************************
+XDT_CHECK_PACKAGE([GTK], [gtk+-2.0], [2.6.0])
+XDT_CHECK_PACKAGE([LIBXFCEGUI4], [libxfcegui4-1.0], [4.4.1])
+
+dnl **********************************
+dnl *** Check for xfce-mcs-manager ***
+dnl **********************************
+XDT_XFCE_MCS_PLUGIN([XFCE_MCS_MANAGER], [4.4.1])
+
+XDT_FEATURE_DEBUG
+
+AC_OUTPUT([
+Makefile
+icons/Makefile
+icons/48x48/Makefile
+src/Makefile
+po/Makefile.in
+])
