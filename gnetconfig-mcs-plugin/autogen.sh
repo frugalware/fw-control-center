@@ -39,16 +39,18 @@ if [ "$1" == "--pot-only" ]; then
 fi
 
 if [ "$1" == "--dist" ]; then
-	ver=`grep AC_INIT configure.ac|sed 's/.*, \([0-9\.]*\), .*/\1/'`
+	ver=`grep version_major -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
+	ver=$ver.`grep version_minor -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
+	ver=$ver.`grep version_micro -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
 	git-archive --format=tar --prefix=gnetconfig-mcs-plugin-$ver/ HEAD | tar xf -
 	git log --no-merges |git name-rev --tags --stdin > gnetconfig-mcs-plugin-$ver/ChangeLog
 	cd gnetconfig-mcs-plugin-$ver
 	./autogen.sh --git
 	cd ..
 	tar czf gnetconfig-mcs-plugin-$ver.tar.gz gnetconfig-mcs-plugin-$ver
-	rm -rf gnetconfig-$ver
+	rm -rf gnetconfig-mcs-plugin-$ver
 	gpg --comment "See http://ftp.frugalware.org/pub/README.GPG for info" \
-		-ba -u 20F55619 gnetconfig-$ver.tar.gz
+		-ba -u 20F55619 gnetconfig-mcs-plugin-$ver.tar.gz
 	#mv gnetconfig-$ver.tar.gz.asc ../..
 	exit 0
 fi
