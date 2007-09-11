@@ -368,27 +368,28 @@ gnetconfig_populate_profile_list (void)
 	gn_profile_store = GTK_LIST_STORE (gn_profile_model);
 	gtk_list_store_clear (gn_profile_store);
 	pixbuf = gtk_widget_render_icon (gn_profile_combo, GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU, NULL);
+	fn = fwnet_lastprofile ();
 
 	while (file != NULL)
 	{
 		gtk_list_store_append (gn_profile_store, &iter);
 		gtk_list_store_set (gn_profile_store, &iter, 1, file, -1);
-		if ((fn=fwnet_lastprofile()))
+		if (fn != NULL)
 		{
+			index++;
 			if (!strcmp(file,fn))
 			{
-				index++;
 				gtk_list_store_set (gn_profile_store, &iter, 0, pixbuf, -1);
 				gchar *msg = g_strdup_printf ("%s %s", _("Active network profile:"), fn);
 				gnetconfig_update_status (msg);
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_profile_combo), index);
 				g_free (msg);
 			}
-			g_free (fn);
 		}
 		file = g_dir_read_name (dir);
 	}
-	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_profile_combo), index);
 	g_dir_close (dir);
+	g_free (fn);
 
 	return;
 }
