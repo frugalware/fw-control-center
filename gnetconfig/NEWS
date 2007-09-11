@@ -3,6 +3,7 @@ VERSION			DESCRIPTION
 0.1.2			- New translation : Danish (dk)
 			- BUGFIX: Fixed a bug where the last active profile was not
 			  automatically highlighted in the profile list.
+			- Added gnetconfig.desktop for KDE
 0.1.1			- Many small bugfixes
 			- New default icons
 			- Added gnetconfig.desktop for GNOME/XFCE

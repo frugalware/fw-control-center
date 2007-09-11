@@ -10,6 +10,9 @@ icon_DATA	= data/gnetconfig.png data/network-up.png data/network-down.png \
 desktopdir	= $(datadir)/applications
 desktop_DATA	= data/gnetconfig.desktop
 
+desktopkdir = $(datadir)/applications/kde
+desktopk_DATA = data/gnetconfig-kde.desktop
+
 EXTRA_DIST	= $(share_DATA) \
 		  $(icon_DATA)
 

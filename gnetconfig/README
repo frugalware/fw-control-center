@@ -1,4 +1,4 @@
-Gnetconfig 0.1.1
+Gnetconfig 0.1.2
 
 Gnetconfig is a graphical network configuration tool for Frugalware
 Linux. Gnetconfig uses the libfwnetconfig library to perform network
