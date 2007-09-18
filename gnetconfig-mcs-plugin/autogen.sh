@@ -46,6 +46,7 @@ if [ "$1" == "--dist" ]; then
 	git log --no-merges |git name-rev --tags --stdin > gnetconfig-mcs-plugin-$ver/ChangeLog
 	cd gnetconfig-mcs-plugin-$ver
 	./autogen.sh --git
+	rm -rf autom4te.cache
 	cd ..
 	tar czf gnetconfig-mcs-plugin-$ver.tar.gz gnetconfig-mcs-plugin-$ver
 	rm -rf gnetconfig-mcs-plugin-$ver
