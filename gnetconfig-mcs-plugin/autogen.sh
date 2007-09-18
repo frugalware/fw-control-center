@@ -67,7 +67,7 @@ autoheader -f
 autoconf -f
 cp -f $(dirname $(which automake))/../share/automake/mkinstalldirs ./
 cp -f $(dirname $(which automake))/../share/gettext/config.rpath ./
-xdt-autogen
+NOCONFIGURE=1 xdt-autogen
 automake -a -c --gnu --foreign
 if [ "$1" == "--git" ]; then
 	rm -rf autom4te.cache
