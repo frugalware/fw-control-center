@@ -18,8 +18,8 @@ import_pootle()
 		: > po/LINGUAS
 		for i in $(/bin/ls $po_dir/fwcontrolcenter)
 		do
-			[ -e $po_dir/fwcontrolcenter/$i/gnetconfig.po ] || continue
-			cp $po_dir/fwcontrolcenter/$i/gnetconfig.po po/$i.po
+			[ -e $po_dir/fwcontrolcenter/$i/gnetconfig-mcs-plugin.po ] || continue
+			cp $po_dir/fwcontrolcenter/$i/gnetconfig-mcs-plugin.po po/$i.po
 			if msgfmt -c --statistics -o po/$i.gmo po/$i.po; then
 				echo $i >> po/LINGUAS
 			else
