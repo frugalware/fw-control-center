@@ -1353,7 +1353,10 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 				interface->options->data = g_strdup_printf ("%s netmask %s",
 									ipaddr,
 									netmask);
-			sprintf (interface->gateway, "default gw %s", gateway);
+			if (strlen(gateway))
+				sprintf (interface->gateway, "default gw %s", gateway);
+			else
+				*interface->gateway = 0;
 			type = GN_STATIC;
 
 			break;
