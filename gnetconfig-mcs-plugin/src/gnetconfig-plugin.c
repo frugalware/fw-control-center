@@ -40,7 +40,7 @@
 
 static gchar *xterm_argv[] = {
     "xterm",
-    "-T", "Gnetconfig starter -- DONT'T CLOSE THAT WINDOW",
+    "-T", "Gnetconfig starter -- DON'T CLOSE THAT WINDOW",
     "-geometry", "50x1",
     "-e", "su -c " GNETCONFIG_BIN,
     NULL 
