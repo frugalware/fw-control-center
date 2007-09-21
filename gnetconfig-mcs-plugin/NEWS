@@ -1,6 +1,7 @@
 VERSION				DESCRIPTION
 ------------------------------------------------------------------------------------------
-0.1.1					- Spelling fix in setting xterm title
-						- Use gnetconfig-mcs-plugin's .po files and not
-						  the ones of gnetconfig.
+0.1.1				- Spelling fix in setting xterm title
+				- Use gnetconfig-mcs-plugin's .po files and not
+				  the ones of gnetconfig.
+				- New translations - da_DK, hu_HU, fr_FR
 0.1.0 (2007-09-06)		- Initial Release
