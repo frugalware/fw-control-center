@@ -1146,11 +1146,11 @@ cb_gn_interface_selected (GtkTreeSelection *selection, gpointer data)
 		{
 			if (sscanf(inte->dhcp_opts, "%*s %*s -h %s", host))
 			string = g_strdup_printf ("DHCP Hostname:\t %s\n", host);
-		}
-		else
+		} else {
 			string = g_strdup_printf ("DHCP Hostname:\t (none)\n");
-		gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
-		g_free (string);
+			gtk_text_buffer_insert (buffer, &t_iter, string, strlen(string));
+			g_free (string);
+		}
 		if (strlen(inte->dhcpclient))
 			string = g_strdup_printf ("DHCP Client:\t\t %s\n", inte->dhcpclient);
 		else
