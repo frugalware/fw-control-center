@@ -67,7 +67,7 @@ McsPluginInitResult mcs_plugin_init (McsPlugin *plugin)
 
     plugin->plugin_name = g_strdup ("gfpm");
     /* the button label in the xfce-mcs-manager dialog */
-    plugin->caption = g_strdup (Q_ ("Button Label|Package Manager"));
+    plugin->caption = g_strdup (Q_ ("Package Manager"));
     plugin->run_dialog = run_dialog;
     plugin->icon = xfce_themed_icon_load (GFPM_ICON, 48);
     if (plugin->icon) {
