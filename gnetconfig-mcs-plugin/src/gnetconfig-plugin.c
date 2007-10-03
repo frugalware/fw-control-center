@@ -67,7 +67,7 @@ McsPluginInitResult mcs_plugin_init (McsPlugin *plugin)
 
     plugin->plugin_name = g_strdup ("gnetconfig");
     /* the button label in the xfce-mcs-manager dialog */
-    plugin->caption = g_strdup (Q_ ("Button Label|Network Configuration"));
+    plugin->caption = g_strdup (Q_ ("Network Configuration"));
     plugin->run_dialog = run_dialog;
     plugin->icon = xfce_themed_icon_load (GNETCONFIG_ICON, 48);
     if (plugin->icon) {
