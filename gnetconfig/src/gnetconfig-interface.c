@@ -564,11 +564,21 @@ gnetconfig_new_nameserver_dialog_show (void)
 	up:ip = gn_input (_("New DNS"), _("Enter the ip address of the nameserver:"), &res);
 	if (res == GTK_RESPONSE_ACCEPT)
 	{
+		GList *l = NULL;
 		if (ip == NULL || !strlen(ip))
 		{
 			gn_error (_("Required field cannot be left blank."));
 			goto up;
 		}
+		for (l = active_profile->dnses; l!=NULL;l = l->next)
+		{
+			if (!strcmp(l->data, ip))
+			{
+				gn_error (_("The IP address you entered already exists in the DNS list. Please enter a different IP address."));
+				goto up;
+			}
+		}
+
 		active_profile->dnses = g_list_append (active_profile->dnses, (gpointer)g_strdup(ip));
 		gnetconfig_save_profile (active_profile);
 		gnetconfig_populate_dns_list (active_profile->dnses);
