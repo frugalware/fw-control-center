@@ -479,12 +479,13 @@ gnetconfig_populate_dns_list (GList *list)
 	GtkListStore	*store = NULL;
 	GtkTreeIter	iter;
 
-	if (!list)
-		return;
 
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_dns_listview));
 	store = GTK_LIST_STORE (model);
 	gtk_list_store_clear (store);
+	
+	if (!list)
+		return;
 
 	while (list != NULL)
 	{
