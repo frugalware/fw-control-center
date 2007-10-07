@@ -1,5 +1,8 @@
 VERSION				DESCRIPTION
 ------------------------------------------------------------------------------------------
+0.1.2				- Translation updates
+				- Fixed a small bug when setting caption in locales
+				  other than en
 0.1.1				- Spelling fix in setting xterm title
 				- Use gnetconfig-mcs-plugin's .po files and not
 				  the ones of gnetconfig.

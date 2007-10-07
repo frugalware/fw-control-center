@@ -6,7 +6,7 @@ dnl *** Version information ***
 dnl ***************************
 m4_define([gnetconfig_mcs_plugin_version_major], [0])
 m4_define([gnetconfig_mcs_plugin_version_minor], [1])
-m4_define([gnetconfig_mcs_plugin_version_micro], [1])
+m4_define([gnetconfig_mcs_plugin_version_micro], [2])
 m4_define([gnetconfig_mcs_plugin_version_nano], [])
 m4_define([gnetconfig_mcs_plugin_version_tag], [])
 m4_define([gnetconfig_mcs_plugin_version], [gnetconfig_mcs_plugin_version_major().gnetconfig_mcs_plugin_version_minor().gnetconfig_mcs_plugin_version_micro()ifelse(gnetconfig_mcs_plugin_version_nano(), [], [], [.gnetconfig_mcs_plugin_version_nano()])ifelse(gnetconfig_mcs_plugin_version_tag(), [svn], [gnetconfig_mcs_plugin_version_tag()-gnetconfig_mcs_plugin_version_build()], [gnetconfig_mcs_plugin_version_tag()])])
