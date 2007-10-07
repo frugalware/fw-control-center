@@ -6,7 +6,7 @@ dnl *** Version information ***
 dnl ***************************
 m4_define([gfpm_mcs_plugin_version_major], [0])
 m4_define([gfpm_mcs_plugin_version_minor], [1])
-m4_define([gfpm_mcs_plugin_version_micro], [0])
+m4_define([gfpm_mcs_plugin_version_micro], [1])
 m4_define([gfpm_mcs_plugin_version_nano], [])
 m4_define([gfpm_mcs_plugin_version_tag], [])
 m4_define([gfpm_mcs_plugin_version], [gfpm_mcs_plugin_version_major().gfpm_mcs_plugin_version_minor().gfpm_mcs_plugin_version_micro()ifelse(gfpm_mcs_plugin_version_nano(), [], [], [.gfpm_mcs_plugin_version_nano()])ifelse(gfpm_mcs_plugin_version_tag(), [svn], [gfpm_mcs_plugin_version_tag()-gfpm_mcs_plugin_version_build()], [gfpm_mcs_plugin_version_tag()])])

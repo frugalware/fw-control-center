@@ -1,3 +1,6 @@
 VERSION				DESCRIPTION
 ------------------------------------------------------------------------------------------
+0.1.1				- Added Translations hu_HU, fr_FR, da_DA
+				- Small bugfix in displaying caption text in
+				  languages other than en
 0.1.0 (2007-09-21)		- Initial Release
