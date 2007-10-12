@@ -88,12 +88,12 @@ _db_callback (char *section, PM_DB *db) {
 }
 
 static void
-_evt_progress (netbuf *ctl, int xferred, void *arg) {
+_evt_progress (unsigned char event, char *pkgname, int percent, int howmany, int remain) {
 	g_print ("im here\n");
 }
 
 static void
-_evt_evt (unsigned char event, char *pkgname, int percent, int howmany, int remain) {
+_evt_evt (unsigned char event, void* data1, void *data2) {
 	return;
 }
 
