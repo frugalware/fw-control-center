@@ -37,11 +37,6 @@ typedef struct
 static void updnotifierd_init(UpdNotifier *server);
 static void updnotifierd_class_init(UpdNotifierClass *class);
 
-gboolean netconfig_get_current_profile(UpdNotifier *obj, gchar **profile, GError **error);
-gboolean netconfig_change_profile(UpdNotifier *obj, gchar *profile, gint32 *ret, GError **error);
-gboolean netconfig_stop_networking(UpdNotifier *obj, gint32 *ret, GError **error);
-gboolean netconfig_start_networking(UpdNotifier *obj, gint32 *ret, GError **error);
-gboolean netconfig_get_profiles(UpdNotifier *obj, gchar **profiles, GError **error);
-gboolean updnotifier_update_database(UpdNotifier *obj, gint32 *ret, GError **error);
+gboolean updnotifier_update_database(UpdNotifier *obj, gchar **packages, GError **error);
 
 #endif
