@@ -1,10 +1,10 @@
-/***************************************************************************
- *  netconfigd.c
- *  Author(s):  Alex Smith <alex@alex-smith.me.uk>
- *  Copyright (C) 2007 Frugalware Developer Team
- ****************************************************************************/
-
 /*
+ *  updatenotifierd.c for updatenotifier
+ *
+ *  Copyright (C) 2007 by Priyank Gosalia <priyankmg@gmail.com>
+ *  Portions of this code are borrowed fron netconfigd
+ *  netconfigd is Copyright (C) 2007 Alex Smith <alex@alex-smith.me.uk>
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +19,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
 
 #include <errno.h>
 #include <stdio.h>
@@ -36,6 +37,7 @@
 
 typedef void* netbuf;
 static PM_DB *sync_db = NULL;
+static PM_DB *local_db = NULL;
 
 G_DEFINE_TYPE(UpdNotifier, updnotifierd, G_TYPE_OBJECT);
 
@@ -82,18 +84,7 @@ int handle_network_start() {
 }
 
 static void
-_db_callback (char *section, PM_DB *db) {
-	g_print ("section: %s\n", section);
-	return;
-}
-
-static void
-_evt_progress (unsigned char event, char *pkgname, int percent, int howmany, int remain) {
-	g_print ("im here\n");
-}
-
-static void
-_evt_evt (unsigned char event, void* data1, void *data2) {
+_evt_evt (unsigned char event, char *pkgname, int percent, int howmany, int remain) {
 	return;
 }
 
@@ -110,54 +101,43 @@ _updatenotifierd_init_pacman () {
 	if (pacman_initialize ("/") == -1)
 		return FALSE;
 
-	/* parse the pacman-g2 config */
-	pacman_parse_config ("/etc/pacman.conf", _db_callback, "");
-	pacman_set_option (PM_OPT_LOGMASK, (long)-1);
-	pacman_set_option (PM_OPT_LOGCB, (long)_log_cb);
-	
 	/* register the main repo */
 	/* FIXME: Later add support for custom repos */
 	sync_db = pacman_db_register ("frugalware-current");
+	local_db = pacman_db_register ("local");
 
 	if (sync_db == NULL)
 		return FALSE;
+	if (local_db == NULL)
+		return FALSE;
 
+	/* parse the pacman-g2 config */
+	pacman_parse_config ("/etc/pacman.conf", NULL, "");
+	pacman_set_option (PM_OPT_LOGMASK, (long)-1);
+	pacman_set_option (PM_OPT_LOGCB, (long)_log_cb);
+	
 	return TRUE;
 }
 
-static gint
-_updnotifierd_update_db () {
-	int ret = 0;
+GList* _updnotifierd_update_database (void) {
+	PM_LIST	*packages = NULL;
+	GList	*ret = NULL;
+	int	retval = 0;
 
 	/* update the pacman database */
-	ret = pacman_db_update (0, sync_db);
+	retval = pacman_db_update (0, sync_db);
 	
 	/* something went wrong */
-	if (ret == -1) {
+	if (retval== -1) {
 		printf ("%s\n", pacman_strerror(pm_errno));
 		return ret;
 	}
-	else if (ret == 0) {
-		printf ("Database updated\n");
-	}
-	else {
-		printf ("Database is up to date\n");
-	}
 
-	return ret;
-}
-
-gboolean updnotifier_update_database (UpdNotifier *obj, gint32 *ret, GError **error) {
-	PM_LIST *packages = NULL;
-
-	if (_updnotifierd_update_db() == 0) {
-		*ret = 0;
-	}
-
-	if (pacman_trans_init(PM_TRANS_TYPE_SYNC, 0, _evt_evt, NULL, _evt_progress) == -1) {
+	if (pacman_trans_init(PM_TRANS_TYPE_SYNC, 0, NULL, NULL, NULL) == -1) {
 		gchar *errorstr = g_strdup_printf ("Failed to init transaction (%s)\n", pacman_strerror(pm_errno));
 		g_print (errorstr);
 		g_free (errorstr);
+		return ret;
 	}
 	else {
 		if (pacman_trans_sysupgrade() == -1) {
@@ -167,44 +147,42 @@ gboolean updnotifier_update_database (UpdNotifier *obj, gint32 *ret, GError **er
 			packages = pacman_trans_getinfo (PM_TRANS_PACKAGES);
 			if (packages == NULL) {
 				g_print ("No new updates are available\n");
-				g_print (pacman_strerror(pm_errno));
 			}
 			else {
 				PM_LIST *i = NULL;
 	
-				for (i=packages;i!=NULL;i=pacman_list_next(i)) {
-					g_print ("%s\n", pacman_list_getdata(i));
+				for (i=pacman_list_first(packages);i!=NULL;i=pacman_list_next(i)) {
+					PM_SYNCPKG *spkg = pacman_list_getdata (i);
+					PM_PKG *pkg = pacman_sync_getinfo (spkg, PM_SYNC_PKG);
+					ret = g_list_append (ret, g_strdup((char*)pacman_pkg_getinfo(pkg,PM_PKG_NAME)));
 				}
 			}
 			pacman_trans_release ();
 		}
 	}
 
-	return TRUE;
+	return ret;
 }
 
-gboolean netconfig_get_current_profile(UpdNotifier *obj, gchar **profile, GError **error) {
-	return TRUE;
-}
-
-gboolean netconfig_change_profile(UpdNotifier *obj, gchar *profile, gint32 *ret, GError **error) {
-	return TRUE;
-}
-
-gboolean netconfig_stop_networking(UpdNotifier *obj, gint32 *ret, GError **error) {
-	return TRUE;
-}
-
-gboolean netconfig_start_networking(UpdNotifier *obj, gint32 *ret, GError **error) {
-	return TRUE;
-}
-
-gboolean netconfig_get_profiles(UpdNotifier *obj, gchar **profiles, GError **error) {
-	return TRUE;
+gboolean updnotifier_update_database(UpdNotifier *obj, gchar **packages, GError **error) {
+	GList *list = NULL;
+	if ((list = _updnotifierd_update_database())==NULL) {
+		*packages = NULL;
+		return FALSE;
+	}
+	else {
+		GString *tmp = g_string_new ("");
+		for (list; list!=NULL;list=g_list_next(list)) {
+			tmp = g_string_append (tmp, list->data);
+			tmp = g_string_append (tmp, " ");
+		}
+		*packages = g_strdup (tmp->str);
+		return TRUE;
+	}
 }
 
 void usage() {
-	printf("Netconfigd v" VERSION "\n");
+	printf("Updatenotifierd v" VERSION "\n");
 	printf(" --help        Display this help text\n");
 	printf(" --daemon      Fork into the background\n");
 }
@@ -252,9 +230,9 @@ int main (int argc, char *argv[]) {
 	}
 	
 	// Connect to syslog
-	openlog("netconfigd", LOG_PID, LOG_DAEMON);
+	openlog("updnotifierd", LOG_PID, LOG_DAEMON);
 	
-	syslog(LOG_INFO, "Netconfigd v" VERSION " started...");
+	syslog(LOG_INFO, "Updatenotifierd v" VERSION " started...");
 	
 	g_type_init();
 	
