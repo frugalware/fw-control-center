@@ -74,20 +74,6 @@ void updnotifierd_init(UpdNotifier *server) {
 	g_object_unref(driver_proxy);
 }
 
-// Copied from netconfig.
-int handle_network_stop() {
-	return(1);
-}
-
-int handle_network_start() {
-	return 0;
-}
-
-static void
-_evt_evt (unsigned char event, char *pkgname, int percent, int howmany, int remain) {
-	return;
-}
-
 static void
 _log_cb (unsigned short level, char *msg) {
 	g_print ("%s\n", msg);
@@ -181,8 +167,13 @@ gboolean updnotifier_update_database(UpdNotifier *obj, gchar **packages, GError 
 	}
 }
 
+gboolean updnotifier_test_service(UpdNotifier *obj, gint *ret, GError **error) {
+	*ret = 1;
+	return TRUE;	
+}
+
 void usage() {
-	printf("Updatenotifierd v" VERSION "\n");
+	printf("Fund v" VERSION "\n");
 	printf(" --help        Display this help text\n");
 	printf(" --daemon      Fork into the background\n");
 }
@@ -232,7 +223,7 @@ int main (int argc, char *argv[]) {
 	// Connect to syslog
 	openlog("updnotifierd", LOG_PID, LOG_DAEMON);
 	
-	syslog(LOG_INFO, "Updatenotifierd v" VERSION " started...");
+	syslog(LOG_INFO, "Fund v" VERSION " started...");
 	
 	g_type_init();
 	

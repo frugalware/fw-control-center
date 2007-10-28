@@ -5,5 +5,9 @@
 			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="updnotifier_update_database"/>
 			<arg type="s" name="packages" direction="out" />
 		</method>
+		<method name="TestService">
+			<annotation name="org.freedesktop.DBus.GLib.CSymbol" value="updnotifier_test_service"/>
+			<arg type="i" name="ret" direction="out" />
+		</method>
 	</interface>
 </node>

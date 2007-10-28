@@ -38,5 +38,6 @@ static void updnotifierd_init(UpdNotifier *server);
 static void updnotifierd_class_init(UpdNotifierClass *class);
 
 gboolean updnotifier_update_database(UpdNotifier *obj, gchar **packages, GError **error);
+gboolean updnotifier_test_service(UpdNotifier *obj, gint *ret, GError **error);
 
 #endif
