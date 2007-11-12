@@ -14,6 +14,9 @@ AC_PROG_CC
 AC_HEADER_STDC
 AC_CHECK_HEADERS([locale.h stdlib.h string.h sys/ioctl.h unistd.h libfwnetconfig.h libfwutil.h])
 
+AC_ARG_ENABLE(debug,
+    AC_HELP_STRING([  --enable-debug], [Enable debugging support]), [debug="yes"])
+
 if test "${GCC}" = "yes"
 then
 	CFLAGS="${CFLAGS} -pipe -Wall"
@@ -25,6 +28,20 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [needed for bindtextdomain() and textdomain()])
 AM_GLIB_GNU_GETTEXT
 AM_GLIB_DEFINE_LOCALEDIR(LOCALEDIR)
+
+dnl Check for debug enabled or not
+AC_MSG_CHECKING(for debug request)
+if test "x$debug" = "xyes" ; then
+    AC_DEFINE(GFPM_DEBUG, 1, [Debug support: enabled])
+    CFLAGS="${CFLAGS} -ggdb3 -Wall -DGNETCONFIG_DEBUG"
+    debug=yes
+    AC_MSG_RESULT(yes)
+else
+    AC_DEFINE(GFPM_DEBUG, 0, [Debug support: disabled])
+    CFLAGS="${CFLAGS} -Wall"
+    debug=no
+    AC_MSG_RESULT(no)
+fi
 
 pkg_modules="gtk+-2.0 >= 2.6.0 \
 			 libglade-2.0 >= 2.6.0"
