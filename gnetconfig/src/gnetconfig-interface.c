@@ -407,6 +407,7 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	GdkPixbuf		*wired_pixbuf;
 	GdkPixbuf		*wireless_pixbuf;
 	gchar			*ptr = NULL;
+	gchar			*old_profile = NULL;
 	gboolean		flag = FALSE;
 
 	n_ifs = g_list_length (profile->interfaces);
@@ -426,8 +427,10 @@ gnetconfig_populate_interface_list (fwnet_profile_t *profile)
 	wireless_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 26, 26, NULL);
 	g_free (ptr);
 
-	if ((strcmp(profile->name, fwnet_lastprofile())) == 0)
-		flag = TRUE;
+	old_profile = fwnet_lastprofile ();
+	if (old_profile!=NULL)
+		if ((strcmp(profile->name, old_profile)) == 0)
+			flag = TRUE;
 
 	for (i=0;i<n_ifs;i++)
 	{
