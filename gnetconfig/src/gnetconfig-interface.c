@@ -765,16 +765,20 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 	gboolean		found = FALSE;
 	fwnet_interface_t*	inte = NULL;
 	gint			ret;
+	gchar			*old_profile = NULL;
 
 	gtk_combo_box_get_active_iter (GTK_COMBO_BOX(gn_profile_combo), &iter);
 	model = gtk_combo_box_get_model (GTK_COMBO_BOX(gn_profile_combo));
-	gtk_tree_model_get (model, &iter, 1, &profile, -1); 
-	if (strcmp(profile,fwnet_lastprofile())!=0)
+	gtk_tree_model_get (model, &iter, 1, &profile, -1);
+	old_profile = fwnet_lastprofile ();
+	if (old_profile!=NULL)
 	{
-		gn_error (_("This interface cannot be activated. It belongs to an inactive profile."));
-		return;
+		if (strcmp(profile,old_profile)!=0)
+		{
+			gn_error (_("This interface cannot be activated. It belongs to an inactive profile."));
+			return;
+		}
 	}
-
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(gn_interface_treeview));
 	selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
 	if ( FALSE == gtk_tree_selection_get_selected (selection, &model, &iter) )
