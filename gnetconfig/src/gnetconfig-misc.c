@@ -124,7 +124,7 @@ gnetconfig_get_wireless_mode (const char *mode)
 	else if (strlen(mode) && (!strcmp(mode, "auto")))
 		return GN_AUTO;
 	else
-		return -1;
+		return GN_AUTO;
 }
 
 char *
