@@ -1382,12 +1382,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 		case GN_DHCP:
 		{
 			char *dhcp_hname = NULL;
-			
-			dhcp_hname = (char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry));
-			if (strlen(dhcp_hname))
-				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", dhcp_hname);
-			else
-				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10\n");
 
 			if (interface->options == NULL)
 			{
@@ -1401,9 +1395,18 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			{
 				case GN_DHCPCD:
 					snprintf (interface->dhcpclient, PATH_MAX, "dhcpcd");
+					dhcp_hname = (char*)gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry));
+					if (strlen(dhcp_hname))
+						snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", dhcp_hname);
+					else
+						snprintf (interface->dhcp_opts, PATH_MAX, "-t 10\n");
 					break;
 				case GN_DHCLIENT:
 					snprintf (interface->dhcpclient, PATH_MAX, "dhclient");
+					/* interface_opts is only valid when the dhcp client
+					 * is dhcpcd. So, if we use dhclient, dhcp_opts
+					 * should be blank */
+					*interface->dhcp_opts = '\0';
 					break;
 				default:
 					*interface->dhcpclient = '\0';
