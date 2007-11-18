@@ -1468,44 +1468,6 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			g_free (mode);
 		}
 
-		if (type == GN_STATIC)
-		{
-			if (interface->options == NULL)
-			{	
-				snprintf (opstring, 49, "%s netmask %s", ipaddr, netmask);
-				interface->options = g_list_append (interface->options, strdup(opstring));
-			}
-			else
-				interface->options->data = g_strdup_printf ("%s netmask %s", ipaddr,	netmask);
-			sprintf (interface->gateway, "default gw %s", gateway);
-		}
-		else if (type == GN_DHCP)
-		{
-			if (interface->options == NULL)
-			{
-				snprintf (opstring, 49, "dhcp");
-				interface->options = g_list_append (interface->options, strdup(opstring));
-			}
-			else
-				interface->options->data = g_strdup_printf ("dhcp");
-			char *hn = (char*) gtk_entry_get_text (GTK_ENTRY(gn_dhcp_hostname_entry));
-			if (!hn && strlen(hn))
-				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10 -h %s\n", hn);
-			else
-				snprintf (interface->dhcp_opts, PATH_MAX, "-t 10\n");
-
-			switch (gtk_combo_box_get_active (GTK_COMBO_BOX(gn_dhcp_client_combo)))
-			{
-				case GN_DHCPCD:
-					snprintf (interface->dhcpclient, PATH_MAX, "dhcpcd");
-					break;
-				case GN_DHCLIENT:
-					snprintf (interface->dhcpclient, PATH_MAX, "dhclient");
-					break;
-				default:
-					*interface->dhcpclient = '\0';
-			}
-		}
 	}
 
 	gnetconfig_save_profile (active_profile);
