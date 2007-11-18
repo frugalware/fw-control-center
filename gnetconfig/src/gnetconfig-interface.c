@@ -940,7 +940,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			}
 			dsl_conn = GN_STATIC;
 		}
-		else if ((fwnet_is_dhcp(inte)==1) && (!fwnet_is_wireless_device(inte->name)))
+		else if (fwnet_is_dhcp(inte))
 		{
 			/* DHCP Active */
 			gtk_entry_set_text (GTK_ENTRY(gn_ipaddress_entry), "");
