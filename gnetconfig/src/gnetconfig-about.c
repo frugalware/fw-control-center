@@ -45,9 +45,11 @@ static gchar	*license =
 static const gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>",
      			"Christian Hamar alias krix <krics@linuxforum.hu>", NULL };
 static const gchar translators[] = \
-			"Finn <detto_o@freenet.de> (de)\n"
-			"Michel Hermier <michel.hermier@gmail.com> (fr)\n"
-			"Vajna Miklos <vmiklos@frugalware.org> (hu)";
+			"Carl Andersen <carl@frugalware.dk> (da_DK)\n"
+			"Finn <detto_o@freenet.de> (de_DE)\n"
+			"Manuel Peral <mcklaren@gmail.com> (es_ES)\n"
+			"Michel Hermier <michel.hermier@gmail.com> (fr_FR)\n"
+			"Vajna Miklos <vmiklos@frugalware.org> (hu_HU)";
 static const gchar *artists[] = { "gnetconfig uses icons from the GNOME and Tango projects.",
 			NULL };
 
