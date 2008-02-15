@@ -40,7 +40,7 @@
 
 static gchar *xterm_argv[] = {
     "xterm",
-    "-T", "GFpm starter -- DONT'T CLOSE THAT WINDOW",
+    "-T", "GFpm starter -- DONT CLOSE THAT WINDOW",
     "-geometry", "50x1",
     "-e", "su -c " GFPM_BIN,
     NULL 
