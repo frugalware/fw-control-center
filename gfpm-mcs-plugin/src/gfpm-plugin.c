@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 Priyank Gosalia <priyankmg@gmail.com>
+ * Copyright (c) 2007-2008 Priyank Gosalia <priyankmg@gmail.com>
  * Copyright (c) 2007 Bernhard Walle <bwalle@suse.de>
  * 
  * This program is free software; you can redistribute it and/or modify
