@@ -45,6 +45,7 @@ static gchar	*license =
 static const gchar *authors[] = { "Priyank M. Gosalia <priyankmg@gmail.com>",
      			"Christian Hamar alias krix <krics@linuxforum.hu>", NULL };
 static const gchar translators[] = \
+			"Martin Burda <brdam@email.cz> (cs_CZ)\n"
 			"Carl Andersen <carl@frugalware.dk> (da_DK)\n"
 			"Finn <detto_o@freenet.de> (de_DE)\n"
 			"Manuel Peral <mcklaren@gmail.com> (es_ES)\n"
