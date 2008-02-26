@@ -1,5 +1,7 @@
 VERSION				DESCRIPTION
 ------------------------------------------------------------------------------------------
+0.1.2				- New Translation cs_CZ
+				- Typo fix
 0.1.1				- Added Translations hu_HU, fr_FR, da_DA
 				- Small bugfix in displaying caption text in
 				  languages other than en
