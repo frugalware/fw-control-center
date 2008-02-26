@@ -1,7 +1,7 @@
 ENV_CFLAGS=$CFLAGS
 
 AC_PREREQ(2.59)
-AC_INIT([gnetconfig], 0.1.3, [priyankmg@gmail.com], gnetconfig)
+AC_INIT([gnetconfig], 0.1.4, [priyankmg@gmail.com], gnetconfig)
 AC_CONFIG_SRCDIR([src/gnetconfig.c])
 AC_LANG(C)
 AM_CONFIG_HEADER(config.h)

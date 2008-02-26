@@ -1,6 +1,19 @@
 VERSION			DESCRIPTION
 ---------------------------------------------------------------------------------------------------------
-0.1.3			- Set the textdomain codeset to UTF-8. This fixes a bug where the 				  text is not displayed correctly for accented languages like fr, hu
+0.1.4			- BUGFIX: Fix a bug where the last DNS entry was not deleted even if the user
+			  tried to do so.
+			- BUGFIX: Don't allow duplicate DNS entries to be added.
+			- BUGFIX: Fixed a bug where the connection type was left
+			  blank if a wifi interface with dhcp was selected.
+			- When saving a profile, make sure dhcp_opts is not set if
+			  dhcp_client is dhclient
+			- Fixed a possible NULL pointer dereference.
+			- Added --enable-debug switch to configure.
+			- Removed some unnecessary + buggy code.
+			- Translation updates.
+			- New Translation: Czech (cs_CZ)
+0.1.3			- Set the textdomain codeset to UTF-8. This fixes a bug where the 
+			  text is not displayed correctly for accented languages like fr, hu
 			- BUGFIX: Fixed a bug where a blank gateway line was written if the
 			  user left the gateway entry blank when editing a network interface
 			- BUGFIX: Fix a double free or corruption
