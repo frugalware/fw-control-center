@@ -1,5 +1,8 @@
 VERSION				DESCRIPTION
 ------------------------------------------------------------------------------------------
+0.1.4				- Bumped to 0.1.4 instead of 0.1.3 to be in sync with
+				  Gnetconfig
+				- New Translation: Czech (cs_CZ)
 0.1.2				- Translation updates
 				- Fixed a small bug when setting caption in locales
 				  other than en
