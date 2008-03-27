@@ -44,23 +44,27 @@ gnetconfig_if_detect_dlg_init (void)
 	GtkWidget		*button_box;
 	GtkWidget  		*vbox;
 	GtkWidget		*label;
+	GtkWidget		*scrollw;
 	GtkListStore 		*store;
 	GtkCellRenderer	 	*renderer;
 	GtkTreeViewColumn	*column;
 
 	if_detect_dlg = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_default_size (GTK_WINDOW(if_detect_dlg), 450, 200);
+	scrollw = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW(scrollw), GTK_SHADOW_ETCHED_OUT);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(scrollw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 	gtk_container_set_border_width (GTK_CONTAINER(if_detect_dlg), 8);
-	gtk_window_set_title (GTK_WINDOW(if_detect_dlg), _("Detected interfaces:"));
-	gtk_window_set_resizable (GTK_WINDOW(if_detect_dlg), FALSE);
+	gtk_window_set_title (GTK_WINDOW(if_detect_dlg), _("Detected Interfaces"));
 	gtk_window_set_transient_for (GTK_WINDOW(if_detect_dlg), GTK_WINDOW(gn_if_add_dialog));
 	vbox = gtk_vbox_new (FALSE, 4);
 	if_detect_treeview = gtk_tree_view_new ();
-	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW(if_detect_treeview), FALSE);
 	label = gtk_label_new (_("The following interfaces were detected"));
 	gtk_box_pack_start (GTK_BOX(vbox), label, FALSE, TRUE, 2);
-	gtk_box_pack_start (GTK_BOX(vbox), GTK_WIDGET(if_detect_treeview), TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER(scrollw), GTK_WIDGET(if_detect_treeview));
+	gtk_box_pack_start (GTK_BOX(vbox), GTK_WIDGET(scrollw), TRUE, TRUE, 2);
 	gtk_container_add (GTK_CONTAINER(if_detect_dlg), GTK_WIDGET(vbox));
-	store = gtk_list_store_new (4, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
+	store = gtk_list_store_new (5, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN);
 	gtk_tree_view_set_model (GTK_TREE_VIEW(if_detect_treeview), GTK_TREE_MODEL(store));
 	
 	renderer = gtk_cell_renderer_pixbuf_new ();
@@ -77,14 +81,24 @@ gnetconfig_if_detect_dlg_init (void)
 							"text", 1,
 							NULL);
 	gtk_tree_view_column_set_resizable (column, FALSE);
-	gtk_tree_view_column_set_min_width (column, 80);
-	g_object_set (G_OBJECT(column), "expand", TRUE, "spacing", 4, NULL);
+	gtk_tree_view_column_set_min_width (column, 40);
+	g_object_set (G_OBJECT(column), "expand", FALSE, "spacing", 4, NULL);
 	gtk_tree_view_append_column (GTK_TREE_VIEW(if_detect_treeview), column);
 
 	renderer = gtk_cell_renderer_text_new ();
-	column = gtk_tree_view_column_new_with_attributes ("Status",
+	column = gtk_tree_view_column_new_with_attributes ("Description",
 							renderer,
 							"text", 2,
+							NULL);
+	gtk_tree_view_column_set_min_width (column, 60);
+	gtk_tree_view_column_set_resizable (column, TRUE);
+	g_object_set (G_OBJECT(column), "expand", TRUE, "spacing", 4, NULL);
+	gtk_tree_view_append_column (GTK_TREE_VIEW(if_detect_treeview), column);
+	
+	renderer = gtk_cell_renderer_text_new ();
+	column = gtk_tree_view_column_new_with_attributes ("Status",
+							renderer,
+							"text", 3,
 							NULL);
 	gtk_tree_view_column_set_min_width (column, 60);
 	gtk_tree_view_column_set_resizable (column, FALSE);
@@ -117,24 +131,18 @@ gnetconfig_if_detect_dlg_init (void)
 int
 gnetconfig_detect_interfaces (void)
 {
-	FILE			*fh = NULL;
-	char 			buf[512];
-	char 			name[512];
-	char 			*s;
-	gint			n_if, i;
+	char 			*name = NULL;
+	char			*desc = NULL;
+	gint			n_if, i, l;
 	GtkTreeModel 		*model;
 	GtkListStore 		*store;
 	GtkTreeIter		iter;
 	GdkPixbuf		*yes_pixbuf;
 	GdkPixbuf		*no_pixbuf;
 	fwnet_interface_t	*interface;
+	GList			*iflist = NULL;
+	GList			*tlist = NULL;
 
-	fh = fopen ("/proc/net/dev", "r");
-	if (fh == NULL)
-	{	
-		gn_error (_("Error opening /proc/net/dev"));
-		return 1;
-	}
 	n_if = g_list_length (active_profile->interfaces);
 	yes_pixbuf = gtk_widget_render_icon (GTK_WIDGET(if_detect_treeview),
 					GTK_STOCK_YES,
@@ -145,16 +153,22 @@ gnetconfig_detect_interfaces (void)
 	model = gtk_tree_view_get_model (GTK_TREE_VIEW(if_detect_treeview));
 	store = GTK_LIST_STORE (model);
 	gtk_list_store_clear (store);
-	fgets (buf, sizeof(buf), fh);
-	fgets (buf, sizeof(buf), fh);
-
-	while ( fgets (buf, sizeof(buf), fh) )
+	iflist = fwnet_iflist ();
+	if (iflist == NULL)
 	{
-		gboolean configured = FALSE;
-		s = gnetconfig_get_ifname (name, buf);
-		if (!strcmp(name, "lo")) /* skip lo */
-			continue;
+		gn_error (_("Cannot populate interface list"));
+		return 1;
+	}
+	tlist = iflist;
 
+	for (l=0;l<(g_list_length(iflist)/2);l++)
+	{
+		name = (char*) tlist->data;
+		tlist = g_list_next (tlist);
+		desc = (char*) tlist->data;
+		tlist = g_list_next (tlist);
+		gboolean configured = FALSE;
+		
 		/* check if the interface is already present in our profile */
 		for (i=0;i<n_if;i++)
 		{
@@ -172,16 +186,18 @@ gnetconfig_detect_interfaces (void)
 			gtk_list_store_set (store, &iter,
 					0, yes_pixbuf,
 					1, name,
-					2, _("Configured"),
-					3, TRUE, -1);
+					2, desc,
+					3, _("Configured"),
+					4, TRUE, -1);
 		}
 		else
 		{
 			gtk_list_store_set (store, &iter,
 					0, no_pixbuf,
 					1, name,
-					2, _("Not Configured"),
-					3, FALSE, -1);
+					2, desc,
+					3, _("Not Configured"),
+					4, FALSE, -1);
 		}
 	}
 	gtk_window_set_position (GTK_WINDOW(if_detect_dlg), GTK_WIN_POS_CENTER_ON_PARENT);
