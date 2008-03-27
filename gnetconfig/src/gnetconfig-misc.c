@@ -2,8 +2,6 @@
  *  gnetconfig-misc.c for gnetconfig
  *
  *  Copyright (C) 2007 by Priyank Gosalia <priyankmg@gmail.com>
- *  Parts borrowed from net-tools.
- *  The parts are Copyright (C) 1998, 2000 by Andi Kleen
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -154,30 +152,3 @@ gnetconfig_get_wireless_mode_string (int mode)
 	return ret;
 }
 
-char *
-gnetconfig_get_ifname (char *name, char *p)
-{
-    while (isspace(*p))
-	p++;
-    while (*p) {
-	if (isspace(*p))
-	    break;
-	if (*p == ':') {	/* could be an alias */
-	    char *dot = p, *dotname = name;
-	    *name++ = *p++;
-	    while (isdigit(*p))
-		*name++ = *p++;
-	    if (*p != ':') {	/* it wasn't, backup */
-		p = dot;
-		name = dotname;
-	    }
-	    if (*p == '\0')
-		return NULL;
-	    p++;
-	    break;
-	}
-	*name++ = *p++;
-    }
-    *name++ = '\0';
-    return p;
-}
