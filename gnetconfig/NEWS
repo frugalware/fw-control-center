@@ -1,5 +1,7 @@
 VERSION			DESCRIPTION
 ---------------------------------------------------------------------------------------------------------
+0.1.5			- Improved network interface detection (requires frugalwareutils 0.8.0)
+			- Use text+icon (previously only icon) for Activate and Delete profile buttons
 0.1.4			- BUGFIX: Fix a bug where the last DNS entry was not deleted even if the user
 			  tried to do so.
 			- BUGFIX: Don't allow duplicate DNS entries to be added.
