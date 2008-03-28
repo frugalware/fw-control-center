@@ -1,7 +1,7 @@
 /*
  *  gnetconfig-about.c for gnetconfig
  *
- *  Copyright (C) 2007 by Priyank Gosalia <priyankmg@gmail.com>
+ *  Copyright (C) 2007-2008 by Priyank Gosalia <priyankmg@gmail.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ gnetconfig_about (void)
 	gtk_show_about_dialog (GTK_WINDOW(gn_main_window),
 				"name", PACKAGE,
 				"version", VERSION,
-				"copyright", _("(C) 2007 Frugalware Developer Team (GPL)"),
+				"copyright", _("(C) 2007-2008 Frugalware Developer Team (GPL)"),
 				"comments", _("A graphical network configuration tool for Frugalware Linux."),
 				"license", license,
 				"authors", authors,
