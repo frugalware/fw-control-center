@@ -42,7 +42,7 @@ if [ "$1" == "--dist" ]; then
 	ver=`grep version_major -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
 	ver=$ver.`grep version_minor -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
 	ver=$ver.`grep version_micro -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
-	git-archive --format=tar --prefix=gfpm-mcs-plugin-$ver/ HEAD | tar xf -
+	git archive --format=tar --prefix=gfpm-mcs-plugin-$ver/ HEAD | tar xf -
 	git log --no-merges |git name-rev --tags --stdin > gfpm-mcs-plugin-$ver/ChangeLog
 	cd gfpm-mcs-plugin-$ver
 	./autogen.sh --git
