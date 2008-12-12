@@ -72,6 +72,8 @@ GtkWidget *gn_profile_desc;
 GtkWidget *gn_wpa_enable_check;
 GtkWidget *gn_wpa_pass_entry;
 GtkWidget *gn_wpa_driver_combo;
+GtkWidget *gn_wpa_pass_label;
+GtkWidget *gn_wpa_driver_label;
 
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
@@ -113,6 +115,7 @@ static void cb_gn_dns_listview_keypress (GtkWidget *widget, GdkEventKey *event, 
 static void cb_gn_interface_double_click (GtkTreeView *treeview);
 static void cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event);
 static void cb_gn_config_dsl_check_toggle (GtkToggleButton *togglebutton, gpointer data);
+static void cb_gn_wpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data);
 
 void
 gnetconfig_interface_init (void)
@@ -152,6 +155,8 @@ gnetconfig_interface_init (void)
 	gn_wpa_enable_check	= glade_xml_get_widget (xml, "fwn_use_wpa_check");
 	gn_wpa_pass_entry	= glade_xml_get_widget (xml, "fwn_wpa_pass_entry");
 	gn_wpa_driver_combo	= glade_xml_get_widget (xml, "fwn_wpa_driver_combo");
+	gn_wpa_driver_label	= glade_xml_get_widget (xml, "fwn_wpa_driver_label");
+	gn_wpa_pass_label	= glade_xml_get_widget (xml, "fwn_wpa_pass_label");
 	
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
@@ -319,6 +324,10 @@ gnetconfig_interface_init (void)
 	g_signal_connect (G_OBJECT(gn_config_dsl_check),
 			"toggled",
 			G_CALLBACK(cb_gn_config_dsl_check_toggle),
+			NULL);
+	g_signal_connect (G_OBJECT(gn_wpa_enable_check),
+			"toggled",
+			G_CALLBACK(cb_gn_wpa_enable_check_toggle),
 			NULL);
 
 	/* keybindings */
@@ -998,6 +1007,17 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			gtk_combo_box_set_active (GTK_COMBO_BOX(gn_wireless_mode_combo), gnetconfig_get_wireless_mode (inte->mode));
 			if (strlen(inte->essid))
 				gtk_entry_set_text (GTK_ENTRY(gn_essid_entry), inte->essid);
+			if (strlen(inte->wpa_psk) || strlen(inte->wpa_driver))
+			{
+				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_wpa_enable_check), TRUE);
+				gtk_widget_set_sensitive (GTK_WIDGET(gn_key_entry), FALSE);
+				gtk_entry_set_text (GTK_ENTRY(gn_wpa_pass_entry), inte->wpa_psk);
+			}
+			else
+			{
+				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_wpa_enable_check), FALSE);
+				gtk_widget_set_sensitive (GTK_WIDGET(gn_key_entry), TRUE);
+			}
 			if (strlen(inte->key))
 				gtk_entry_set_text (GTK_ENTRY(gn_key_entry), inte->key);
 			options = inte->options;
@@ -1484,13 +1504,34 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 static void
 cb_gn_config_dsl_check_toggle (GtkToggleButton *togglebutton, gpointer data)
 {
-	if (TRUE == gtk_toggle_button_get_active(togglebutton))
+	if (gtk_toggle_button_get_active(togglebutton))
 	{
 		gtk_widget_show (gn_dsl_table);
 	}
 	else
 	{
 		gtk_widget_hide (gn_dsl_table);
+	}
+
+	return;
+}
+
+static void
+cb_gn_wpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data)
+{
+	if (gtk_toggle_button_get_active(togglebutton))
+	{
+		gtk_widget_show (gn_wpa_pass_label);
+		gtk_widget_show (gn_wpa_pass_entry);
+		gtk_widget_show (gn_wpa_driver_label);
+		gtk_widget_show (gn_wpa_driver_combo);
+	}
+	else
+	{
+		gtk_widget_hide (gn_wpa_pass_label);
+		gtk_widget_hide (gn_wpa_pass_entry);
+		gtk_widget_hide (gn_wpa_driver_label);
+		gtk_widget_hide (gn_wpa_driver_combo);
 	}
 
 	return;
