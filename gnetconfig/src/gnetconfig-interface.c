@@ -69,6 +69,9 @@ GtkWidget *gn_config_dsl_check;
 GtkWidget *gn_statusbar;
 GtkWidget *gn_iflabel;
 GtkWidget *gn_profile_desc;
+GtkWidget *gn_wpa_enable_check;
+GtkWidget *gn_wpa_pass_entry;
+GtkWidget *gn_wpa_driver_combo;
 
 /* New Widgets */
 GtkWidget *gn_interface_treeview;
@@ -146,7 +149,10 @@ gnetconfig_interface_init (void)
 	gn_statusbar		= glade_xml_get_widget (xml, "fwn_statusbar");
 	gn_iflabel		= glade_xml_get_widget (xml, "fwn_interface_label");
 	gn_profile_desc		= glade_xml_get_widget (xml, "fwn_profile_desc");
-
+	gn_wpa_enable_check	= glade_xml_get_widget (xml, "fwn_use_wpa_check");
+	gn_wpa_pass_entry	= glade_xml_get_widget (xml, "fwn_wpa_pass_entry");
+	gn_wpa_driver_combo	= glade_xml_get_widget (xml, "fwn_wpa_driver_combo");
+	
 	/* new widgets */
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
 	gn_interface_treeview = glade_xml_get_widget (xml, "interface_treeview");
