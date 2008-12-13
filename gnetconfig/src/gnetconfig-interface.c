@@ -1016,6 +1016,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 			}
 			else
 			{
+				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_wpa_enable_check), TRUE);
 				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_wpa_enable_check), FALSE);
 				gtk_widget_set_sensitive (GTK_WIDGET(gn_key_entry), TRUE);
 			}
