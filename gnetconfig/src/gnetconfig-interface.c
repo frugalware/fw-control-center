@@ -1012,6 +1012,7 @@ cb_gn_interface_edited (GtkButton *button, gpointer data)
 				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_wpa_enable_check), TRUE);
 				gtk_widget_set_sensitive (GTK_WIDGET(gn_key_entry), FALSE);
 				gtk_entry_set_text (GTK_ENTRY(gn_wpa_pass_entry), inte->wpa_psk);
+				gtk_combo_box_set_active (GTK_COMBO_BOX(gn_wpa_driver_combo), gnetconfig_get_wpa_driver_type(inte->wpa_driver));
 			}
 			else
 			{
