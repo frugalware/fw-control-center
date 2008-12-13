@@ -33,6 +33,16 @@ typedef enum _gn_dhcp_client_type
 	GN_DHCLIENT
 } GN_DHCP_CLIENT_TYPE;
 
+typedef enum _gn_wpa_driver_type
+{
+	GN_WPA_WEXT = 0,
+	GN_WPA_HOSTAP,
+	GN_WPA_PRISM54,
+	GN_WPA_MADWIFI,
+	GN_WPA_ATMEL,
+	GN_WPA_NDISWRAPPER
+} GN_WPA_DRIVER_TYPE;
+
 void gnetconfig_read_hostname (char *);
 
 int gnetconfig_set_hostname (const char *);
@@ -44,6 +54,8 @@ void gnetconfig_profile_free (fwnet_profile_t *profile);
 int gnetconfig_get_wireless_mode (const char *);
 
 char * gnetconfig_get_wireless_mode_string (int);
+
+int gnetconfig_get_wpa_driver_type (const char *);
 
 #endif
 

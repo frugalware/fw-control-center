@@ -125,6 +125,27 @@ gnetconfig_get_wireless_mode (const char *mode)
 		return GN_AUTO;
 }
 
+int
+gnetconfig_get_wpa_driver_type (const char *driver)
+{
+	if (!driver)
+		return -1;
+	if (strlen(driver) && (!strcmp(driver, "wext")))
+		return GN_WPA_WEXT;
+	else if (strlen(driver) && (!strcmp(driver, "hostap")))
+		return GN_WPA_HOSTAP;
+	else if (strlen(driver) && (!strcmp(driver, "prism54")))
+		return GN_WPA_PRISM54;
+	else if (strlen(driver) && (!strcmp(driver, "madwifi")))
+		return GN_WPA_MADWIFI;
+	else if (strlen(driver) && (!strcmp(driver, "atmel")))
+		return GN_WPA_ATMEL;
+	else if (strlen(driver) && (!strcmp(driver, "ndiswrapper")))
+		return GN_WPA_NDISWRAPPER;
+	else
+		return -1;
+}
+
 char *
 gnetconfig_get_wireless_mode_string (int mode)
 {
