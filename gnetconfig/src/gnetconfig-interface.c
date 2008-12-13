@@ -1471,17 +1471,34 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 	{
 		char *key, *essid;
 		char *mode;
+		char *wpa_pass = NULL;
+		char *wpa_driver = NULL;
 		ipaddr	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_ipaddress_entry));
 		netmask	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_netmask_entry));
 		gateway	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_gateway_entry));
 		essid	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_essid_entry));
 		key	= (char*)gtk_entry_get_text (GTK_ENTRY(gn_key_entry));
+		wpa_pass= (char*)gtk_entry_get_text (GTK_ENTRY(gn_wpa_pass_entry));
+		wpa_driver = (char*)gtk_combo_box_get_active_text (GTK_COMBO_BOX(gn_wpa_driver_combo));
 		mode	= gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_wireless_mode_combo)));
 
-		if (strlen(key))
-			snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gn_wpa_enable_check)))
+		{
+			if (strlen(wpa_pass))
+				snprintf (interface->wpa_psk, PATH_MAX, wpa_pass);
+			else
+				*interface->wpa_psk = '\0';
+			
+			if (strlen(wpa_driver))
+				snprintf (interface->wpa_driver, PATH_MAX, wpa_driver);
+		}
 		else
-			*interface->key = '\0';
+		{
+			if (strlen(key))
+				snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
+			else
+				*interface->key = '\0';
+		}
 
 		if (strlen(essid))
 			snprintf (interface->essid, FWNET_ESSID_MAX_SIZE, essid);
