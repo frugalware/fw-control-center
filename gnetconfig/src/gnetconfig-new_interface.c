@@ -362,14 +362,32 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 	if (fwnet_is_wireless_device(nif->name))
 	{
 		char *key, *essid, *mode;
+		char *wpa_pass = NULL;
+		char *wpa_driver = NULL;
+		
 		mode = gnetconfig_get_wireless_mode_string (gtk_combo_box_get_active(GTK_COMBO_BOX(gn_nwmode_combo)));
 		key = (char*)gtk_entry_get_text (GTK_ENTRY(gn_nkey_entry));
 		essid = (char*)gtk_entry_get_text (GTK_ENTRY(gn_nessid_entry));
-
-		if (strlen(key))
-			snprintf (nif->key, FWNET_ENCODING_TOKEN_MAX, key);
+		wpa_pass= (char*)gtk_entry_get_text (GTK_ENTRY(gn_nwpa_pass_entry));
+		wpa_driver = (char*)gtk_combo_box_get_active_text (GTK_COMBO_BOX(gn_nwpa_driver_combo));
+		
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(gn_nwpa_enable_check)))
+		{
+			if (strlen(wpa_pass))
+				snprintf (nif->wpa_psk, PATH_MAX, wpa_pass);
+			else
+				*nif->wpa_psk = '\0';
+			
+			if (strlen(wpa_driver))
+				snprintf (nif->wpa_driver, PATH_MAX, wpa_driver);
+		}
 		else
-			*nif->key = '\0';
+		{
+			if (strlen(key))
+				snprintf (nif->key, FWNET_ENCODING_TOKEN_MAX, key);
+			else
+				*nif->key = '\0';
+		}
 
 		if (strlen(essid))
 			snprintf (nif->essid, FWNET_ESSID_MAX_SIZE, essid);

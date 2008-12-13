@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Sun Dec 14 01:39:59 2008 -->
+<!--Generated with glade3 3.4.5 on Sun Dec 14 01:47:50 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <property name="width_request">550</property>
@@ -1858,7 +1858,6 @@ dhclient</property>
   <widget class="GtkDialog" id="new_interface_dialog">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="border_width">5</property>
-    <property name="resizable">False</property>
     <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
     <property name="has_separator">False</property>
@@ -2349,8 +2348,12 @@ Auto
                       <widget class="GtkComboBox" id="fwn_wpa_driver_combo2">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                        <property name="items" translatable="yes">dhcpcd (default)
-dhclient</property>
+                        <property name="items" translatable="yes">wext
+hostap
+prism54
+madwifi
+atmel
+ndiswrapper</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
