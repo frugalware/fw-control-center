@@ -58,6 +58,11 @@ GtkWidget *gn_nif_dsl_check;
 GtkWidget *gn_ndsl_username;
 GtkWidget *gn_ndsl_password;
 GtkWidget *gn_ndsl_cpassword;
+GtkWidget *gn_nwpa_enable_check;
+GtkWidget *gn_nwpa_pass_entry;
+GtkWidget *gn_nwpa_driver_combo;
+GtkWidget *gn_nwpa_pass_label;
+GtkWidget *gn_nwpa_driver_label;
 
 static gboolean check_dsl = FALSE;
 
@@ -68,6 +73,7 @@ static void cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data);
 static void cb_gn_new_int_close_clicked (GtkWidget *widget, gpointer data);
 static void cb_gn_new_int_autodetect_clicked (GtkWidget *widget, gpointer data);
 static void cb_gn_config_dsl_changed (GtkToggleButton *togglebutton, gpointer data);
+static void cb_gn_nwpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data);
 
 void
 gnetconfig_new_interface_dialog_setup (void)
@@ -94,7 +100,12 @@ gnetconfig_new_interface_dialog_setup (void)
 	gn_ndsl_username	= glade_xml_get_widget (xml, "fwn_dsl_username3");
 	gn_ndsl_password	= glade_xml_get_widget (xml, "fwn_dsl_password3");
 	gn_ndsl_cpassword	= glade_xml_get_widget (xml, "fwn_dsl_cpassword3");
-
+	gn_nwpa_enable_check	= glade_xml_get_widget (xml, "fwn_use_wpa_check2");
+	gn_nwpa_pass_entry	= glade_xml_get_widget (xml, "fwn_wpa_pass_entry2");
+	gn_nwpa_driver_combo	= glade_xml_get_widget (xml, "fwn_wpa_driver_combo2");
+	gn_nwpa_driver_label	= glade_xml_get_widget (xml, "fwn_wpa_driver_label2");
+	gn_nwpa_pass_label	= glade_xml_get_widget (xml, "fwn_wpa_pass_label2");
+	
 	gtk_window_set_title(GTK_WINDOW(gn_if_add_dialog), _("Add new interface"));
 
 	/* setup signals and callbacks */
@@ -130,6 +141,11 @@ gnetconfig_new_interface_dialog_setup (void)
 	g_signal_connect (G_OBJECT(gn_if_add_dialog),
 			"delete-event",
 			G_CALLBACK(gtk_widget_hide),
+			NULL);
+			
+	g_signal_connect (G_OBJECT(gn_nwpa_enable_check),
+			"toggled",
+			G_CALLBACK(cb_gn_nwpa_enable_check_toggle),
 			NULL);
 
 	/* center the dialog on the main window */
@@ -389,6 +405,27 @@ static void
 cb_gn_new_int_autodetect_clicked (GtkWidget *widget, gpointer data)
 {
 	gnetconfig_detect_interfaces ();
+	return;
+}
+
+static void
+cb_gn_nwpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data)
+{
+	if (gtk_toggle_button_get_active(togglebutton))
+	{
+		gtk_widget_show (gn_nwpa_pass_label);
+		gtk_widget_show (gn_nwpa_pass_entry);
+		gtk_widget_show (gn_nwpa_driver_label);
+		gtk_widget_show (gn_nwpa_driver_combo);
+	}
+	else
+	{
+		gtk_widget_hide (gn_nwpa_pass_label);
+		gtk_widget_hide (gn_nwpa_pass_entry);
+		gtk_widget_hide (gn_nwpa_driver_label);
+		gtk_widget_hide (gn_nwpa_driver_combo);
+	}
+
 	return;
 }
 

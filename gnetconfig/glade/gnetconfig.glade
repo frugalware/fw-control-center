@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Sun Dec 14 01:17:30 2008 -->
+<!--Generated with glade3 3.4.5 on Sun Dec 14 01:39:59 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <property name="width_request">550</property>
@@ -2298,7 +2298,7 @@ Auto
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label47">
+                      <widget class="GtkLabel" id="fwn_wpa_pass_label2">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0</property>
@@ -2329,7 +2329,7 @@ Auto
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label49">
+                      <widget class="GtkLabel" id="fwn_wpa_driver_label2">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="xalign">0</property>
