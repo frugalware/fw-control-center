@@ -384,9 +384,13 @@ cb_gn_new_int_save_clicked (GtkWidget *widget, gpointer data)
 			
 			if (strlen(wpa_driver))
 				snprintf (nif->wpa_driver, PATH_MAX, wpa_driver);
+			else
+				*nif->wpa_driver = '\0';
 		}
 		else
 		{
+			*nif->wpa_psk = '\0';
+			*nif->wpa_driver = '\0';
 			if (strlen(key))
 				snprintf (nif->key, FWNET_ENCODING_TOKEN_MAX, key);
 			else
