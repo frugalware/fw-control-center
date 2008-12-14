@@ -1493,9 +1493,13 @@ cb_gn_save_interface_clicked (GtkButton *button, gpointer data)
 			
 			if (strlen(wpa_driver))
 				snprintf (interface->wpa_driver, PATH_MAX, wpa_driver);
+			else
+				*interface->wpa_driver = '\0';
 		}
 		else
 		{
+			*interface->wpa_psk = '\0';
+			*interface->wpa_driver = '\0';
 			if (strlen(key))
 				snprintf (interface->key, FWNET_ENCODING_TOKEN_MAX, key);
 			else
