@@ -1544,6 +1544,7 @@ cb_gn_wpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data)
 		gtk_widget_show (gn_wpa_pass_entry);
 		gtk_widget_show (gn_wpa_driver_label);
 		gtk_widget_show (gn_wpa_driver_combo);
+		gtk_widget_set_sensitive (GTK_WIDGET(gn_key_entry), FALSE);
 	}
 	else
 	{
@@ -1551,6 +1552,7 @@ cb_gn_wpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data)
 		gtk_widget_hide (gn_wpa_pass_entry);
 		gtk_widget_hide (gn_wpa_driver_label);
 		gtk_widget_hide (gn_wpa_driver_combo);
+		gtk_widget_set_sensitive (GTK_WIDGET(gn_key_entry), TRUE);
 	}
 
 	return;

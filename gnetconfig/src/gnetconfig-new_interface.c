@@ -167,6 +167,9 @@ gnetconfig_reset_nif_dialog (void)
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_nconntype_combo), -1);
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_nwmode_combo), -1);
 	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_ndhcp_client_combo), -1);
+	gtk_combo_box_set_active (GTK_COMBO_BOX(gn_nwpa_driver_combo), 0);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_nwpa_enable_check), TRUE);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(gn_nwpa_enable_check), FALSE);
 	gtk_entry_set_text (GTK_ENTRY(gn_nif_name_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_nipaddress_entry), "");
 	gtk_entry_set_text (GTK_ENTRY(gn_nnetmask_entry), "");
@@ -188,6 +191,7 @@ gnetconfig_new_interface_dialog_show (void)
 
 	if (!GTK_WIDGET_VISIBLE(gn_if_add_dialog))
 	{
+		gnetconfig_reset_nif_dialog ();
 		gtk_widget_show (gn_if_add_dialog);
 		gtk_window_present (GTK_WINDOW(gn_if_add_dialog));
 	}
@@ -435,6 +439,7 @@ cb_gn_nwpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data)
 		gtk_widget_show (gn_nwpa_pass_entry);
 		gtk_widget_show (gn_nwpa_driver_label);
 		gtk_widget_show (gn_nwpa_driver_combo);
+		gtk_widget_set_sensitive (GTK_WIDGET(gn_nkey_entry), FALSE);
 	}
 	else
 	{
@@ -442,6 +447,7 @@ cb_gn_nwpa_enable_check_toggle (GtkToggleButton *togglebutton, gpointer data)
 		gtk_widget_hide (gn_nwpa_pass_entry);
 		gtk_widget_hide (gn_nwpa_driver_label);
 		gtk_widget_hide (gn_nwpa_driver_combo);
+		gtk_widget_set_sensitive (GTK_WIDGET(gn_nkey_entry), TRUE);
 	}
 
 	return;
