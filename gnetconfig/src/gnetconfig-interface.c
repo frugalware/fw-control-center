@@ -1240,7 +1240,7 @@ cb_gn_interface_right_click (GtkTreeView *treeview, GdkEventButton *event)
 	menu_item = gtk_image_menu_item_new_with_label (_("Stop"));
 	image = gtk_image_new_from_stock ("gtk-disconnect", GTK_ICON_SIZE_MENU);
 	gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(menu_item), image);
-	g_signal_connect (G_OBJECT(menu_item), "activate", G_CALLBACK(cb_gn_interface_start), NULL);
+	g_signal_connect (G_OBJECT(menu_item), "activate", G_CALLBACK(cb_gn_interface_stop), NULL);
 	gtk_menu_shell_append (GTK_MENU_SHELL(menu), menu_item);
 	gtk_widget_show (menu_item);
 
