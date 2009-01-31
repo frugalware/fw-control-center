@@ -1090,6 +1090,14 @@ cb_gn_interface_delete (GtkButton *button, gpointer data)
 	else
 	{
 		active_profile->interfaces = g_list_delete_link (active_profile->interfaces, interface);
+		/* if the interface to be deleted is an ADSL one, then also clear all ADSL info about
+		   that interface */
+		if (!strcmp(active_profile->adsl_interface,inte->name))
+		{
+			memset (active_profile->adsl_interface, 0, PATH_MAX+1);
+			memset (active_profile->adsl_username, 0, PATH_MAX+1);
+			memset (active_profile->adsl_password, 0, PATH_MAX+1);
+		}
 		fwnet_writeconfig (active_profile, NULL);
 		gn_message (_("Interface deleted successfully"));
 		gnetconfig_populate_interface_list (active_profile);
