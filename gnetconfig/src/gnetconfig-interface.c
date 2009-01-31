@@ -815,11 +815,21 @@ cb_gn_interface_start (GtkButton *button, gpointer data)
 
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if (!fwutil_system(ptr))
+	{
 		gn_error (_("Interface is already started."));
+	}
 	else
 	{
 		ret = fwnet_ifup (inte, active_profile);
-		gnetconfig_populate_interface_list (active_profile);
+		/* re-populate interface list */
+		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
+		gtk_tree_selection_get_selected (selection, &model, &iter);
+		GtkListStore	*store = GTK_LIST_STORE (model);
+		gchar		*ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_UP);
+		GdkPixbuf	*up_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 26, 26, NULL);
+		gtk_list_store_set (store, &iter, 3, up_pixbuf, 4, " UP", -1);
+		g_object_unref (up_pixbuf);
+		g_free (ptr);
 	}
 	g_free (ptr);
 
@@ -870,11 +880,21 @@ cb_gn_interface_stop (GtkButton *button, gpointer data)
 
 	ptr = g_strdup_printf ("ifconfig %s | grep UP > /dev/null", inte->name);
 	if (fwutil_system(ptr))
+	{
 		gn_error (_("Interface is not running."));
+	}
 	else
 	{
 		ret = fwnet_ifdown (inte, active_profile);
-		gnetconfig_populate_interface_list (active_profile);
+		/* re-populate interface list */
+		selection = gtk_tree_view_get_selection (GTK_TREE_VIEW(gn_interface_treeview));
+		gtk_tree_selection_get_selected (selection, &model, &iter);
+		GtkListStore	*store = GTK_LIST_STORE (model);
+		gchar		*ptr = g_strdup_printf ("%s%s", PREFIX, IFACE_DN);
+		GdkPixbuf	*dn_pixbuf = gdk_pixbuf_new_from_file_at_size (ptr, 26, 26, NULL);
+		gtk_list_store_set (store, &iter, 3, dn_pixbuf, 4, " DOWN", -1);
+		g_object_unref (dn_pixbuf);
+		g_free (ptr);
 	}
 	g_free (ptr);
 
