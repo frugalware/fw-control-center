@@ -162,6 +162,14 @@ gnetconfig_interface_init (void)
 	gn_interface_dialog = glade_xml_get_widget (xml, "interface_edit_dialog");
 	gn_interface_treeview = glade_xml_get_widget (xml, "interface_treeview");
 
+	/* set application icon */
+	GdkPixbuf *icon = gtk_widget_render_icon (gn_main_window,
+						GTK_STOCK_NETWORK,
+						GTK_ICON_SIZE_SMALL_TOOLBAR,
+						NULL);
+	gtk_window_set_icon (GTK_WINDOW(gn_main_window), icon);
+	g_object_unref (icon);
+
 	/* Set the title for some stuff */
 	gtk_window_set_title (GTK_WINDOW(gn_main_window), PACKAGE_STRING);
 	gtk_window_set_title (GTK_WINDOW(gn_interface_dialog), _("Configure interface"));
