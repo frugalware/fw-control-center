@@ -1,5 +1,9 @@
 VERSION			DESCRIPTION
 ---------------------------------------------------------------------------------------------------------
+0.1.7			- BUGFIX: ADSL information not cleared when deleting ADSL interface
+			- BUGFIX: Fix bug when stopping an interface from the popup menu
+			- Preserve interface selection after a start/stop operation
+			- New translation : Vietnamese (Thanks to Clytie Siddall)
 0.1.6			- Added WPA support
 0.1.5			- Improved network interface detection (requires frugalwareutils 0.8.0)
 			- Use text+icon (previously only icon) for Activate and Delete profile buttons
