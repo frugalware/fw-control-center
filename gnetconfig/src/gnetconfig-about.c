@@ -50,7 +50,8 @@ static const gchar translators[] = \
 			"Finn <detto_o@freenet.de> (de_DE)\n"
 			"Manuel Peral <mcklaren@gmail.com> (es_ES)\n"
 			"Michel Hermier <michel.hermier@gmail.com> (fr_FR)\n"
-			"Vajna Miklos <vmiklos@frugalware.org> (hu_HU)";
+			"Vajna Miklos <vmiklos@frugalware.org> (hu_HU)\n"
+			"Clytie Siddall <clytie@riverland.net.au> (vi_VI)";
 static const gchar *artists[] = { "gnetconfig uses icons from the GNOME and Tango projects.",
 			NULL };
 
