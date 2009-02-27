@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Sun Dec 14 11:04:14 2008 -->
+<!--Generated with glade3 3.4.5 on Fri Feb 27 19:13:19 2009 -->
 <glade-interface>
   <widget class="GtkWindow" id="window1">
     <property name="width_request">550</property>
@@ -490,6 +490,9 @@ Graphical network configuration tool for Frugalware linux.</property>
                           </packing>
                         </child>
                         <child>
+                          <placeholder/>
+                        </child>
+                        <child>
                           <widget class="GtkButton" id="fwn_if_add">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -527,7 +530,7 @@ Graphical network configuration tool for Frugalware linux.</property>
                             </child>
                           </widget>
                           <packing>
-                            <property name="position">2</property>
+                            <property name="position">3</property>
                           </packing>
                         </child>
                         <child>
@@ -566,7 +569,7 @@ Graphical network configuration tool for Frugalware linux.</property>
                             </child>
                           </widget>
                           <packing>
-                            <property name="position">3</property>
+                            <property name="position">4</property>
                           </packing>
                         </child>
                         <child>
@@ -580,7 +583,7 @@ Graphical network configuration tool for Frugalware linux.</property>
                             <property name="response_id">0</property>
                           </widget>
                           <packing>
-                            <property name="position">4</property>
+                            <property name="position">5</property>
                           </packing>
                         </child>
                       </widget>
