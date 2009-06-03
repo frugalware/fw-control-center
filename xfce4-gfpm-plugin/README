@@ -1,7 +1,7 @@
-gfpm mcs plugin
+xfce4 gfpm plugin
 ----------------------
 
-This plugin adds a GFpm (Package Manager) icon to the XFCE settings manager.
+This plugin adds a GFpm (Graphical Frugalware Package Manager) icon to the XFCE settings manager.
 This will allow you to launch the GFpm package manager directly from Xfce
 settings manager.
 It requires gksu to get superuser permissions. If gksu is not installed,

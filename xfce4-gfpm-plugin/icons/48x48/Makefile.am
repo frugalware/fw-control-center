@@ -1,7 +1,4 @@
-iconsdir = $(datadir)/icons/hicolor/48x48/apps
-icons_DATA =								\
-	gfpm-mcs.png
+icondir = $(datadir)/icons/hicolor/48x48/apps
+icon_DATA = gfpm-mcs.png
 
-EXTRA_DIST =								\
-	$(icons_DATA)
-
+EXTRA_DIST = $(icon_DATA)

@@ -1,27 +1,10 @@
-# $Id: Makefile.am 2284 2006-12-29 14:39:00Z pollux $
+INCLUDES=@XFCE4_GFPM_PLUGIN_CFLAGS@ \
+	-DPREFIX=\"$(prefix)\" \
+	-fPIC
 
-INCLUDES =								\
-	-I$(top_srcdir)							\
-	-I$(top_builddir)						\
-	-DLOCALEDIR=\""$(localedir)"\"
+bin_PROGRAMS=xfce4-gfpm-plugin
 
-plugindir = $(XFCE_MCS_MANAGER_PLUGINSDIR)
-plugin_LTLIBRARIES =							\
-	gfpm_plugin.la
+xfce4_gfpm_plugin_SOURCES=gfpm-plugin.c 
 
-gfpm_plugin_la_SOURCES =						\
-	gfpm-plugin.c 
+xfce4_gfpm_plugin_LDADD= @XFCE4_GFPM_PLUGIN_LIBS@
 
-gfpm_plugin_la_CFLAGS =						\
-	$(LIBXFCEGUI4_CFLAGS)						\
-	$(XFCE_MCS_MANAGER_CFLAGS)
-
-gfpm_plugin_la_LDFLAGS =						\
-	-avoid-version							\
-	-module								\
-	-no-undefined
-
-gfpm_plugin_la_LIBADD =						\
-	$(XFCE_MCS_MANAGER_LIBS)
-
-# vi:set ts=8 sw=8 noet ai nocindent syntax=automake:
