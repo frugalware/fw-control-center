@@ -39,10 +39,8 @@ if [ "$1" == "--pot-only" ]; then
 fi
 
 if [ "$1" == "--dist" ]; then
-	ver=`grep version_major -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
-	ver=$ver.`grep version_minor -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
-	ver=$ver.`grep version_micro -m1 configure.in | sed 's/.*, \[\(.*\)].*/\1/'`
-	git archive --format=tar --prefix=gfpm-mcs-plugin-$ver/ HEAD | tar xf -
+	ver=`grep AC_INIT configure.ac | sed 's/.*, \([0-9\.]*\), .*/\1/'`
+	git archive --format=tar --prefix=xfce4-gfpm-plugin-$ver/ HEAD | tar xf -
 	git log --no-merges |git name-rev --tags --stdin > xfce4-gfpm-plugin-$ver/ChangeLog
 	cd xfce4-gfpm-plugin-$ver
 	./autogen.sh --git
@@ -67,6 +65,7 @@ autoconf -f
 cp -f $(dirname $(which automake))/../share/automake/mkinstalldirs ./
 cp -f $(dirname $(which automake))/../share/gettext/config.rpath ./
 automake -a -c --gnu --foreign
+
 if [ "$1" == "--git" ]; then
 	rm -rf autom4te.cache
 fi

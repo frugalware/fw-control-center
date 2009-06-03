@@ -1,5 +1,7 @@
 VERSION				DESCRIPTION
 ------------------------------------------------------------------------------------------
+0.2.0 (2009-06-03) 		- Now a standalone program instead of a plugin
+				- New build system
 0.1.2				- New Translation cs_CZ
 				- Typo fix
 0.1.1				- Added Translations hu_HU, fr_FR, da_DA
