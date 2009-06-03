@@ -28,14 +28,6 @@
 
 #include <gtk/gtk.h>
 
-#include <libxfce4mcs/mcs-manager.h>
-
-#include <libxfce4util/libxfce4util.h>
-#include <libxfcegui4/libxfcegui4.h>
-
-#include <xfce-mcs-manager/manager-plugin.h>
-
-#define GFPM_ICON      "gfpm-mcs"
 #define GFPM_BIN       "/usr/bin/gfpm"
 
 static gchar *xterm_argv[] = {
@@ -52,35 +44,8 @@ static gchar *gnomesu_argv[] = {
     NULL
 };
 
-
-/* static prototypes */
-static void run_dialog (McsPlugin *);
-
-/*
- */
-McsPluginInitResult mcs_plugin_init (McsPlugin *plugin)
-{
-    gchar *where;
-    GError *error = NULL;
-
-    xfce_textdomain (GETTEXT_PACKAGE, LOCALEDIR, "UTF-8");
-
-    plugin->plugin_name = g_strdup ("gfpm");
-    /* the button label in the xfce-mcs-manager dialog */
-    plugin->caption = g_strdup (Q_ ("Package Manager"));
-    plugin->run_dialog = run_dialog;
-    plugin->icon = xfce_themed_icon_load (GFPM_ICON, 48);
-    if (plugin->icon) {
-        g_object_set_data_full (G_OBJECT (plugin->icon), "mcs-plugin-icon-name",
-                g_strdup (GFPM_ICON), g_free);
-    }
-
-    return MCS_PLUGIN_INIT_OK;
-}
-
-/*
- */
-static void run_dialog(McsPlugin * plugin)
+int
+main (int argc, char *argv[])
 {
     GError *error = NULL;
 
@@ -101,7 +66,3 @@ static void run_dialog(McsPlugin * plugin)
     }
 }
 
-/* */
-MCS_PLUGIN_CHECK_INIT
-
-/* vim: set sw=4 ts=4 et: */
