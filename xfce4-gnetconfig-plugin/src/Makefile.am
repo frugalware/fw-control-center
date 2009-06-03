@@ -1,27 +1,10 @@
-# $Id: Makefile.am 2284 2006-12-29 14:39:00Z pollux $
+INCLUDES=@XFCE4_GNETCONFIG_PLUGIN_CFLAGS@ \
+	-DPREFIX=\"$(prefix)\" \
+	-fPIC
 
-INCLUDES =								\
-	-I$(top_srcdir)							\
-	-I$(top_builddir)						\
-	-DLOCALEDIR=\""$(localedir)"\"
+bin_PROGRAMS=xfce4-gnetconfig-plugin
 
-plugindir = $(XFCE_MCS_MANAGER_PLUGINSDIR)
-plugin_LTLIBRARIES =							\
-	gnetconfig_plugin.la
+xfce4_gnetconfig_plugin_SOURCES=gnetconfig-plugin.c 
 
-gnetconfig_plugin_la_SOURCES =						\
-	gnetconfig-plugin.c 
+xfce4_gnetconfig_plugin_LDADD= @XFCE4_GNETCONFIG_PLUGIN_LIBS@
 
-gnetconfig_plugin_la_CFLAGS =						\
-	$(LIBXFCEGUI4_CFLAGS)						\
-	$(XFCE_MCS_MANAGER_CFLAGS)
-
-gnetconfig_plugin_la_LDFLAGS =						\
-	-avoid-version							\
-	-module								\
-	-no-undefined
-
-gnetconfig_plugin_la_LIBADD =						\
-	$(XFCE_MCS_MANAGER_LIBS)
-
-# vi:set ts=8 sw=8 noet ai nocindent syntax=automake:
