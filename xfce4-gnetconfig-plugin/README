@@ -1,7 +1,7 @@
-gnetconfig mcs plugin
+xfce4 gnetconfig plugin
 ----------------------
 
-This plugin adds a Gnetconfig icon to the XFCE settings manager.
+This plugin adds a GNetconfig icon to the XFCE settings manager.
 This will allow you to tweak your network settings directly from Xfce
 settings manager.
 It requires gksu to get superuser permissions. If gksu is not installed,

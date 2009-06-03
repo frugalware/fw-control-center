@@ -1,7 +1,7 @@
 ENV_CFLAGS=$CFLAGS
 
 AC_PREREQ(2.59)
-AC_INIT([xfce4-gnetconfig-plugin], 0.1.4, [priyankmg@gmail.com], xfce4-gnetconfig-plugin)
+AC_INIT([xfce4-gnetconfig-plugin], 0.2.0, [priyankmg@gmail.com], xfce4-gnetconfig-plugin)
 AC_CONFIG_SRCDIR([src/gnetconfig-plugin.c])
 AC_LANG(C)
 AM_CONFIG_HEADER(config.h)

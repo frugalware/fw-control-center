@@ -1,5 +1,7 @@
 VERSION				DESCRIPTION
 ------------------------------------------------------------------------------------------
+0.2.0 (2009-06-03)		- Now a standalone program instead of a mcs plugin
+				- New build system
 0.1.4				- Bumped to 0.1.4 instead of 0.1.3 to be in sync with
 				  Gnetconfig
 				- New Translation: Czech (cs_CZ)
