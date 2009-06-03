@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Network Configuration
+Comment=Configure network
+Exec=xfce4-gnetconfig-plugin
+Icon=gnetconfig-mcs
+Terminal=false
+StartupNotify=true
+Type=Application
+Categories=X-XFCE;Settings;DesktopSettings;X-XfceSettingsDialog;
+OnlyShowIn=XFCE;
+X-XfcePluggable=true
