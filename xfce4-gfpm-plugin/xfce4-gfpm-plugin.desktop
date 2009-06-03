@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Package Manager
+Comment=Add/Remove packages
+Exec=xfce4-gfpm-plugin
+Icon=gfpm-mcs.png
+Terminal=false
+StartupNotify=true
+Type=Application
+Categories=X-XFCE;Settings;DesktopSettings;X-XfceSettingsDialog;
+OnlyShowIn=XFCE;
+X-XfcePluggable=true
