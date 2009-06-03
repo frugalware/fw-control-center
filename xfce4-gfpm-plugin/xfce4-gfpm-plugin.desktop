@@ -2,7 +2,7 @@
 Name=Package Manager
 Comment=Add/Remove packages
 Exec=xfce4-gfpm-plugin
-Icon=gfpm-mcs.png
+Icon=gfpm-mcs
 Terminal=false
 StartupNotify=true
 Type=Application
