@@ -27,20 +27,11 @@
 #endif
 
 #include <gtk/gtk.h>
-
-#include <libxfce4mcs/mcs-manager.h>
-
-#include <libxfce4util/libxfce4util.h>
-#include <libxfcegui4/libxfcegui4.h>
-
-#include <xfce-mcs-manager/manager-plugin.h>
-
-#define GNETCONFIG_ICON      "gnetconfig-mcs"
 #define GNETCONFIG_BIN       "/usr/bin/gnetconfig"
 
 static gchar *xterm_argv[] = {
     "xterm",
-    "-T", "Gnetconfig starter -- DON'T CLOSE THAT WINDOW",
+    "-T", "GNetconfig starter -- DON'T CLOSE THAT WINDOW",
     "-geometry", "50x1",
     "-e", "su -c " GNETCONFIG_BIN,
     NULL 
@@ -53,34 +44,8 @@ static gchar *gnomesu_argv[] = {
 };
 
 
-/* static prototypes */
-static void run_dialog (McsPlugin *);
-
-/*
- */
-McsPluginInitResult mcs_plugin_init (McsPlugin *plugin)
-{
-    gchar *where;
-    GError *error = NULL;
-
-    xfce_textdomain (GETTEXT_PACKAGE, LOCALEDIR, "UTF-8");
-
-    plugin->plugin_name = g_strdup ("gnetconfig");
-    /* the button label in the xfce-mcs-manager dialog */
-    plugin->caption = g_strdup (Q_ ("Network Configuration"));
-    plugin->run_dialog = run_dialog;
-    plugin->icon = xfce_themed_icon_load (GNETCONFIG_ICON, 48);
-    if (plugin->icon) {
-        g_object_set_data_full (G_OBJECT (plugin->icon), "mcs-plugin-icon-name",
-                g_strdup (GNETCONFIG_ICON), g_free);
-    }
-
-    return MCS_PLUGIN_INIT_OK;
-}
-
-/*
- */
-static void run_dialog(McsPlugin * plugin)
+int
+main (int argc, char *argv[])
 {
     GError *error = NULL;
 
@@ -95,13 +60,11 @@ static void run_dialog(McsPlugin * plugin)
                 (NULL, xterm_argv, NULL,
                  G_SPAWN_SEARCH_PATH | G_SPAWN_STDOUT_TO_DEV_NULL |
                  G_SPAWN_STDERR_TO_DEV_NULL, NULL, NULL, NULL, &error)) {
-            g_error ("Could not start Gnetconfig: %s", error->message);
+            g_error ("Could not start GNetconfig: %s", error->message);
             g_error_free (error);
         }
     }
+
+    return 0;
 }
 
-/* */
-MCS_PLUGIN_CHECK_INIT
-
-/* vim: set sw=4 ts=4 et: */
