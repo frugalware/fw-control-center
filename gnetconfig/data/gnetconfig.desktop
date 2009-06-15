@@ -1,5 +1,4 @@
 [Desktop Entry]
-Encoding=UTF-8
 Name=Gnetconfig
 Comment=Graphical network configuration tool for Frugalware Linux.
 Exec=gksu gnetconfig 
