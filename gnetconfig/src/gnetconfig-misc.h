@@ -33,6 +33,13 @@ typedef enum _gn_dhcp_client_type
 	GN_DHCLIENT
 } GN_DHCP_CLIENT_TYPE;
 
+typedef enum _gn_wireless_auth_type
+{
+	GN_WAUTH_OPEN = 0,
+	GN_WAUTH_WEP,
+	GN_WAUTH_WPA
+} GN_WIRELESS_AUTH_TYPE;
+
 typedef enum _gn_wpa_driver_type
 {
 	GN_WPA_WEXT = 0,
